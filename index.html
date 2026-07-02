@@ -3,38 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Airdrop Hub</title>
 
-    <style>
+    <link rel="stylesheet" href="css/style.css">
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
+    <script defer src="js/app.js"></script>
 
-body{
-    background:#0f172a;
-    color:white;
-}
+</head>
 
-.container{
-    display:flex;
-    min-height:100vh;
-}
+<body>
 
-/* Sidebar */
+<div class="container">
 
-.sidebar{
-    width:250px;
-    background:#111827;
-    padding:20px;
-    border-right:1px solid #1f2937;
-}
+    <!-- Sidebar -->
+    <aside class="sidebar">
 
-.logo{
-    font-size:28px;
+        <h1 class="logo">Airdrop Hub</h1>
+
+        <nav>
+
+            <ul class="menu">
+
+                <li class="active">🏠 Dashboard</li>
+
+                <li>📁 Projects</li>
+
+                <li>👛 Wallets</li>
+
+                <li>📅 Daily Tasks</li>
+
+                <li>⭐ Watchlist</li>
+
+                <li>📝 Notes</li>
+
+                <li>⚙️ Settings</li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main -->
+
+    <main class="content">
+
+        <h2 class="title">
+            Dashboard
+        </h2>
+
+        <section class="cards">
+
+            <div class="card">
+                <span>Active Projects</span>
+                <h3 id="activeProjects">0</h3>
+            </div>
+
+            <div class="card">
+                <span>Wallets</span>
+                <h3 id="wallets">0</h3>
+            </div>
+
+            <div class="card">
+                <span>Today's Tasks</span>
+                <h3 id="todayTasks">0</h3>
+            </div>
+
+            <div class="card">
+                <span>Completed</span>
+                <h3 id="completed">0</h3>
+            </div>
+
+        </section>
+
+        <section class="search">
+
+            <input
+                type="text"
+                placeholder="Cari project..."
+                id="searchInput">
+
+        </section>
+
+        <section class="project">
+
+            <h2>Projects</h2>
+
+            <div class="empty">
+
+                Belum ada project.
+
+                <br><br>
+
+                Pada versi berikutnya kita akan membuat tombol
+                <b>Tambah Project</b>.
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>    font-size:28px;
     font-weight:bold;
     color:#38bdf8;
     margin-bottom:40px;
