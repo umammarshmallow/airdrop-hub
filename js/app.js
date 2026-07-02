@@ -1,8 +1,119 @@
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Airdrop Hub v1.0");
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
 
-    document.getElementById("activeProjects").textContent = 0;
-    document.getElementById("wallets").textContent = 0;
-    document.getElementById("todayTasks").textContent = 0;
-    document.getElementById("completed").textContent = 0;
-});!");
+body{
+    background:#0f172a;
+    color:#fff;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    background:#111827;
+    padding:20px;
+}
+
+.logo{
+    color:#38bdf8;
+    font-size:28px;
+    margin-bottom:30px;
+}
+
+.menu{
+    list-style:none;
+}
+
+.menu li{
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.menu li:hover{
+    background:#1e293b;
+}
+
+.active{
+    background:#2563eb;
+}
+
+.content{
+    flex:1;
+    padding:30px;
+}
+
+.title{
+    margin-bottom:25px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+}
+
+.card span{
+    color:#94a3b8;
+}
+
+.card h3{
+    font-size:36px;
+    margin-top:10px;
+    color:#38bdf8;
+}
+
+.search{
+    margin:30px 0;
+}
+
+.search input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:#1e293b;
+    color:white;
+}
+
+.project{
+    background:#1e293b;
+    border-radius:12px;
+    padding:20px;
+}
+
+.empty{
+    text-align:center;
+    color:#94a3b8;
+    padding:60px;
+}
+
+@media(max-width:768px){
+
+.container{
+    flex-direction:column;
+}
+
+.sidebar{
+    width:100%;
+}
+
+.cards{
+    grid-template-columns:1fr;
+}
+
+    }
