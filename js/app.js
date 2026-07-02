@@ -1,40 +1,58 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+const projects=[];
+
+const list=document.getElementById("projectList");
+
+document.getElementById("addProject").onclick=function(){
+
+let name=prompt("Nama Project");
+
+if(!name) return;
+
+let network=prompt("Network");
+
+projects.push({
+
+name:name,
+
+network:network
+
+});
+
+render();
+
 }
 
-body{
-    background:#0f172a;
-    color:#fff;
+function render(){
+
+if(projects.length===0){
+
+list.innerHTML='<div class="empty">Belum ada project.</div>';
+
+return;
+
 }
 
-.container{
-    display:flex;
-    min-height:100vh;
-}
+list.innerHTML="";
 
-.sidebar{
-    width:250px;
-    background:#111827;
-    padding:20px;
-}
+projects.forEach((p)=>{
 
-.logo{
-    color:#38bdf8;
-    font-size:28px;
-    margin-bottom:30px;
-}
+list.innerHTML+=`
 
-.menu{
-    list-style:none;
-}
+<div class="project-item">
 
-.menu li{
-    padding:15px;
-    margin-bottom:10px;
-    border-radius:8px;
+<h3>${p.name}</h3>
+
+<p>${p.network}</p>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("activeProjects").textContent=projects.length;
+
+}    border-radius:8px;
     cursor:pointer;
 }
 
