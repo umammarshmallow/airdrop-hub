@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Airdrop Hub</title>
 
-    <title>Airdrop Hub</title>
-
-    <link rel="stylesheet" href="css/style.css">
-
-    <script defer src="js/app.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<script defer src="js/app.js"></script>
 
 </head>
 
@@ -16,42 +14,25 @@
 
 <div class="container">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
 
         <h1 class="logo">Airdrop Hub</h1>
 
-        <nav>
-
-            <ul class="menu">
-
-                <li class="active">🏠 Dashboard</li>
-
-                <li>📁 Projects</li>
-
-                <li>👛 Wallets</li>
-
-                <li>📅 Daily Tasks</li>
-
-                <li>⭐ Watchlist</li>
-
-                <li>📝 Notes</li>
-
-                <li>⚙️ Settings</li>
-
-            </ul>
-
-        </nav>
+        <ul class="menu">
+            <li class="active">🏠 Dashboard</li>
+            <li>📁 Projects</li>
+            <li>👛 Wallets</li>
+            <li>📅 Daily Tasks</li>
+            <li>⭐ Watchlist</li>
+            <li>📝 Notes</li>
+            <li>⚙️ Settings</li>
+        </ul>
 
     </aside>
 
-    <!-- Main -->
-
     <main class="content">
 
-        <h2 class="title">
-            Dashboard
-        </h2>
+        <h2 class="title">Dashboard</h2>
 
         <section class="cards">
 
@@ -78,27 +59,20 @@
         </section>
 
         <section class="search">
-
-            <input
-                type="text"
-                placeholder="Cari project..."
-                id="searchInput">
-
+            <input id="searchInput" type="text" placeholder="Cari Project...">
         </section>
 
         <section class="project">
 
-            <h2>Projects</h2>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                <h2>Projects</h2>
+                <button id="addProject">+ Add Project</button>
+            </div>
 
-            <div class="empty">
-
-                Belum ada project.
-
-                <br><br>
-
-                Pada versi berikutnya kita akan membuat tombol
-                <b>Tambah Project</b>.
-
+            <div id="projectList">
+                <div class="empty">
+                    Belum ada project.
+                </div>
             </div>
 
         </section>
