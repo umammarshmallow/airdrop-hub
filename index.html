@@ -16,66 +16,90 @@
 
     <aside class="sidebar">
 
-        <h1 class="logo">Airdrop Hub</h1>
+        <div class="logo">
+            🚀 AIRDROP HUB
+        </div>
 
         <ul class="menu">
+
             <li class="active">🏠 Dashboard</li>
+
             <li>📁 Projects</li>
+
             <li>👛 Wallets</li>
+
             <li>📅 Daily Tasks</li>
+
             <li>⭐ Watchlist</li>
+
             <li>📝 Notes</li>
-            <li>⚙️ Settings</li>
+
+            <li>⚙ Settings</li>
+
         </ul>
 
     </aside>
 
     <main class="content">
 
-        <h2 class="title">Dashboard</h2>
+        <h1>Dashboard</h1>
 
-        <section class="cards">
+        <div class="cards">
 
             <div class="card">
                 <span>Active Projects</span>
-                <h3 id="activeProjects">0</h3>
+                <h2 id="activeProjects">0</h2>
             </div>
 
             <div class="card">
                 <span>Wallets</span>
-                <h3 id="wallets">0</h3>
+                <h2 id="wallets">0</h2>
             </div>
 
             <div class="card">
                 <span>Today's Tasks</span>
-                <h3 id="todayTasks">0</h3>
+                <h2 id="todayTasks">0</h2>
             </div>
 
             <div class="card">
                 <span>Completed</span>
-                <h3 id="completed">0</h3>
+                <h2 id="completed">0</h2>
             </div>
 
-        </section>
+        </div>
 
-        <section class="search">
-            <input id="searchInput" type="text" placeholder="Cari Project...">
-        </section>
+        <div class="search">
 
-        <section class="project">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Cari project...">
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        </div>
+
+        <div class="project">
+
+            <div class="project-header">
+
                 <h2>Projects</h2>
-                <button id="addProject">+ Add Project</button>
+
+                <button id="addProject">
+                    + Add Project
+                </button>
+
             </div>
 
             <div id="projectList">
+
                 <div class="empty">
+
                     Belum ada project.
+
                 </div>
+
             </div>
 
-        </section>
+        </div>
 
     </main>
 
