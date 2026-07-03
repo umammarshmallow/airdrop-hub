@@ -7,9 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Airdrop Hub v2.0</title>
-
-<link rel="stylesheet" href="css/style.css">
+<title>Airdrop Hub v3.0</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -17,7 +15,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<script defer src="js/app.js"></script>
+<link rel="stylesheet" href="css/style.css">
 
 </head>
 
@@ -25,91 +23,29 @@
 
 <div class="container">
 
-<!-- ======================
-SIDEBAR
-====================== -->
-
-<aside class="sidebar">
-
-<div class="logo">
-
-🚀 AIRDROP HUB
-
-</div>
-
-<ul class="menu">
-
-<li class="active">
-🏠 Dashboard
-</li>
-
-<li>
-📁 Projects
-</li>
-
-<li>
-👛 Wallet
-</li>
-
-<li>
-📅 Daily Task
-</li>
-
-<li>
-⭐ Favorite
-</li>
-
-<li>
-📝 Notes
-</li>
-
-<li>
-⚙ Settings
-</li>
-
-</ul>
-
-<div class="sidebar-footer">
-
-<p>Version 2.0</p>
-
-</div>
-
-</aside>
-
-<!-- ======================
-CONTENT
-====================== -->
-
-<main class="content">
-
-<header class="topbar">
+<header>
 
 <h1>
 
-Dashboard
+🚀 AIRDROP HUB
 
 </h1>
 
-<button id="addProject">
+<button id="addProjectBtn">
 
-➕ Add Project
++ Add Project
 
 </button>
 
 </header>
 
-<section class="cards">
+<section class="dashboard">
 
 <div class="card">
 
-<span>
+<p>Today's Task</p>
 
-Active Projects
-
-</span>
-
-<h2 id="activeProjects">
+<h2 id="todayTask">
 
 0
 
@@ -119,13 +55,9 @@ Active Projects
 
 <div class="card">
 
-<span>
+<p>Active Project</p>
 
-Wallet
-
-</span>
-
-<h2 id="wallets">
+<h2 id="activeProject">
 
 0
 
@@ -135,13 +67,9 @@ Wallet
 
 <div class="card">
 
-<span>
+<p>Pending Project</p>
 
-Today's Task
-
-</span>
-
-<h2 id="todayTasks">
+<h2 id="pendingProject">
 
 0
 
@@ -151,13 +79,9 @@ Today's Task
 
 <div class="card">
 
-<span>
+<p>Completed</p>
 
-Completed
-
-</span>
-
-<h2 id="completed">
+<h2 id="completeProject">
 
 0
 
@@ -173,23 +97,19 @@ Completed
 
 type="text"
 
-id="searchInput"
+id="search"
 
-placeholder="Cari project...">
+placeholder="Cari Project...">
 
 </section>
 
-<section class="project">
-
-<div class="project-header">
+<section>
 
 <h2>
 
 Project List
 
 </h2>
-
-</div>
 
 <div id="projectList">
 
@@ -203,17 +123,15 @@ Belum ada project.
 
 </section>
 
-</main>
+<!-- ADD PROJECT -->
 
-</div>
+<div
 
-<!-- ======================
-MODAL TAMBAH PROJECT
-====================== -->
+class="modal"
 
-<div id="modal" class="modal">
+id="projectModal">
 
-<div class="modal-box">
+<div class="modal-content">
 
 <h2>
 
@@ -222,45 +140,30 @@ Tambah Project
 </h2>
 
 <input
+
 type="text"
-id="projectName"
+
+id="name"
+
 placeholder="Nama Project">
 
 <input
+
 type="text"
-id="projectNetwork"
+
+id="network"
+
 placeholder="Network">
 
 <input
+
 type="text"
-id="projectWebsite"
+
+id="website"
+
 placeholder="Website">
 
-<input
-type="text"
-id="projectGalxe"
-placeholder="Galxe">
-
-<input
-type="text"
-id="projectDiscord"
-placeholder="Discord">
-
-<input
-type="text"
-id="projectTwitter"
-placeholder="X / Twitter">
-
-<input
-type="date"
-id="projectDeadline">
-
-<input
-type="number"
-id="projectWallet"
-placeholder="Jumlah Wallet">
-
-<select id="projectStatus">
+<select id="taskType">
 
 <option value="Daily">
 
@@ -286,29 +189,85 @@ Mainnet
 
 </option>
 
+<option value="One Time">
+
+One Time (Follow, Retweet, dll)
+
+</option>
+
+</select>
+
+<input
+
+type="date"
+
+id="deadline">
+
+<select id="priority">
+
+<option value="High">
+
+🔴 High
+
+</option>
+
+<option value="Medium">
+
+🟡 Medium
+
+</option>
+
+<option value="Low">
+
+🟢 Low
+
+</option>
+
+</select>
+
+<select id="status">
+
+<option value="Active">
+
+🟢 Active
+
+</option>
+
+<option value="Pending">
+
+🟡 Pending
+
+</option>
+
+<option value="Complete">
+
+🔵 Complete
+
+</option>
+
 </select>
 
 <textarea
 
-id="projectNotes"
+id="note"
 
-rows="5"
+placeholder="Catatan"
 
-placeholder="Catatan...">
+rows="5">
 
 </textarea>
 
-<div class="modal-buttons">
+<div class="modal-button">
 
 <button id="saveProject">
 
-💾 Simpan
+Simpan
 
 </button>
 
 <button id="closeModal">
 
-❌ Batal
+Batal
 
 </button>
 
@@ -318,13 +277,15 @@ placeholder="Catatan...">
 
 </div>
 
-<!-- ======================
-MODAL EDIT PROJECT
-====================== -->
+<!-- EDIT PROJECT -->
 
-<div id="editModal" class="modal">
+<div
 
-<div class="modal-box">
+class="modal"
+
+id="editModal">
+
+<div class="modal-content">
 
 <h2>
 
@@ -333,76 +294,135 @@ Edit Project
 </h2>
 
 <input
+
 type="hidden"
-id="editIndex">
+
+id="editId">
 
 <input
+
 type="text"
+
 id="editName"
+
 placeholder="Nama Project">
 
 <input
+
 type="text"
+
 id="editNetwork"
+
 placeholder="Network">
 
 <input
+
 type="text"
+
 id="editWebsite"
+
 placeholder="Website">
 
-<input
-type="text"
-id="editGalxe"
-placeholder="Galxe">
+<select id="editTaskType">
 
-<input
-type="text"
-id="editDiscord"
-placeholder="Discord">
+<option value="Daily">
 
-<input
-type="text"
-id="editTwitter"
-placeholder="X / Twitter">
+Daily
+
+</option>
+
+<option value="Weekly">
+
+Weekly
+
+</option>
+
+<option value="Testnet">
+
+Testnet
+
+</option>
+
+<option value="Mainnet">
+
+Mainnet
+
+</option>
+
+<option value="One Time">
+
+One Time (Follow, Retweet, dll)
+
+</option>
+
+</select>
 
 <input
 type="date"
 id="editDeadline">
 
-<input
-type="number"
-id="editWallet"
-placeholder="Jumlah Wallet">
+<select id="editPriority">
+
+<option value="High">
+
+🔴 High
+
+</option>
+
+<option value="Medium">
+
+🟡 Medium
+
+</option>
+
+<option value="Low">
+
+🟢 Low
+
+</option>
+
+</select>
 
 <select id="editStatus">
 
-<option value="Daily">Daily</option>
+<option value="Active">
 
-<option value="Weekly">Weekly</option>
+🟢 Active
 
-<option value="Testnet">Testnet</option>
+</option>
 
-<option value="Mainnet">Mainnet</option>
+<option value="Pending">
+
+🟡 Pending
+
+</option>
+
+<option value="Complete">
+
+🔵 Complete
+
+</option>
 
 </select>
 
 <textarea
-id="editNotes"
+id="editNote"
 rows="5"
-placeholder="Catatan..."></textarea>
+placeholder="Catatan">
 
-<div class="modal-buttons">
+</textarea>
+
+<div class="modal-button">
 
 <button id="updateProject">
 
-💾 Update
+Update
 
 </button>
 
 <button id="closeEditModal">
 
-❌ Batal
+Batal
 
 </button>
 
@@ -412,45 +432,7 @@ placeholder="Catatan..."></textarea>
 
 </div>
 
-<!-- ======================
-BACKUP & RESTORE
-====================== -->
-
-<input
-type="file"
-id="restoreFile"
-accept=".json"
-style="display:none;">
-
-<!-- ======================
-TOOLS
-====================== -->
-
-<div class="tools" style="display:none;">
-
-<button id="backupData">
-
-💾 Backup JSON
-
-</button>
-
-<button id="restoreData">
-
-📂 Restore JSON
-
-</button>
-
-<button id="clearData">
-
-🗑 Hapus Semua Data
-
-</button>
-
-</div>
-
-<!-- ======================
-NOTIFICATION
-====================== -->
+<!-- TOAST -->
 
 <div id="toast" class="toast">
 
@@ -462,9 +444,7 @@ Berhasil
 
 </div>
 
-<!-- ======================
-LOADING
-====================== -->
+<!-- LOADING -->
 
 <div id="loading" class="loading">
 
@@ -478,31 +458,17 @@ Loading...
 
 </div>
 
-<!-- ======================
-FOOTER
-====================== -->
-
-<footer class="footer">
+<footer>
 
 <p>
 
-© 2026 Airdrop Hub
+Airdrop Hub v3.0
 
 </p>
 
 </footer>
 
-<!-- ======================
-SCRIPT
-====================== -->
-
-<script src="js/storage.js"></script>
-
-<script src="js/project.js"></script>
-
-<script src="js/wallet.js"></script>
-
-<script src="js/ui.js"></script>
+</div>
 
 <script src="js/app.js"></script>
 
