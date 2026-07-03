@@ -7,7 +7,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Airdrop Hub v3.1</title>
+<title>Airdrop Hub v3.0</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -25,7 +25,11 @@
 
 <header>
 
-<h1>🚀 AIRDROP HUB</h1>
+<h1>
+
+🚀 AIRDROP HUB
+
+</h1>
 
 <button id="addProjectBtn">
 
@@ -95,9 +99,7 @@ type="text"
 
 id="search"
 
-placeholder="Cari project..."
-
-autocomplete="off">
+placeholder="Cari Project...">
 
 </section>
 
@@ -121,9 +123,7 @@ Belum ada project.
 
 </section>
 
-<!-- ==========================
-ADD PROJECT MODAL
-========================== -->
+<!-- ADD PROJECT -->
 
 <div
 
@@ -141,25 +141,25 @@ Tambah Project
 
 <input
 
-id="name"
-
 type="text"
+
+id="name"
 
 placeholder="Nama Project">
 
 <input
 
-id="network"
-
 type="text"
+
+id="network"
 
 placeholder="Network">
 
 <input
 
-id="website"
-
 type="text"
+
+id="website"
 
 placeholder="Website">
 
@@ -191,7 +191,7 @@ Mainnet
 
 <option value="One Time">
 
-One Time
+One Time (Follow, Retweet, dll)
 
 </option>
 
@@ -199,9 +199,9 @@ One Time
 
 <input
 
-id="deadline"
+type="date"
 
-type="date">
+id="deadline">
 
 <select id="priority">
 
@@ -251,9 +251,9 @@ type="date">
 
 id="note"
 
-rows="5"
+placeholder="Catatan"
 
-placeholder="Catatan">
+rows="5">
 
 </textarea>
 
@@ -277,9 +277,7 @@ Batal
 
 </div>
 
-<!-- ==========================
-EDIT PROJECT MODAL
-========================== -->
+<!-- EDIT PROJECT -->
 
 <div
 
@@ -303,25 +301,25 @@ id="editId">
 
 <input
 
-id="editName"
-
 type="text"
+
+id="editName"
 
 placeholder="Nama Project">
 
 <input
 
-id="editNetwork"
-
 type="text"
+
+id="editNetwork"
 
 placeholder="Network">
 
 <input
 
-id="editWebsite"
-
 type="text"
+
+id="editWebsite"
 
 placeholder="Website">
 
@@ -353,17 +351,15 @@ Mainnet
 
 <option value="One Time">
 
-One Time
+One Time (Follow, Retweet, dll)
 
 </option>
 
 </select>
 
 <input
-
-id="editDeadline"
-
-type="date">
+type="date"
+id="editDeadline">
 
 <select id="editPriority">
 
@@ -410,11 +406,8 @@ type="date">
 </select>
 
 <textarea
-
 id="editNote"
-
 rows="5"
-
 placeholder="Catatan">
 
 </textarea>
@@ -439,6 +432,8 @@ Batal
 
 </div>
 
+<!-- TOAST -->
+
 <div id="toast" class="toast">
 
 <span id="toastText">
@@ -448,6 +443,8 @@ Berhasil
 </span>
 
 </div>
+
+<!-- LOADING -->
 
 <div id="loading" class="loading">
 
@@ -465,27 +462,15 @@ Loading...
 
 <p>
 
-Airdrop Hub v3.1
+Airdrop Hub v3.0
 
 </p>
 
 </footer>
 
-<!-- ==========================
-JAVASCRIPT
-========================== -->
-
-<script src="js/storage.js"></script>
-
-<script src="js/task.js"></script>
-
-<script src="js/dashboard.js"></script>
-
-<script src="js/render.js"></script>
-
-<script src="js/modal.js"></script>
-
 </div>
+
+<script src="js/app.js"></script>
 
 </body>
 
