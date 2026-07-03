@@ -14,96 +14,143 @@
 
 <div class="container">
 
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="logo">
-            🚀 AIRDROP HUB
-        </div>
+<div class="logo">
+🚀 AIRDROP HUB
+</div>
 
-        <ul class="menu">
+<ul class="menu">
 
-            <li class="active">🏠 Dashboard</li>
+<li class="active">🏠 Dashboard</li>
 
-            <li>📁 Projects</li>
+<li>📁 Projects</li>
 
-            <li>👛 Wallets</li>
+<li>👛 Wallets</li>
 
-            <li>📅 Daily Tasks</li>
+<li>📅 Daily Tasks</li>
 
-            <li>⭐ Watchlist</li>
+<li>⭐ Watchlist</li>
 
-            <li>📝 Notes</li>
+<li>📝 Notes</li>
 
-            <li>⚙ Settings</li>
+<li>⚙ Settings</li>
 
-        </ul>
+</ul>
 
-    </aside>
+</aside>
 
-    <main class="content">
+<main class="content">
 
-        <h1>Dashboard</h1>
+<h1>Dashboard</h1>
 
-        <div class="cards">
+<div class="cards">
 
-            <div class="card">
-                <span>Active Projects</span>
-                <h2 id="activeProjects">0</h2>
-            </div>
+<div class="card">
+<span>Active Projects</span>
+<h2 id="activeProjects">0</h2>
+</div>
 
-            <div class="card">
-                <span>Wallets</span>
-                <h2 id="wallets">0</h2>
-            </div>
+<div class="card">
+<span>Wallets</span>
+<h2 id="wallets">0</h2>
+</div>
 
-            <div class="card">
-                <span>Today's Tasks</span>
-                <h2 id="todayTasks">0</h2>
-            </div>
+<div class="card">
+<span>Today's Tasks</span>
+<h2 id="todayTasks">0</h2>
+</div>
 
-            <div class="card">
-                <span>Completed</span>
-                <h2 id="completed">0</h2>
-            </div>
+<div class="card">
+<span>Completed</span>
+<h2 id="completed">0</h2>
+</div>
 
-        </div>
+</div>
 
-        <div class="search">
+<div class="search">
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Cari project...">
+<input
+type="text"
+id="searchInput"
+placeholder="Cari project...">
 
-        </div>
+</div>
 
-        <div class="project">
+<div class="project">
 
-            <div class="project-header">
+<div class="project-header">
 
-                <h2>Projects</h2>
+<h2>Projects</h2>
 
-                <button id="addProject">
-                    + Add Project
-                </button>
+<button id="addProject">
++ Add Project
+</button>
 
-            </div>
+</div>
 
-            <div id="projectList">
+<div id="projectList">
 
-                <div class="empty">
+<div class="empty">
 
-                    Belum ada project.
+Belum ada project.
 
-                </div>
+</div>
 
-            </div>
+</div>
 
-        </div>
+</div>
 
-    </main>
+</main>
+
+</div>
+
+<!-- Modal -->
+
+<div id="modal" class="modal">
+
+<div class="modal-box">
+
+<h2>Tambah Project</h2>
+
+<input id="projectName" placeholder="Nama Project">
+
+<input id="projectNetwork" placeholder="Network">
+
+<input id="projectWebsite" placeholder="Website">
+
+<select id="projectStatus">
+
+<option>Daily</option>
+
+<option>Weekly</option>
+
+<option>Testnet</option>
+
+<option>Mainnet</option>
+
+</select>
+
+<div class="modal-button">
+
+<button id="saveProject">
+
+Simpan
+
+</button>
+
+<button id="closeModal">
+
+Batal
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 
 </body>
+
 </html>
