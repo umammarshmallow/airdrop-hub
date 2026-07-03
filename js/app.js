@@ -2,95 +2,89 @@ let projects = JSON.parse(localStorage.getItem("projects")) || [];
 
 const list = document.getElementById("projectList");
 
+const modal = document.getElementById("modal");
+
+const addBtn = document.getElementById("addProject");
+
+const closeBtn = document.getElementById("closeModal");
+
+const saveBtn = document.getElementById("saveProject");
+
+const searchInput = document.getElementById("searchInput");
+
 const activeProjects = document.getElementById("activeProjects");
+
 const wallets = document.getElementById("wallets");
+
 const todayTasks = document.getElementById("todayTasks");
+
 const completed = document.getElementById("completed");
 
-function save(){
-    localStorage.setItem("projects", JSON.stringify(projects));
+function saveData(){
+
+    localStorage.setItem("projects",JSON.stringify(projects));
+
 }
 
 function render(){
 
-    activeProjects.textContent = projects.length;
-    wallets.textContent = 0;
-    todayTasks.textContent = 0;
-    completed.textContent = 0;
+    activeProjects.textContent=projects.length;
+
+    wallets.textContent=0;
+
+    todayTasks.textContent=0;
+
+    completed.textContent=0;
 
     if(projects.length===0){
-        list.innerHTML = `
-        <div class="empty">
-            Belum ada project.
-        </div>
-        `;
+
+        list.innerHTML='<div class="empty">Belum ada project.</div>';
+
         return;
+
     }
 
     list.innerHTML="";
 
-    projects.forEach((project,index)=>{
+    projects.forEach((p,index)=>{
 
-        list.innerHTML += `
+        list.innerHTML+=`
+
         <div class="project-item">
 
-            <h3>${project.name}</h3>
+            <h3>${p.name}</h3>
 
-            <p><b>Network :</b> ${project.network}</p>
+            <p><b>Network :</b> ${p.network}</p>
 
-            <p><b>Status :</b> ${project.status}</p>
+            <p><b>Status :</b> ${p.status}</p>
 
-            <br>
+            <div style="margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;">
 
-            <button onclick="openWebsite('${project.website}')">
-                🌐 Website
-            </button>
+                <button onclick="window.open('${p.website}','_blank')">
+                Website
+                </button>
 
-            <button onclick="deleteProject(${index})">
-                🗑 Hapus
-            </button>
+                <button onclick="removeProject(${index})">
+                Hapus
+                </button>
+
+            </div>
 
         </div>
+
         `;
 
     });
 
 }
 
-document.getElementById("addProject").addEventListener("click",()=>{
+function removeProject(index){
 
-    const name = prompt("Nama Project");
-
-    if(!name) return;
-
-    const network = prompt("Network");
-
-    const website = prompt("Website");
-
-    const status = prompt("Status (Daily / Weekly / Testnet)");
-
-    projects.push({
-
-        name,
-        network,
-        website,
-        status
-
-    });
-
-    save();
-
-    render();
-
-});
-
-function deleteProject(index){
-
-    if(confirm("Hapus project?")){
+    if(confirm("Hapus project ini?")){
 
         projects.splice(index,1);
 
-        save();
+        saveData();
 
         render();
 
@@ -98,26 +92,80 @@ function deleteProject(index){
 
 }
 
-function openWebsite(url){
+addBtn.onclick=()=>{
 
-    if(url){
-        window.open(url,"_blank");
-    }
+    modal.style.display="flex";
 
 }
 
-document.getElementById("searchInput").addEventListener("keyup",function(){
+closeBtn.onclick=()=>{
 
-    const keyword=this.value.toLowerCase();
+    modal.style.display="none";
+
+}
+
+saveBtn.onclick=()=>{
+
+    const name=document.getElementById("projectName").value.trim();
+
+    const network=document.getElementById("projectNetwork").value.trim();
+
+    const website=document.getElementById("projectWebsite").value.trim();
+
+    const status=document.getElementById("projectStatus").value;
+
+    if(name===""){
+
+        alert("Nama project wajib diisi");
+
+        return;
+
+    }
+
+    projects.push({
+
+        name,
+
+        network,
+
+        website,
+
+        status
+
+    });
+
+    saveData();
+
+    render();
+
+    document.getElementById("projectName").value="";
+
+    document.getElementById("projectNetwork").value="";
+
+    document.getElementById("projectWebsite").value="";
+
+    document.getElementById("projectStatus").selectedIndex=0;
+
+    modal.style.display="none";
+
+}
+
+searchInput.addEventListener("keyup",()=>{
+
+    const keyword=searchInput.value.toLowerCase();
 
     const cards=document.querySelectorAll(".project-item");
 
     cards.forEach(card=>{
 
         if(card.innerText.toLowerCase().includes(keyword)){
+
             card.style.display="block";
+
         }else{
+
             card.style.display="none";
+
         }
 
     });
