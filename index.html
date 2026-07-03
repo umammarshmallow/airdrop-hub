@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Airdrop Hub</title>
+
+<title>Airdrop Hub v2.0</title>
 
 <link rel="stylesheet" href="css/style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <script defer src="js/app.js"></script>
 
 </head>
@@ -14,78 +25,169 @@
 
 <div class="container">
 
+<!-- ======================
+SIDEBAR
+====================== -->
+
 <aside class="sidebar">
 
 <div class="logo">
+
 🚀 AIRDROP HUB
+
 </div>
 
 <ul class="menu">
 
-<li class="active">🏠 Dashboard</li>
+<li class="active">
+🏠 Dashboard
+</li>
 
-<li>📁 Projects</li>
+<li>
+📁 Projects
+</li>
 
-<li>👛 Wallets</li>
+<li>
+👛 Wallet
+</li>
 
-<li>📅 Daily Tasks</li>
+<li>
+📅 Daily Task
+</li>
 
-<li>⭐ Watchlist</li>
+<li>
+⭐ Favorite
+</li>
 
-<li>📝 Notes</li>
+<li>
+📝 Notes
+</li>
 
-<li>⚙ Settings</li>
+<li>
+⚙ Settings
+</li>
 
 </ul>
 
+<div class="sidebar-footer">
+
+<p>Version 2.0</p>
+
+</div>
+
 </aside>
+
+<!-- ======================
+CONTENT
+====================== -->
 
 <main class="content">
 
-<h1>Dashboard</h1>
+<header class="topbar">
 
-<div class="cards">
+<h1>
+
+Dashboard
+
+</h1>
+
+<button id="addProject">
+
+➕ Add Project
+
+</button>
+
+</header>
+
+<section class="cards">
 
 <div class="card">
-<span>Active Projects</span>
-<h2 id="activeProjects">0</h2>
+
+<span>
+
+Active Projects
+
+</span>
+
+<h2 id="activeProjects">
+
+0
+
+</h2>
+
 </div>
 
 <div class="card">
-<span>Wallets</span>
-<h2 id="wallets">0</h2>
+
+<span>
+
+Wallet
+
+</span>
+
+<h2 id="wallets">
+
+0
+
+</h2>
+
 </div>
 
 <div class="card">
-<span>Today's Tasks</span>
-<h2 id="todayTasks">0</h2>
+
+<span>
+
+Today's Task
+
+</span>
+
+<h2 id="todayTasks">
+
+0
+
+</h2>
+
 </div>
 
 <div class="card">
-<span>Completed</span>
-<h2 id="completed">0</h2>
-</div>
+
+<span>
+
+Completed
+
+</span>
+
+<h2 id="completed">
+
+0
+
+</h2>
 
 </div>
 
-<div class="search">
+</section>
+
+<section class="search">
 
 <input
+
 type="text"
+
 id="searchInput"
+
 placeholder="Cari project...">
 
-</div>
+</section>
 
-<div class="project">
+<section class="project">
 
 <div class="project-header">
 
-<h2>Projects</h2>
+<h2>
 
-<button id="addProject">
-+ Add Project
-</button>
+Project List
+
+</h2>
 
 </div>
 
@@ -99,49 +201,114 @@ Belum ada project.
 
 </div>
 
-</div>
+</section>
 
 </main>
 
 </div>
 
-<!-- Modal -->
+<!-- ======================
+MODAL TAMBAH PROJECT
+====================== -->
 
 <div id="modal" class="modal">
 
 <div class="modal-box">
 
-<h2>Tambah Project</h2>
+<h2>
 
-<input id="projectName" placeholder="Nama Project">
+Tambah Project
 
-<input id="projectNetwork" placeholder="Network">
+</h2>
 
-<input id="projectWebsite" placeholder="Website">
+<input
+type="text"
+id="projectName"
+placeholder="Nama Project">
+
+<input
+type="text"
+id="projectNetwork"
+placeholder="Network">
+
+<input
+type="text"
+id="projectWebsite"
+placeholder="Website">
+
+<input
+type="text"
+id="projectGalxe"
+placeholder="Galxe">
+
+<input
+type="text"
+id="projectDiscord"
+placeholder="Discord">
+
+<input
+type="text"
+id="projectTwitter"
+placeholder="X / Twitter">
+
+<input
+type="date"
+id="projectDeadline">
+
+<input
+type="number"
+id="projectWallet"
+placeholder="Jumlah Wallet">
 
 <select id="projectStatus">
 
-<option>Daily</option>
+<option value="Daily">
 
-<option>Weekly</option>
+Daily
 
-<option>Testnet</option>
+</option>
 
-<option>Mainnet</option>
+<option value="Weekly">
+
+Weekly
+
+</option>
+
+<option value="Testnet">
+
+Testnet
+
+</option>
+
+<option value="Mainnet">
+
+Mainnet
+
+</option>
 
 </select>
 
-<div class="modal-button">
+<textarea
+
+id="projectNotes"
+
+rows="5"
+
+placeholder="Catatan...">
+
+</textarea>
+
+<div class="modal-buttons">
 
 <button id="saveProject">
 
-Simpan
+💾 Simpan
 
 </button>
 
 <button id="closeModal">
 
-Batal
+❌ Batal
 
 </button>
 
@@ -150,6 +317,194 @@ Batal
 </div>
 
 </div>
+
+<!-- ======================
+MODAL EDIT PROJECT
+====================== -->
+
+<div id="editModal" class="modal">
+
+<div class="modal-box">
+
+<h2>
+
+Edit Project
+
+</h2>
+
+<input
+type="hidden"
+id="editIndex">
+
+<input
+type="text"
+id="editName"
+placeholder="Nama Project">
+
+<input
+type="text"
+id="editNetwork"
+placeholder="Network">
+
+<input
+type="text"
+id="editWebsite"
+placeholder="Website">
+
+<input
+type="text"
+id="editGalxe"
+placeholder="Galxe">
+
+<input
+type="text"
+id="editDiscord"
+placeholder="Discord">
+
+<input
+type="text"
+id="editTwitter"
+placeholder="X / Twitter">
+
+<input
+type="date"
+id="editDeadline">
+
+<input
+type="number"
+id="editWallet"
+placeholder="Jumlah Wallet">
+
+<select id="editStatus">
+
+<option value="Daily">Daily</option>
+
+<option value="Weekly">Weekly</option>
+
+<option value="Testnet">Testnet</option>
+
+<option value="Mainnet">Mainnet</option>
+
+</select>
+
+<textarea
+id="editNotes"
+rows="5"
+placeholder="Catatan..."></textarea>
+
+<div class="modal-buttons">
+
+<button id="updateProject">
+
+💾 Update
+
+</button>
+
+<button id="closeEditModal">
+
+❌ Batal
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ======================
+BACKUP & RESTORE
+====================== -->
+
+<input
+type="file"
+id="restoreFile"
+accept=".json"
+style="display:none;">
+
+<!-- ======================
+TOOLS
+====================== -->
+
+<div class="tools" style="display:none;">
+
+<button id="backupData">
+
+💾 Backup JSON
+
+</button>
+
+<button id="restoreData">
+
+📂 Restore JSON
+
+</button>
+
+<button id="clearData">
+
+🗑 Hapus Semua Data
+
+</button>
+
+</div>
+
+<!-- ======================
+NOTIFICATION
+====================== -->
+
+<div id="toast" class="toast">
+
+<span id="toastText">
+
+Berhasil
+
+</span>
+
+</div>
+
+<!-- ======================
+LOADING
+====================== -->
+
+<div id="loading" class="loading">
+
+<div class="spinner"></div>
+
+<p>
+
+Loading...
+
+</p>
+
+</div>
+
+<!-- ======================
+FOOTER
+====================== -->
+
+<footer class="footer">
+
+<p>
+
+© 2026 Airdrop Hub
+
+</p>
+
+</footer>
+
+<!-- ======================
+SCRIPT
+====================== -->
+
+<script src="js/storage.js"></script>
+
+<script src="js/project.js"></script>
+
+<script src="js/wallet.js"></script>
+
+<script src="js/ui.js"></script>
+
+<script src="js/app.js"></script>
 
 </body>
 
