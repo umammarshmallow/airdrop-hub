@@ -4,13 +4,11 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Airdrop Hub v3.0</title>
+<title>Airdrop Hub v3.1</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,16 +23,10 @@
 
 <header>
 
-<h1>
-
-🚀 AIRDROP HUB
-
-</h1>
+<h1>🚀 AIRDROP HUB</h1>
 
 <button id="addProjectBtn">
-
 + Add Project
-
 </button>
 
 </header>
@@ -42,51 +34,28 @@
 <section class="dashboard">
 
 <div class="card">
-
 <p>Today's Task</p>
-
-<h2 id="todayTask">
-
-0
-
-</h2>
-
+<h2 id="todayTask">0</h2>
 </div>
 
 <div class="card">
-
 <p>Active Project</p>
-
-<h2 id="activeProject">
-
-0
-
-</h2>
-
+<h2 id="activeProject">0</h2>
 </div>
 
 <div class="card">
-
 <p>Pending Project</p>
-
-<h2 id="pendingProject">
-
-0
-
-</h2>
-
+<h2 id="pendingProject">0</h2>
 </div>
 
 <div class="card">
+<p>Waitlist</p>
+<h2 id="waitlistProject">0</h2>
+</div>
 
+<div class="card">
 <p>Completed</p>
-
-<h2 id="completeProject">
-
-0
-
-</h2>
-
+<h2 id="completeProject">0</h2>
 </div>
 
 </section>
@@ -94,22 +63,45 @@
 <section class="search">
 
 <input
-
 type="text"
-
 id="search"
-
 placeholder="Cari Project...">
+
+<select id="filterStatus">
+
+<option value="All">Semua Status</option>
+
+<option value="Active">🟢 Active</option>
+
+<option value="Pending">🟡 Pending</option>
+
+<option value="Waitlist">🟣 Waitlist</option>
+
+<option value="Complete">🔵 Complete</option>
+
+</select>
+
+<select id="filterTask">
+
+<option value="All">Semua Task</option>
+
+<option value="Daily">Daily</option>
+
+<option value="Weekly">Weekly</option>
+
+<option value="Testnet">Testnet</option>
+
+<option value="Mainnet">Mainnet</option>
+
+<option value="One Time">One Time</option>
+
+</select>
 
 </section>
 
 <section>
 
-<h2>
-
-Project List
-
-</h2>
+<h2>Project List</h2>
 
 <div id="projectList">
 
@@ -123,145 +115,75 @@ Belum ada project.
 
 </section>
 
-<!-- ADD PROJECT -->
+<!-- ==========================
+ADD PROJECT
+========================== -->
 
-<div
-
-class="modal"
-
-id="projectModal">
+<div class="modal" id="projectModal">
 
 <div class="modal-content">
 
-<h2>
-
-Tambah Project
-
-</h2>
+<h2>Tambah Project</h2>
 
 <input
-
 type="text"
-
 id="name"
-
 placeholder="Nama Project">
 
 <input
-
 type="text"
-
 id="network"
-
 placeholder="Network">
 
 <input
-
 type="text"
-
 id="website"
-
 placeholder="Website">
 
 <select id="taskType">
 
-<option value="Daily">
+<option value="Daily">Daily</option>
 
-Daily
+<option value="Weekly">Weekly</option>
 
-</option>
+<option value="Testnet">Testnet</option>
 
-<option value="Weekly">
+<option value="Mainnet">Mainnet</option>
 
-Weekly
-
-</option>
-
-<option value="Testnet">
-
-Testnet
-
-</option>
-
-<option value="Mainnet">
-
-Mainnet
-
-</option>
-
-<option value="One Time">
-
-One Time (Follow, Retweet, dll)
-
-</option>
+<option value="One Time">One Time</option>
 
 </select>
 
 <input
-
 type="date"
-
 id="deadline">
 
 <select id="priority">
 
-<option value="High">
+<option value="High">🔴 High</option>
 
-🔴 High
+<option value="Medium">🟡 Medium</option>
 
-</option>
-
-<option value="Medium">
-
-🟡 Medium
-
-</option>
-
-<option value="Low">
-
-🟢 Low
-
-</option>
+<option value="Low">🟢 Low</option>
 
 </select>
 
 <select id="status">
 
-<option value="Waitlist">
+<option value="Active">🟢 Active</option>
 
-🟣 Waitlist
+<option value="Pending">🟡 Pending</option>
 
-</option>
-  
-<option value="Active">
+<option value="Waitlist">🟣 Waitlist</option>
 
-🟢 Active
-
-</option>
-    
-<option value="Pending">
-
-🟡 Pending
-
-</option>
-
-<option value="Complete">
-
-🔵 Complete
-
-</option>
+<option value="Complete">🔵 Complete</option>
 
 </select>
 
 <textarea
-
 id="note"
-
-placeholder="Catatan"
-
-rows="5">
-
-</textarea>
+rows="5"
+placeholder="Catatan"></textarea>
 
 <div class="modal-button">
 
@@ -283,153 +205,79 @@ Batal
 
 </div>
 
-<!-- EDIT PROJECT -->
+<!-- ==========================
+EDIT PROJECT
+========================== -->
 
-<div
-
-class="modal"
-
-id="editModal">
+<div class="modal" id="editModal">
 
 <div class="modal-content">
 
-<h2>
-
-Edit Project
-
-</h2>
+<h2>Edit Project</h2>
 
 <input
-
 type="hidden"
-
 id="editId">
 
 <input
-
 type="text"
-
 id="editName"
-
 placeholder="Nama Project">
 
 <input
-
 type="text"
-
 id="editNetwork"
-
 placeholder="Network">
 
 <input
-
 type="text"
-
 id="editWebsite"
-
 placeholder="Website">
 
 <select id="editTaskType">
 
-<option value="Daily">
+<option value="Daily">Daily</option>
 
-Daily
+<option value="Weekly">Weekly</option>
 
-</option>
+<option value="Testnet">Testnet</option>
 
-<option value="Weekly">
+<option value="Mainnet">Mainnet</option>
 
-Weekly
-
-</option>
-
-<option value="Testnet">
-
-Testnet
-
-</option>
-
-<option value="Mainnet">
-
-Mainnet
-
-</option>
-
-<option value="One Time">
-
-One Time (Follow, Retweet, dll)
-
-</option>
+<option value="One Time">One Time</option>
 
 </select>
 
 <input
-
 type="date"
-
 id="editDeadline">
 
 <select id="editPriority">
 
-<option value="High">
+<option value="High">🔴 High</option>
 
-🔴 High
+<option value="Medium">🟡 Medium</option>
 
-</option>
-
-<option value="Medium">
-
-🟡 Medium
-
-</option>
-
-<option value="Low">
-
-🟢 Low
-
-</option>
+<option value="Low">🟢 Low</option>
 
 </select>
 
-<select id="status">
+<select id="editStatus">
 
-</option>
+<option value="Active">🟢 Active</option>
 
-<option value="Waitlist">
+<option value="Pending">🟡 Pending</option>
 
-🟣 Waitlist
+<option value="Waitlist">🟣 Waitlist</option>
 
-</option>
-
-<option value="Active">
-
-🟢 Active
-
-</option>
-
-<option value="Pending">
-
-🟡 Pending
-
-</option>
-
-<option value="Complete">
-
-🔵 Complete
-
-</option>
+<option value="Complete">🔵 Complete</option>
 
 </select>
 
 <textarea
-
 id="editNote"
-
 rows="5"
-
-placeholder="Catatan">
-
-</textarea>
+placeholder="Catatan"></textarea>
 
 <div class="modal-button">
 
@@ -451,8 +299,6 @@ Batal
 
 </div>
 
-<!-- TOAST -->
-
 <div id="toast" class="toast">
 
 <span id="toastText">
@@ -463,17 +309,11 @@ Berhasil
 
 </div>
 
-<!-- LOADING -->
-
 <div id="loading" class="loading">
 
 <div class="spinner"></div>
 
-<p>
-
-Loading...
-
-</p>
+<p>Loading...</p>
 
 </div>
 
@@ -481,7 +321,7 @@ Loading...
 
 <p>
 
-Airdrop Hub v3.0
+Airdrop Hub v3.1
 
 </p>
 
