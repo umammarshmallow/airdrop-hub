@@ -82,6 +82,22 @@ function clearForm(){
 }
 
 /* =====================
+BODY SCROLL LOCK
+===================== */
+
+function lockBody(){
+
+    document.body.style.overflow = "hidden";
+
+}
+
+function unlockBody(){
+
+    document.body.style.overflow = "";
+
+}
+
+/* =====================
 UPDATE DASHBOARD
 ===================== */
 
@@ -423,17 +439,23 @@ addProjectBtn.addEventListener("click",()=>{
 
     projectModal.style.display="flex";
 
-});
-
-document.getElementById("closeModal").addEventListener("click",()=>{
-
-    projectModal.style.display="none";
+    lockBody();
 
 });
 
 document.getElementById("closeEditModal").addEventListener("click",()=>{
 
     editModal.style.display="none";
+
+    unlockBody();
+
+});
+
+document.getElementById("closeModal").addEventListener("click",()=>{
+
+    projectModal.style.display="none";
+
+    unlockBody();
 
 });
 
@@ -445,7 +467,9 @@ window.addEventListener("click",(e)=>{
 
     if(e.target===projectModal){
 
-        projectModal.style.display="none";
+    projectModal.style.display="none";
+
+    unlockBody();
 
     }
 
@@ -467,9 +491,9 @@ document.addEventListener("keydown",(e)=>{
 
         projectModal.style.display="none";
 
-        editModal.style.display="none";
+editModal.style.display="none";
 
-    }
+unlockBody();
 
 });
 
