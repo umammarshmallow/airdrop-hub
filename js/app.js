@@ -1,8 +1,12 @@
 /* ==========================================
-   AIRDROP HUB V3.0
+   AIRDROP HUB V4.0
 ========================================== */
 
 let projects = JSON.parse(localStorage.getItem("airdropHub")) || [];
+
+/* =====================
+ELEMENT
+===================== */
 
 const projectList = document.getElementById("projectList");
 
@@ -22,6 +26,10 @@ const updateProject = document.getElementById("updateProject");
 
 const search = document.getElementById("search");
 
+const filterStatus = document.getElementById("filterStatus");
+
+const filterTask = document.getElementById("filterTask");
+
 const todayTask = document.getElementById("todayTask");
 
 const activeProject = document.getElementById("activeProject");
@@ -31,56 +39,113 @@ const pendingProject = document.getElementById("pendingProject");
 const completeProject = document.getElementById("completeProject");
 
 /* =====================
-OPEN & CLOSE MODAL
+MODAL
 ===================== */
 
 addProjectBtn.onclick = () => {
 
     projectModal.style.display = "flex";
 
-}
+};
 
 closeModal.onclick = () => {
 
     projectModal.style.display = "none";
 
-}
+};
 
 closeEditModal.onclick = () => {
 
     editModal.style.display = "none";
 
-}
+};
 
-window.onclick = (e)=>{
+window.onclick = (e) => {
 
-    if(e.target==projectModal){
+    if (e.target === projectModal) {
 
-        projectModal.style.display="none";
+        projectModal.style.display = "none";
+
+    }
+
+    if (e.target === editModal) {
+
+        editModal.style.display = "none";
 
     }
 
-    if(e.target==editModal){
+};
 
-        editModal.style.display="none";
+/* =====================
+LOCAL STORAGE
+===================== */
 
-    }
+function saveData() {
+
+    localStorage.setItem(
+        "airdropHub",
+        JSON.stringify(projects)
+    );
 
 }
 
 /* =====================
-SAVE LOCAL STORAGE
+HELPER
 ===================== */
 
-function saveData(){
+function formatUrl(url) {
 
-    localStorage.setItem(
+    if (!url) return "";
 
-        "airdropHub",
+    if (url.startsWith("http://") || url.startsWith("https://")) {
 
-        JSON.stringify(projects)
+        return url;
 
-    );
+    }
+
+    return "https://" + url;
+
+}
+
+function showToast(message) {
+
+    const toast = document.getElementById("toast");
+
+    const text = document.getElementById("toastText");
+
+    text.textContent = message;
+
+    toast.style.display = "block";
+
+    setTimeout(() => {
+
+        toast.style.display = "none";
+
+    }, 2000);
+
+}
+
+/* =====================
+CLEAR FORM
+===================== */
+
+function clearForm() {
+
+    document.getElementById("name").value = "";
+
+    document.getElementById("network").value = "";
+
+    document.getElementById("website").value = "";
+
+    document.getElementById("deadline").value = "";
+
+    document.getElementById("note").value = "";
+
+    document.getElementById("taskType").selectedIndex = 0;
+
+    document.getElementById("priority").selectedIndex = 0;
+
+    document.getElementById("status").selectedIndex = 0;
 
 }
 
@@ -112,15 +177,15 @@ saveProject.onclick = () => {
 
     };
 
-    if(project.name===""){
+    if (project.name === "") {
 
-        alert("Nama Project wajib diisi");
+        alert("Nama project wajib diisi");
 
         return;
 
     }
 
-    if(project.network===""){
+    if (project.network === "") {
 
         alert("Network wajib diisi");
 
@@ -128,39 +193,59 @@ saveProject.onclick = () => {
 
     }
 
-    projects.unshift(project);
+    projects.push(project);
 
     saveData();
 
-    renderProjects();
-
-    projectModal.style.display="none";
-
     clearForm();
 
-}
+    projectModal.style.display = "none";
+
+    showToast("Project berhasil ditambahkan");
+
+    renderProjects();
+
+};
 
 /* =====================
-CLEAR FORM
+UPDATE DASHBOARD
 ===================== */
 
-function clearForm(){
+function updateDashboard() {
 
-    document.getElementById("name").value="";
+    let active = 0;
+    let pending = 0;
+    let complete = 0;
+    let today = 0;
 
-    document.getElementById("network").value="";
+    projects.forEach(project => {
 
-    document.getElementById("website").value="";
+        if (project.status === "Active") active++;
 
-    document.getElementById("deadline").value="";
+        if (project.status === "Pending") pending++;
 
-    document.getElementById("note").value="";
+        if (project.status === "Complete") complete++;
 
-    document.getElementById("taskType").selectedIndex=0;
+        if (
+            project.status === "Active" &&
+            (
+                project.taskType === "Daily" ||
+                project.taskType === "Weekly" ||
+                project.taskType === "Testnet" ||
+                project.taskType === "Mainnet"
+            )
+        ) {
 
-    document.getElementById("priority").selectedIndex=0;
+            today++;
 
-    document.getElementById("status").selectedIndex=0;
+        }
+
+    });
+
+    todayTask.textContent = today;
+    activeProject.textContent = active;
+    pendingProject.textContent = pending;
+    completeProject.textContent = complete;
 
 }
 
@@ -168,43 +253,89 @@ function clearForm(){
 RENDER PROJECT
 ===================== */
 
-function renderProjects(){
+function renderProjects() {
 
     updateDashboard();
 
     const keyword = search.value.toLowerCase();
 
-    let html = "";
+    const statusFilter = filterStatus.value;
 
-    const filtered = projects.filter(project=>{
+    const taskFilter = filterTask.value;
 
-        return (
+    const filtered = projects
+
+    .filter(project => {
+
+        const keywordMatch =
 
             project.name.toLowerCase().includes(keyword) ||
 
-            project.network.toLowerCase().includes(keyword) ||
+            project.network.toLowerCase().includes(keyword);
 
-            project.status.toLowerCase().includes(keyword) ||
+        const statusMatch =
 
-            project.taskType.toLowerCase().includes(keyword)
+            statusFilter === "All" ||
 
+            project.status === statusFilter;
+
+        const taskMatch =
+
+            taskFilter === "All" ||
+
+            project.taskType === taskFilter;
+
+        return keywordMatch && statusMatch && taskMatch;
+
+    })
+
+    .sort((a, b) => {
+
+        /* COMPLETE SELALU PALING BAWAH */
+
+        if (
+            a.status === "Complete" &&
+            b.status !== "Complete"
+        ) return 1;
+
+        if (
+            a.status !== "Complete" &&
+            b.status === "Complete"
+        ) return -1;
+
+        /* URUTKAN A-Z */
+
+        return a.name.localeCompare(
+            b.name,
+            "id",
+            {
+                sensitivity: "base"
+            }
         );
 
     });
 
-    if(filtered.length===0){
+    if (filtered.length === 0) {
 
         projectList.innerHTML = `
+
         <div class="empty">
+
             Belum ada project.
+
         </div>
+
         `;
 
         return;
 
     }
 
-    filtered.forEach(project=>{
+    let html = "";
+
+    filtered.forEach(project => {
+
+        const safeUrl = formatUrl(project.website);
 
         html += `
 
@@ -224,13 +355,45 @@ ${project.status}
 
 <div class="project-info">
 
-<p><b>Network</b><br>${project.network}</p>
+<p>
 
-<p><b>Task</b><br>${project.taskType}</p>
+<b>Network</b>
 
-<p><b>Priority</b><br>${project.priority}</p>
+<br>
 
-<p><b>Deadline</b><br>${project.deadline || "-"}</p>
+${project.network}
+
+</p>
+
+<p>
+
+<b>Task</b>
+
+<br>
+
+${project.taskType}
+
+</p>
+
+<p>
+
+<b>Priority</b>
+
+<br>
+
+${project.priority}
+
+</p>
+
+<p>
+
+<b>Deadline</b>
+
+<br>
+
+${project.deadline || "-"}
+
+</p>
 
 </div>
 
@@ -242,7 +405,9 @@ ${project.note || "-"}
 
 <div class="link-group">
 
-<a href="${project.website}" target="_blank">
+<a
+href="${safeUrl}"
+target="_blank">
 
 🌐 Website
 
@@ -253,9 +418,7 @@ ${project.note || "-"}
 <div class="project-action">
 
 <button
-
 class="btn-green"
-
 onclick="changeStatus(${project.id},'Active')">
 
 Active
@@ -263,9 +426,7 @@ Active
 </button>
 
 <button
-
 class="btn-yellow"
-
 onclick="changeStatus(${project.id},'Pending')">
 
 Pending
@@ -273,9 +434,7 @@ Pending
 </button>
 
 <button
-
 class="btn-blue"
-
 onclick="changeStatus(${project.id},'Complete')">
 
 Complete
@@ -283,9 +442,7 @@ Complete
 </button>
 
 <button
-
 class="btn-gray"
-
 onclick="editProject(${project.id})">
 
 Edit
@@ -293,9 +450,7 @@ Edit
 </button>
 
 <button
-
 class="btn-red"
-
 onclick="deleteProject(${project.id})">
 
 Delete
@@ -315,98 +470,18 @@ Delete
 }
 
 /* =====================
-UPDATE DASHBOARD
-===================== */
-
-function updateDashboard(){
-
-    let active = 0;
-
-    let pending = 0;
-
-    let complete = 0;
-
-    let today = 0;
-
-    projects.forEach(project=>{
-
-        switch(project.status){
-
-            case "Active":
-
-                active++;
-
-                break;
-
-            case "Pending":
-
-                pending++;
-
-                break;
-
-            case "Complete":
-
-                complete++;
-
-                break;
-
-        }
-
-        /* Today's Task */
-
-        if(project.status==="Active"){
-
-            if(
-
-                project.taskType==="Daily" ||
-
-                project.taskType==="Weekly" ||
-
-                project.taskType==="Testnet" ||
-
-                project.taskType==="Mainnet"
-
-            ){
-
-                today++;
-
-            }
-
-        }
-
-    });
-
-    todayTask.textContent = today;
-
-    activeProject.textContent = active;
-
-    pendingProject.textContent = pending;
-
-    completeProject.textContent = complete;
-
-}
-
-/* =====================
-SEARCH
-===================== */
-
-search.addEventListener("keyup",()=>{
-
-    renderProjects();
-
-});
-
-/* =====================
 DELETE PROJECT
 ===================== */
 
-function deleteProject(id){
+function deleteProject(id) {
 
-    if(!confirm("Hapus project ini?")) return;
+    if (!confirm("Hapus project ini?")) return;
 
-    projects = projects.filter(p => p.id !== id);
+    projects = projects.filter(project => project.id !== id);
 
     saveData();
+
+    showToast("Project berhasil dihapus");
 
     renderProjects();
 
@@ -416,15 +491,17 @@ function deleteProject(id){
 CHANGE STATUS
 ===================== */
 
-function changeStatus(id, status){
+function changeStatus(id, status) {
 
-    const index = projects.findIndex(p => p.id === id);
+    const project = projects.find(project => project.id === id);
 
-    if(index === -1) return;
+    if (!project) return;
 
-    projects[index].status = status;
+    project.status = status;
 
     saveData();
+
+    showToast("Status berhasil diubah");
 
     renderProjects();
 
@@ -434,11 +511,11 @@ function changeStatus(id, status){
 EDIT PROJECT
 ===================== */
 
-function editProject(id){
+function editProject(id) {
 
-    const project = projects.find(p => p.id === id);
+    const project = projects.find(project => project.id === id);
 
-    if(!project) return;
+    if (!project) return;
 
     document.getElementById("editId").value = project.id;
 
@@ -463,123 +540,59 @@ function editProject(id){
 }
 
 /* =====================
-UPDATE PROJECT (SAVE EDIT)
+UPDATE PROJECT
 ===================== */
 
 updateProject.onclick = () => {
 
     const id = Number(document.getElementById("editId").value);
 
-    const index = projects.findIndex(p => p.id === id);
+    const project = projects.find(project => project.id === id);
 
-    if(index === -1) return;
+    if (!project) return;
 
-    projects[index] = {
+    project.name = document.getElementById("editName").value.trim();
 
-        ...projects[index],
+    project.network = document.getElementById("editNetwork").value.trim();
 
-        name: document.getElementById("editName").value.trim(),
+    project.website = document.getElementById("editWebsite").value.trim();
 
-        network: document.getElementById("editNetwork").value.trim(),
+    project.taskType = document.getElementById("editTaskType").value;
 
-        website: document.getElementById("editWebsite").value.trim(),
+    project.deadline = document.getElementById("editDeadline").value;
 
-        taskType: document.getElementById("editTaskType").value,
+    project.priority = document.getElementById("editPriority").value;
 
-        deadline: document.getElementById("editDeadline").value,
+    project.status = document.getElementById("editStatus").value;
 
-        priority: document.getElementById("editPriority").value,
-
-        status: document.getElementById("editStatus").value,
-
-        note: document.getElementById("editNote").value.trim()
-
-    };
+    project.note = document.getElementById("editNote").value.trim();
 
     saveData();
 
-    renderProjects();
-
     editModal.style.display = "none";
 
-}
-
-/* =====================
-OPEN MODAL EVENTS
-===================== */
-
-addProjectBtn.addEventListener("click", () => {
-
-    projectModal.style.display = "flex";
-
-});
-
-/* =====================
-CLOSE MODAL EVENTS
-===================== */
-
-document.getElementById("closeModal").addEventListener("click", () => {
-
-    projectModal.style.display = "none";
-
-});
-
-document.getElementById("closeEditModal").addEventListener("click", () => {
-
-    editModal.style.display = "none";
-
-});
-
-/* =====================
-TOAST SYSTEM
-===================== */
-
-function showToast(message){
-
-    const toast = document.getElementById("toast");
-
-    const text = document.getElementById("toastText");
-
-    text.textContent = message;
-
-    toast.style.display = "block";
-
-    setTimeout(()=>{
-
-        toast.style.display = "none";
-
-    },2000);
-
-}
-
-/* =====================
-LOADING SYSTEM
-===================== */
-
-function showLoading(){
-
-    document.getElementById("loading").style.display = "flex";
-
-}
-
-function hideLoading(){
-
-    document.getElementById("loading").style.display = "none";
-
-}
-
-/* =====================
-INITIAL LOAD
-===================== */
-
-window.onload = () => {
+    showToast("Project berhasil diperbarui");
 
     renderProjects();
 
 };
 
 /* =====================
-ENTER KEY SUPPORT (OPTIONAL UX)
+SEARCH
+===================== */
+
+search.addEventListener("keyup", renderProjects);
+
+/* =====================
+FILTER
+===================== */
+
+filterStatus.addEventListener("change", renderProjects);
+
+filterTask.addEventListener("change", renderProjects);
+
+/* =====================
+ESC KEY
 ===================== */
 
 document.addEventListener("keydown", (e) => {
@@ -595,218 +608,11 @@ document.addEventListener("keydown", (e) => {
 });
 
 /* =====================
-AUTO FORMAT WEBSITE LINK
+INITIAL LOAD
 ===================== */
 
-function formatUrl(url){
+window.onload = () => {
 
-    if(!url) return "";
+    renderProjects();
 
-    if(url.startsWith("http")) return url;
-
-    return "https://" + url;
-
-}
-
-/* =====================
-PATCH: SAFE WEBSITE LINK
-===================== */
-
-function renderProjects(){
-
-    updateDashboard();
-
-    const keyword = search.value.toLowerCase();
-
-    let html = "";
-
-    const filtered = projects.filter(project => {
-
-        return (
-
-            project.name.toLowerCase().includes(keyword) ||
-
-            project.network.toLowerCase().includes(keyword) ||
-
-            project.status.toLowerCase().includes(keyword) ||
-
-            project.taskType.toLowerCase().includes(keyword)
-
-        );
-
-    });
-
-    if(filtered.length === 0){
-
-        projectList.innerHTML = `
-        <div class="empty">
-            Belum ada project.
-        </div>
-        `;
-
-        return;
-
-    }
-
-    filtered.forEach(project => {
-
-        const safeUrl = formatUrl(project.website);
-
-        html += `
-
-<div class="project-card">
-
-<div class="project-title">
-
-<h3>${project.name}</h3>
-
-<span class="badge ${project.status.toLowerCase()}">
-
-${project.status}
-
-</span>
-
-</div>
-
-<div class="project-info">
-
-<p><b>Network</b><br>${project.network}</p>
-
-<p><b>Task</b><br>${project.taskType}</p>
-
-<p><b>Priority</b><br>${project.priority}</p>
-
-<p><b>Deadline</b><br>${project.deadline || "-"}</p>
-
-</div>
-
-<div class="note">
-
-${project.note || "-"}
-
-</div>
-
-<div class="link-group">
-
-<a href="${safeUrl}" target="_blank">🌐 Website</a>
-
-</div>
-
-<div class="project-action">
-
-<button class="btn-gray" onclick="editProject(${project.id})">Edit</button>
-
-<button class="btn-red" onclick="deleteProject(${project.id})">Delete</button>
-
-</div>
-
-</div>
-
-`;
-
-    });
-
-    projectList.innerHTML = html;
-
-}
-
-/* =====================
-FIX: COUNTER BUG SAFETY
-===================== */
-
-function safeCount(){
-
-    let active = 0;
-
-    let pending = 0;
-
-    let complete = 0;
-
-    let today = 0;
-
-    projects.forEach(p => {
-
-        if(p.status === "Active") active++;
-
-        if(p.status === "Pending") pending++;
-
-        if(p.status === "Complete") complete++;
-
-        if(p.status === "Active"){
-
-            if(
-
-                p.taskType === "Daily" ||
-
-                p.taskType === "Weekly" ||
-
-                p.taskType === "Testnet" ||
-
-                p.taskType === "Mainnet"
-
-            ){
-
-                today++;
-
-            }
-
-        }
-
-    });
-
-    return {active, pending, complete, today};
-
-}
-
-/* =====================
-REPLACE DASHBOARD WITH SAFE VERSION
-===================== */
-
-function updateDashboard(){
-
-    const c = safeCount();
-
-    todayTask.textContent = c.today;
-
-    activeProject.textContent = c.active;
-
-    pendingProject.textContent = c.pending;
-
-    completeProject.textContent = c.complete;
-
-}
-
-/* =====================
-FINAL INIT FIX
-===================== */
-
-renderProjects();
-updateDashboard();
-
-/* =====================
-FINAL CLEAN INIT
-===================== */
-
-function init(){
-
-    try{
-
-        if(!projects) projects = [];
-
-        renderProjects();
-
-        updateDashboard();
-
-    }catch(e){
-
-        console.error("Init error:", e);
-
-    }
-
-}
-
-/* =====================
-RUN APP
-===================== */
-
-init();
+};
