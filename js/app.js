@@ -694,9 +694,13 @@ ${project.note || "-"}
 
 <div class="project-action">
 
-<button class="btn-gray" onclick="editProject(${project.id})">Edit</button>
+<button class="btn-gray" onclick="editProject(${project.id})">
+Edit
+</button>
 
-<button class="btn-red" onclick="deleteProject(${project.id})">Delete</button>
+<button class="btn-red" onclick="deleteProject(${project.id})">
+Delete
+</button>
 
 </div>
 
