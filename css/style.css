@@ -22,6 +22,7 @@
     --success:#22c55e;
     --warning:#eab308;
     --danger:#ef4444;
+    --purple:#9333ea;
 
     --white:#ffffff;
     --gray:#94a3b8;
@@ -125,11 +126,8 @@ header button:hover{
 .search{
 
     display:flex;
-
-    flex-wrap:wrap;
-
     gap:12px;
-
+    flex-wrap:wrap;
     margin-bottom:25px;
 
 }
@@ -137,48 +135,20 @@ header button:hover{
 .search input{
 
     flex:1;
-
-    min-width:250px;
-
-    padding:15px 18px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:12px;
-
-    background:var(--card);
-
-    color:white;
-
-    font-size:16px;
-
-    border:1px solid var(--border);
-
-    transition:.25s;
+    min-width:260px;
 
 }
 
+.search input,
 .search select{
 
-    min-width:180px;
-
-    padding:15px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:12px;
-
+    padding:14px 16px;
     background:var(--card);
-
     color:white;
-
     border:1px solid var(--border);
-
-    transition:.25s;
+    border-radius:12px;
+    outline:none;
+    font-size:15px;
 
 }
 
@@ -308,6 +278,16 @@ button{
 
 }
 
+/* =========================
+WAITLIST BUTTON
+========================= */
+
+.btn-purple{
+
+    background:#9333ea;
+
+}
+
 .btn-blue{
 
     background:#2563eb;
@@ -335,6 +315,16 @@ button{
 .btn-yellow:hover{
 
     background:#a16207;
+
+}
+
+/* =========================
+WAITLIST BUTTON HOVER
+========================= */
+
+.btn-purple:hover{
+
+    background:#7e22ce;
 
 }
 
@@ -368,12 +358,6 @@ button{
 
 }
 
-.waitlist{
-
-    background:#9333ea;
-
-}
-
 .active{
 
     background:#16a34a;
@@ -383,6 +367,16 @@ button{
 .pending{
 
     background:#ca8a04;
+
+}
+
+/* =========================
+WAITLIST BADGE
+========================= */
+
+.waitlist{
+
+    background:#9333ea;
 
 }
 
@@ -400,8 +394,7 @@ button{
     padding:50px;
     border-radius:15px;
     text-align:center;
-    color:var(--gray);
-
+    
 }
 
 /* MODAL */
@@ -510,11 +503,15 @@ button{
 @keyframes spin{
 
     from{
+
         transform:rotate(0deg);
+
     }
 
     to{
+
         transform:rotate(360deg);
+
     }
 
 }
@@ -592,4 +589,4 @@ flex-direction:column;
 
 }
 
-                    }
+}
