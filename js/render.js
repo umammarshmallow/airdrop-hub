@@ -112,51 +112,12 @@ export function renderProjects() {
             <div class="project-action">
 
                 <button
-                    class="btn-green"
-                    data-action="status"
-                    data-status="Active"
-                    data-id="${project.id}">
 
-                    Active
-
-                </button>
-
-                <button
-                    class="btn-yellow"
-                    data-action="status"
-                    data-status="Pending"
-                    data-id="${project.id}">
-
-                    Pending
-
-                </button>
-
-                <button
-                    class="btn-purple"
-                    data-action="status"
-                    data-status="Waitlist"
-                    data-id="${project.id}">
-
-                    Waitlist
-
-                </button>
-
-                <button
-                    class="btn-blue"
-                    data-action="status"
-                    data-status="Complete"
-                    data-id="${project.id}">
-
-                    Complete
-
-                </button>
-
-                <button
                     class="btn-gray"
                     data-action="edit"
                     data-id="${project.id}">
 
-                    Edit
+                    ✏️ Edit
 
                 </button>
 
@@ -165,7 +126,7 @@ export function renderProjects() {
                     data-action="delete"
                     data-id="${project.id}">
 
-                    Delete
+                    🗑 Delete
 
                 </button>
 
