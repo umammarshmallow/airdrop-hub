@@ -444,16 +444,62 @@ WAITLIST BADGE
 
 }
 
+/* ==========================
+MODAL BUTTON
+========================== */
+
 .modal-button{
 
     display:flex;
-    gap:10px;
+    gap:12px;
+    margin-top:10px;
 
 }
 
 .modal-button button{
 
     flex:1;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+
+}
+
+/* Tombol Simpan & Update */
+
+#saveProject,
+#updateProject{
+
+    background:var(--primary);
+    color:var(--white);
+
+}
+
+#saveProject:hover,
+#updateProject:hover{
+
+    background:var(--primaryHover);
+
+}
+
+/* Tombol Batal */
+
+#closeModal,
+#closeEditModal{
+
+    background:#475569;
+    color:var(--white);
+
+}
+
+#closeModal:hover,
+#closeEditModal:hover{
+
+    background:#334155;
 
 }
 
