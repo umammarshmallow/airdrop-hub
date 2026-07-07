@@ -3,7 +3,7 @@
    APP.JS
 ========================================== */
 
-import { initEvents } from "./events.js";
+import { initEvents } from "./event.js";
 
 import { loadProjects } from "./storage.js";
 
