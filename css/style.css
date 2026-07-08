@@ -37,16 +37,6 @@ body{
 
 }
 
-/* Lock scroll ketika modal terbuka */
-
-body.modal-open{
-
-    overflow:hidden;
-    height:100vh;
-    touch-action:none;
-
-}
-
 .container{
 
     max-width:1200px;
