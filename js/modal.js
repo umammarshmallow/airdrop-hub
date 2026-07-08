@@ -18,6 +18,22 @@ const closeModalBtn = document.getElementById("closeModal");
 const closeEditModalBtn = document.getElementById("closeEditModal");
 
 /* ==========================================
+   LOCK BODY SCROLL
+========================================== */
+
+function lockBodyScroll() {
+
+    document.body.classList.add("modal-open");
+
+}
+
+function unlockBodyScroll() {
+
+    document.body.classList.remove("modal-open");
+
+}
+
+/* ==========================================
    OPEN MODAL
 ========================================== */
 
@@ -27,11 +43,15 @@ export function openAddModal() {
 
     projectModal.style.display = "flex";
 
+    lockBodyScroll();
+
 }
 
 export function openEditModal() {
 
     editModal.style.display = "flex";
+
+    lockBodyScroll();
 
 }
 
@@ -43,11 +63,15 @@ export function closeAddModal() {
 
     projectModal.style.display = "none";
 
+    unlockBodyScroll();
+
 }
 
 export function closeEditModal() {
 
     editModal.style.display = "none";
+
+    unlockBodyScroll();
 
 }
 
@@ -92,8 +116,6 @@ export function initModal() {
         closeEditModal
     );
 
-    /* Klik area gelap */
-
     window.addEventListener("click", (e) => {
 
         if (e.target === projectModal) {
@@ -109,8 +131,6 @@ export function initModal() {
         }
 
     });
-
-    /* ESC */
 
     document.addEventListener("keydown", (e) => {
 
