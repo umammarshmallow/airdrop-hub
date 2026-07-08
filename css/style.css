@@ -665,3 +665,52 @@ body.modal-open{
     overflow-y:auto;
 
 }
+
+.dashboard-summary{
+
+    background:#232d42;
+    border:1px solid #2f63ff;
+    border-radius:18px;
+    padding:20px;
+    margin:25px 0;
+
+}
+
+.dashboard-summary h2{
+
+    color:#fff;
+    font-size:22px;
+    margin-bottom:18px;
+
+}
+
+.summary-grid{
+
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+
+}
+
+.summary-item{
+
+    text-align:center;
+
+}
+
+.summary-item span{
+
+    display:block;
+    color:#41b7ff;
+    font-size:34px;
+    font-weight:bold;
+
+}
+
+.summary-item p{
+
+    color:#cfd4dc;
+    margin-top:6px;
+    font-size:15px;
+
+}
