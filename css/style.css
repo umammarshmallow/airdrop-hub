@@ -637,3 +637,31 @@ flex-direction:column;
 }
 
 }
+
+/* ==========================================
+   FIX MODAL SCROLL
+========================================== */
+
+body.modal-open{
+
+    overflow:hidden;
+    height:100vh;
+    touch-action:none;
+
+}
+
+#projectModal,
+#editModal{
+
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+
+}
+
+#projectModal .modal-content,
+#editModal .modal-content{
+
+    max-height:90vh;
+    overflow-y:auto;
+
+}
