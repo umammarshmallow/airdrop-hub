@@ -33,6 +33,17 @@ body{
 
     background:var(--bg);
     color:white;
+    overflow-x:hidden;
+
+}
+
+/* Lock scroll ketika modal terbuka */
+
+body.modal-open{
+
+    overflow:hidden;
+    height:100vh;
+    touch-action:none;
 
 }
 
