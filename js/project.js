@@ -73,6 +73,8 @@ export function addProject(data) {
 
         note: data.note.trim()
 
+        dailyDone: false
+   
     });
 
     save();
