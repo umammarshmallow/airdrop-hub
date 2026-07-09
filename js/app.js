@@ -84,40 +84,6 @@ window.addEventListener("online", () => {
 });
 
 /* ==========================================
-   DAILY TASK RESET
-========================================== */
-
-const DAILY_RESET_KEY = "airdropHub_lastReset";
-
-export function resetDailyTasks(projects) {
-
-    const today = new Date().toISOString().split("T")[0];
-
-    const lastReset = localStorage.getItem(DAILY_RESET_KEY);
-
-    if (lastReset === today) {
-        return projects;
-    }
-
-    projects.forEach(project => {
-
-        if (project.taskType === "Daily") {
-
-            project.dailyDone = false;
-
-        }
-
-    });
-
-    localStorage.setItem(DAILY_RESET_KEY, today);
-
-    saveProjects(projects);
-
-    return projects;
-
-}
-
-/* ==========================================
    VERSION
 ========================================== */
 
