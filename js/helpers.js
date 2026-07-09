@@ -132,54 +132,34 @@ SORT PROJECT
 
 export function sortProjects(projects) {
 
-    const priorityOrder = {
+    const statusOrder = {
 
-        High: 1,
-        Medium: 2,
-        Low: 3
+        Active: 1,
+        Waitlist: 2,
+        Pending: 3,
+        Complete: 4
 
     };
 
     return [...projects].sort((a, b) => {
 
-        /* Complete selalu paling bawah */
+        /* Urutan Status
+           Active
+           Waitlist
+           Pending
+           Complete
+        */
 
-        if (
-            a.status === "Complete" &&
-            b.status !== "Complete"
-        ) return 1;
+        const statusA = statusOrder[a.status] ?? 999;
+        const statusB = statusOrder[b.status] ?? 999;
 
-        if (
-            a.status !== "Complete" &&
-            b.status === "Complete"
-        ) return -1;
+        if (statusA !== statusB) {
 
-        /* Prioritas */
-
-        if (
-            priorityOrder[a.priority] !==
-            priorityOrder[b.priority]
-        ) {
-
-            return (
-                priorityOrder[a.priority] -
-                priorityOrder[b.priority]
-            );
+            return statusA - statusB;
 
         }
 
-        /* Deadline */
-
-        if (a.deadline && b.deadline) {
-
-            return (
-                new Date(a.deadline) -
-                new Date(b.deadline)
-            );
-
-        }
-
-        /* Nama */
+        /* Dalam setiap status urut A-Z */
 
         return a.name.localeCompare(
             b.name,
