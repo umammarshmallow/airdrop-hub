@@ -5,7 +5,10 @@
 
 import { initEvents } from "./event.js";
 
-import { loadProjects } from "./storage.js";
+import {
+    loadProjects,
+    resetDailyTasks
+} from "./storage.js";
 
 import { renderProjects } from "./render.js";
 
