@@ -28,7 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* memastikan data localStorage terbaca */
 
-        const projects = loadProjects();
+        let projects = loadProjects();
+
+        projects = resetDailyTasks(projects);
 
         /* update dashboard */
 
