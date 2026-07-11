@@ -47,21 +47,32 @@ export function updateDashboard(projects) {
         switch (project.taskType) {
 
             case "Daily":
-                today++;
-                break;
 
-            case "Weekly":
-
-                if (isTodayWeeklyTask(project)) {
+                if (!project.dailyDone) {
                     today++;
                 }
 
                 break;
 
+            case "Weekly":
+
+                if (
+                    isTodayWeeklyTask(project) &&
+                    !project.dailyDone
+                ) {
+                    today++;
+                  }
+
+                break;
+
             case "Testnet":
             case "Mainnet":
-                today++;
-                break;
+
+               if (!project.dailyDone) {
+                   today++;
+               }
+
+               break;
 
         }
 
