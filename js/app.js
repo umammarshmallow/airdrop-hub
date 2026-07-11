@@ -5,16 +5,15 @@
 
 import { initEvents } from "./event.js";
 
-import {
-    loadProjects,
-    resetDailyTasks
-} from "./storage.js";
+import { loadProjects, resetDailyTasks } from "./storage.js";
 
 import { renderProjects } from "./render.js";
 
 import { updateDashboard } from "./dashboard.js";
 
 import { showLoading, hideLoading } from "./helpers.js";
+
+import { getProjects } from "./project.js";
 
 /* ==========================================
    INITIALIZE APPLICATION
@@ -38,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* render project */
 
+        resetDailyTasks(getProjects());
         renderProjects();
 
         /* semua event */
