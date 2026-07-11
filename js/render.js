@@ -111,6 +111,19 @@ export function renderProjects() {
 
             <div class="project-action">
 
+                ${project.status === "Active"
+                    ? `
+                        <button
+                            class="daily-check-btn"
+                            data-id="${project.id}"
+                            ${project.dailyDone ? "disabled" : ""}
+                        >
+                            ${project.dailyDone ? "✔ Completed" : "✓ Checklist"}
+                        </button>
+                   `
+                   : ""
+                }
+                
                 <button
 
                     class="btn-gray"
