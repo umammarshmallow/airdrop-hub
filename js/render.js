@@ -116,6 +116,7 @@ export function renderProjects() {
                     ? `
                         <button
                             class="daily-check-btn"
+                            data-action="daily"
                             data-id="${project.id}"
                             ${project.dailyDone ? "disabled" : ""}
                         >
