@@ -181,7 +181,23 @@ projectList.addEventListener("click", (e) => {
 
             break;
 
-        case "edit":
+        case "daily":
+
+            const project = getProjects().find(
+            p => p.id === id
+            );
+
+            if (!project) return;
+
+            project.dailyDone = true;
+
+            saveProjects(getProjects());
+
+            renderProjects();
+
+            break;
+       
+       case "edit":
 
             editProject(id);
 
@@ -196,25 +212,5 @@ projectList.addEventListener("click", (e) => {
             break;
 
     }
-
-});
-
-document.querySelectorAll(".daily-check-btn").forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        const id = button.dataset.id;
-
-        const project = projects.find(p => p.id == id);
-
-        if (!project) return;
-
-        project.dailyDone = true;
-
-        saveProjects(projects);
-
-        renderProjects(projects);
-
-    });
 
 });
