@@ -11,6 +11,7 @@ import {
     editProject,
     getProjects
 } from "./project.js";
+import { saveProjects } from "./storage.js";
 
 /* ==========================================
    ELEMENT
@@ -195,5 +196,25 @@ projectList.addEventListener("click", (e) => {
             break;
 
     }
+
+});
+
+document.querySelectorAll(".daily-check-btn").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const id = button.dataset.id;
+
+        const project = projects.find(p => p.id == id);
+
+        if (!project) return;
+
+        project.dailyDone = true;
+
+        saveProjects(projects);
+
+        renderProjects(projects);
+
+    });
 
 });
