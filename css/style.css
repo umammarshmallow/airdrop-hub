@@ -254,6 +254,25 @@ section h2{
 
 }
 
+.daily-check-btn{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:6px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.daily-check-btn:hover{
+    background:#15803d;
+}
+
+.daily-check-btn:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
 /* BUTTON */
 
 button{
