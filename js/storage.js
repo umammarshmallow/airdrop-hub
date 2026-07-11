@@ -49,9 +49,16 @@ export function resetDailyTasks(projects) {
 
     projects.forEach(project => {
 
-        if (project.taskType === "Daily") {
+        if (project.status !== "Active") return;
 
-            project.dailyDone = false;
+        switch (project.taskType) {
+
+            case "Daily":
+            case "Weekly":
+            case "Testnet":
+            case "Mainnet":
+                project.dailyDone = false;
+                break;
 
         }
 
