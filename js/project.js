@@ -71,7 +71,7 @@ export function addProject(data) {
 
         status: data.status,
 
-        note: data.note.trim()
+        note: data.note.trim(),
 
         dailyDone: false
    
