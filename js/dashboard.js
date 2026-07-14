@@ -5,18 +5,39 @@
 export function updateDashboard(projects) {
 
     const todayTask = document.getElementById("todayTask");
+    const deadlineToday = document.getElementById("deadlineToday");
     const activeProject = document.getElementById("activeProject");
     const pendingProject = document.getElementById("pendingProject");
     const waitlistProject = document.getElementById("waitlistProject");
     const completeProject = document.getElementById("completeProject");
 
     let today = 0;
+    let deadline = 0;
     let active = 0;
     let pending = 0;
     let waitlist = 0;
     let complete = 0;
 
     projects.forEach(project => {
+
+       if (project.deadline) {
+
+    const today = new Date();
+    const dl = new Date(project.deadline);
+
+    if (
+        dl.getFullYear() === today.getFullYear() &&
+        dl.getMonth() === today.getMonth() &&
+        dl.getDate() === today.getDate()
+    ) {
+        deadline++;
+    }
+
+   }
+
+       
+    if (deadlineToday)
+    deadlineToday.textContent = deadline;
 
         switch (project.status) {
 
