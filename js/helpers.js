@@ -130,7 +130,31 @@ export function validateProject(project) {
 SORT PROJECT
 ========================== */
 
-export function sortProjects(projects) {
+export function sortProjects(projects, mode = "default") {
+
+    if (mode === "deadline") {
+
+        return [...projects].sort((a, b) => {
+
+            if (!a.deadline && !b.deadline)
+                return a.name.localeCompare(b.name, "id");
+
+            if (!a.deadline) return 1;
+            if (!b.deadline) return -1;
+
+            return new Date(a.deadline) - new Date(b.deadline);
+
+        });
+
+    }
+
+    if (mode === "newest") {
+
+        return [...projects].sort(
+            (a, b) => b.id - a.id
+        );
+
+    }
 
     const statusOrder = {
 
@@ -143,30 +167,16 @@ export function sortProjects(projects) {
 
     return [...projects].sort((a, b) => {
 
-        /* Urutan Status
-           Active
-           Waitlist
-           Pending
-           Complete
-        */
-
         const statusA = statusOrder[a.status] ?? 999;
         const statusB = statusOrder[b.status] ?? 999;
 
-        if (statusA !== statusB) {
-
+        if (statusA !== statusB)
             return statusA - statusB;
-
-        }
-
-        /* Dalam setiap status urut A-Z */
 
         return a.name.localeCompare(
             b.name,
             "id",
-            {
-                sensitivity: "base"
-            }
+            { sensitivity: "base" }
         );
 
     });
