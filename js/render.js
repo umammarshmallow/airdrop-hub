@@ -19,6 +19,7 @@ import { saveProjects } from "./storage.js";
 
 const projectList = document.getElementById("projectList");
 const search = document.getElementById("search");
+const sortBy = document.getElementById("sortBy");
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
 
