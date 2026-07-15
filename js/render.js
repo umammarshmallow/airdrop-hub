@@ -34,7 +34,10 @@ export function renderProjects() {
         filterTask.value
     );
 
-    const projects = sortProjects(filtered);
+    const projects = sortProjects(
+    filtered,
+    sortBy.value
+);
 
     updateDashboard(getProjects());
 
@@ -213,5 +216,10 @@ projectList.addEventListener("click", (e) => {
             break;
 
     }
+   
+    sortBy.addEventListener(
+    "change",
+    renderProjects
+);
 
 });
