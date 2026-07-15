@@ -11,9 +11,10 @@ import { initModal } from "./modal.js";
 ========================================== */
 
 const search = document.getElementById("search");
+const sortBy = document.getElementById("sortBy");
+sortBy.addEventListener("change", renderProjects);
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
-
 const saveProjectBtn = document.getElementById("saveProject");
 const updateProjectBtn = document.getElementById("updateProject");
 
