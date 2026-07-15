@@ -218,7 +218,7 @@ projectList.addEventListener("click", (e) => {
 
     }
    
-    sortBy.addEventListener(
+sortBy.addEventListener(
     "change",
     renderProjects
 );
