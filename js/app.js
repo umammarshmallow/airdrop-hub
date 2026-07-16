@@ -13,11 +13,26 @@ import { updateDashboard } from "./dashboard.js";
 
 import { showLoading, hideLoading } from "./helpers.js";
 
-import { getProjects } from "./project.js";
+import { getProjects, setProjects } from "./project.js";
 
 /* ==========================================
    INITIALIZE APPLICATION
 ========================================== */
+
+document.addEventListener("visibilitychange", () => {
+
+    if (!document.hidden) {
+
+        let projects = loadProjects();
+
+        projects = resetDailyTasks(projects);
+
+        setProjects(projects);
+
+        renderProjects();
+    }
+
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -29,20 +44,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let projects = loadProjects();
 
+        // Reset task harian bila hari sudah berganti
         projects = resetDailyTasks(projects);
 
-        /* update dashboard */
+        // Sinkronkan data project di seluruh aplikasi
+        setProjects(projects);
 
+        // Update dashboard
         updateDashboard(projects);
 
-        /* render project */
-
-        resetDailyTasks(getProjects());
+        // Render ulang
         renderProjects();
 
         /* semua event */
 
         initEvents();
+
+       // Mengecek pergantian hari setiap 1 menit
+       setInterval(() => {
+
+       let projects = loadProjects();
+
+       projects = resetDailyTasks(projects);
+
+       setProjects(projects);
+
+       renderProjects();
+
+}, 60000);
 
     } catch (error) {
 
