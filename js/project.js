@@ -266,3 +266,8 @@ export function filterProjects(
     });
 
 }
+
+// Sinkronisasi data project dari luar module
+export function setProjects(newProjects) {
+    projects = newProjects;
+}
