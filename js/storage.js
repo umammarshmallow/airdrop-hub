@@ -39,8 +39,12 @@ const DAILY_RESET_KEY = "airdropHub_lastReset";
 
 export function resetDailyTasks(projects) {
 
-    const today = new Date().toISOString().split("T")[0];
+    const now = new Date();
 
+    const today =
+    now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
     const lastReset = localStorage.getItem(DAILY_RESET_KEY);
 
     if (lastReset === today) {
@@ -67,6 +71,10 @@ export function resetDailyTasks(projects) {
     localStorage.setItem(DAILY_RESET_KEY, today);
 
     saveProjects(projects);
+   
+    console.log("Daily task berhasil di-reset");
+
+    console.log(projects);
 
     return projects;
 
