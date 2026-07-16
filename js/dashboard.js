@@ -9,7 +9,7 @@ export function updateDashboard(projects) {
     const activeProject = document.getElementById("activeProject");
     const pendingProject = document.getElementById("pendingProject");
     const waitlistProject = document.getElementById("waitlistProject");
-    const completeProject = document.getElementById("completeProject");
+    const completeProject = document.getElementById("completedProject");
 
     let today = 0;
     let deadline = 0;
