@@ -19,15 +19,11 @@
 
 <body>
 
-<div class="container">
+<div id="homePage">
 
 <header>
 
 <h1>🚀 AIRDROP HUB</h1>
-
-<button id="addProjectBtn">
-+ Add Project
-</button>
 
 </header>
 
@@ -72,6 +68,11 @@
 </section>
 
 <section class="search">
+
+<input
+type="text"
+id="search"
+placeholder="🔍 Cari Project...">
 
 <input
 type="text"
@@ -131,6 +132,26 @@ Belum ada project.
 </div>
 
 </section>
+
+</div>
+
+<div id="profilePage" style="display:none;">
+
+    <section>
+
+        <h2>Profile</h2>
+
+        <div class="card">
+
+            <h3>Coming Soon</h3>
+
+            <p>Halaman profile masih dalam pengembangan.</p>
+
+        </div>
+
+    </section>
+
+</div>
 
 <!-- ==========================
 ADD PROJECT
@@ -345,6 +366,42 @@ Airdrop Hub v4.0
 </footer>
 
 </div>
+
+<nav class="bottom-nav">
+
+<button id="homeBtn">
+
+🏠
+
+<span>Home</span>
+
+</button>
+
+<button id="searchBtn">
+
+🔍
+
+<span>Search</span>
+
+</button>
+
+<button id="addBottomBtn">
+
+➕
+
+<span>Add Project</span>
+
+</button>
+
+<button id="profileBtn">
+
+👤
+
+<span>Profile</span>
+
+</button>
+
+</nav>
 
 <!-- ES MODULE -->
 <script type="module" src="js/app.js"></script>
