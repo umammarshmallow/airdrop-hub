@@ -733,3 +733,135 @@ body.modal-open{
     font-size:15px;
 
 }
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+left:0;
+
+width:100%;
+
+background:#111827;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+padding:10px 0;
+
+border-top:1px solid #374151;
+
+z-index:999;
+
+}
+
+.bottom-nav button{
+
+background:none;
+
+color:#cbd5e1;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+gap:4px;
+
+font-size:13px;
+
+padding:6px;
+
+}
+
+.bottom-nav button:hover{
+
+color:#38bdf8;
+
+}
+
+.container{
+
+padding-bottom:90px;
+
+}
+
+.search{
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+margin-bottom:25px;
+
+}
+
+.search input{
+
+flex:1;
+
+background:#1e293b;
+
+padding:14px;
+
+border-radius:12px;
+
+border:1px solid #334155;
+
+font-size:15px;
+
+}
+
+.search input::placeholder{
+
+color:#94a3b8;
+
+}
+
+const homeBtn=document.getElementById("homeBtn");
+
+const profileBtn=document.getElementById("profileBtn");
+
+const addBottomBtn=document.getElementById("addBottomBtn");
+
+const searchBtn=document.getElementById("searchBtn");
+
+const homePage=document.getElementById("homePage");
+
+const profilePage=document.getElementById("profilePage");
+
+homeBtn.onclick=()=>{
+
+homePage.style.display="block";
+
+profilePage.style.display="none";
+
+}
+
+profileBtn.onclick=()=>{
+
+homePage.style.display="none";
+
+profilePage.style.display="block";
+
+}
+
+addBottomBtn.onclick=()=>{
+
+document.getElementById("addProjectBtn").click();
+
+}
+
+searchBtn.onclick=()=>{
+
+document.getElementById("search").focus();
+
+}
