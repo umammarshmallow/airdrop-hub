@@ -38,12 +38,11 @@ body{
 }
 
 .container{
-    width:100%;
+
     max-width:1200px;
-    margin:0 auto;
+    margin:auto;
     padding:20px;
-    padding-bottom:90px;
-    box-sizing:border-box;
+
 }
 
 /* HEADER */
@@ -819,61 +818,3 @@ font-size:15px;
 .search input::placeholder{
 
 color:#94a3b8;
-
-}
-
-/* ==========================
-MOBILE FIX
-========================== */
-
-@media (max-width:768px){
-
-    html{
-        width:100%;
-        overflow-x:hidden;
-    }
-
-    body{
-        width:100%;
-        overflow-x:hidden;
-    }
-
-    .container{
-        width:100%;
-        max-width:100%;
-        padding:16px;
-    }
-
-    header h1{
-        font-size:18vw;
-        max-font-size:56px;
-    }
-
-    .dashboard-summary{
-        margin:18px 0;
-        padding:18px;
-    }
-
-    .summary-grid{
-        gap:20px;
-    }
-
-    .project-card{
-        padding:18px;
-    }
-
-    .project-title h3{
-        font-size:32px;
-    }
-
-    .search{
-        flex-direction:column;
-    }
-
-    .search input,
-    .search select{
-        width:100%;
-        min-width:0;
-    }
-
-}
