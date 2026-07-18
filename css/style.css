@@ -42,6 +42,8 @@ body{
     max-width:1200px;
     margin:0 auto;
     padding:20px;
+    padding-bottom:90px;
+    box-sizing:border-box;
 }
 
 /* HEADER */
@@ -783,12 +785,6 @@ padding:6px;
 .bottom-nav button:hover{
 
 color:#38bdf8;
-
-}
-
-.container{
-
-padding-bottom:90px;
 
 }
 
