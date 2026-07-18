@@ -71,46 +71,61 @@
 
 <section class="search">
 
-<input
-type="text"
-id="search"
-placeholder="🔍 Cari Project...">
+    <input
+        type="text"
+        id="search"
+        placeholder="🔍 Cari Project...">
 
-<select id="sortBy">
-    <option value="default">Default</option>
-    <option value="deadline">Deadline Terdekat</option>
-    <option value="newest">Project Terbaru</option>
-</select>
-    
-<select id="filterStatus">
+    <div class="toolbar">
 
-<option value="All">Semua Status</option>
+        <div class="toolbar-item">
 
-<option value="Active">🟢 Active</option>
+            <label>Kategori</label>
 
-<option value="Pending">🟡 Pending</option>
+            <select id="filterStatus">
 
-<option value="Waitlist">🟣 Waitlist</option>
+                <option value="All">Semua Status</option>
+                <option value="Active">🟢 Active</option>
+                <option value="Pending">🟡 Pending</option>
+                <option value="Waitlist">🟣 Waitlist</option>
+                <option value="Complete">🔵 Complete</option>
 
-<option value="Complete">🔵 Complete</option>
+            </select>
 
-</select>
+        </div>
 
-<select id="filterTask">
+        <div class="toolbar-item">
 
-<option value="All">Semua Task</option>
+            <label>Filter</label>
 
-<option value="Daily">Daily</option>
+            <select id="filterTask">
 
-<option value="Weekly">Weekly</option>
+                <option value="All">Semua Task</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Testnet">Testnet</option>
+                <option value="Mainnet">Mainnet</option>
+                <option value="One Time">One Time</option>
 
-<option value="Testnet">Testnet</option>
+            </select>
 
-<option value="Mainnet">Mainnet</option>
+        </div>
 
-<option value="One Time">One Time</option>
+        <div class="toolbar-item">
 
-</select>
+            <label>Urutkan</label>
+
+            <select id="sortBy">
+
+                <option value="default">Default</option>
+                <option value="deadline">Deadline Terdekat</option>
+                <option value="newest">Project Terbaru</option>
+
+            </select>
+
+        </div>
+
+    </div>
 
 </section>
 
