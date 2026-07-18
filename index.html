@@ -79,62 +79,110 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         id="search"
         placeholder="🔍 Cari Project...">
 
-    <div class="filter-toolbar">
+    <div class="toolbar">
 
-        <button class="filter-btn">
+        <!-- STATUS -->
+        <div class="dropdown">
 
-            <i class="fa-solid fa-list"></i>
+            <button class="dropbtn">
 
-            <span>Kategori</span>
+                <span>
+                    <i class="fa-solid fa-list"></i>
+                    Kategori
+                </span>
 
-            <select id="filterStatus">
+                <i class="fa-solid fa-chevron-down arrow"></i>
 
-                <option value="All">Semua Status</option>
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-                <option value="Waitlist">Waitlist</option>
-                <option value="Complete">Complete</option>
+            </button>
 
-            </select>
+            <div class="dropdown-content">
 
-        </button>
+                <div data-target="filterStatus" data-value="All">Semua Status</div>
+                <div data-target="filterStatus" data-value="Active">Active</div>
+                <div data-target="filterStatus" data-value="Pending">Pending</div>
+                <div data-target="filterStatus" data-value="Waitlist">Waitlist</div>
+                <div data-target="filterStatus" data-value="Complete">Complete</div>
 
-        <button class="filter-btn">
+            </div>
 
-            <i class="fa-solid fa-sliders"></i>
+        </div>
 
-            <span>Filter</span>
+        <!-- TASK -->
+        <div class="dropdown">
 
-            <select id="filterTask">
+            <button class="dropbtn">
 
-                <option value="All">Semua Task</option>
-                <option value="Daily">Daily</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Testnet">Testnet</option>
-                <option value="Mainnet">Mainnet</option>
-                <option value="One Time">One Time</option>
+                <span>
+                    <i class="fa-solid fa-sliders"></i>
+                    Filter
+                </span>
 
-            </select>
+                <i class="fa-solid fa-chevron-down arrow"></i>
 
-        </button>
+            </button>
 
-        <button class="filter-btn">
+            <div class="dropdown-content">
 
-            <i class="fa-solid fa-arrow-down-wide-short"></i>
+                <div data-target="filterTask" data-value="All">Semua Task</div>
+                <div data-target="filterTask" data-value="Daily">Daily</div>
+                <div data-target="filterTask" data-value="Weekly">Weekly</div>
+                <div data-target="filterTask" data-value="Testnet">Testnet</div>
+                <div data-target="filterTask" data-value="Mainnet">Mainnet</div>
+                <div data-target="filterTask" data-value="One Time">One Time</div>
 
-            <span>Urutkan</span>
+            </div>
 
-            <select id="sortBy">
+        </div>
 
-                <option value="default">Default</option>
-                <option value="deadline">Deadline Terdekat</option>
-                <option value="newest">Project Terbaru</option>
+        <!-- SORT -->
+        <div class="dropdown">
 
-            </select>
+            <button class="dropbtn">
 
-        </button>
+                <span>
+                    <i class="fa-solid fa-arrow-down-wide-short"></i>
+                    Urutkan
+                </span>
+
+                <i class="fa-solid fa-chevron-down arrow"></i>
+
+            </button>
+
+            <div class="dropdown-content">
+
+                <div data-target="sortBy" data-value="default">Default</div>
+                <div data-target="sortBy" data-value="deadline">Deadline Terdekat</div>
+                <div data-target="sortBy" data-value="newest">Project Terbaru</div>
+
+            </div>
+
+        </div>
 
     </div>
+
+    <!-- Hidden Select -->
+    <select id="filterStatus" hidden>
+        <option value="All"></option>
+        <option value="Active"></option>
+        <option value="Pending"></option>
+        <option value="Waitlist"></option>
+        <option value="Complete"></option>
+    </select>
+
+    <select id="filterTask" hidden>
+        <option value="All"></option>
+        <option value="Daily"></option>
+        <option value="Weekly"></option>
+        <option value="Testnet"></option>
+        <option value="Mainnet"></option>
+        <option value="One Time"></option>
+    </select>
+
+    <select id="sortBy" hidden>
+        <option value="default"></option>
+        <option value="deadline"></option>
+        <option value="newest"></option>
+    </select>
 
 </section>
 
