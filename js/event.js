@@ -126,3 +126,74 @@ export function initEvents() {
     renderProjects();
 
 }
+
+/* =====================================================
+   CUSTOM DROPDOWN
+===================================================== */
+
+const dropdowns = document.querySelectorAll(".dropdown");
+
+dropdowns.forEach(dropdown => {
+
+    const button = dropdown.querySelector(".dropbtn");
+    const menu = dropdown.querySelector(".dropdown-content");
+
+    button.addEventListener("click", e => {
+
+        e.stopPropagation();
+
+        dropdowns.forEach(d => {
+
+            if (d !== dropdown)
+                d.classList.remove("active");
+
+        });
+
+        dropdown.classList.toggle("active");
+
+    });
+
+    menu.querySelectorAll("div").forEach(item => {
+
+        item.addEventListener("click", () => {
+
+            menu.querySelectorAll("div").forEach(i => {
+                i.classList.remove("selected");
+            });
+
+            item.classList.add("selected");
+
+            const value = item.dataset.value;
+            const target = item.dataset.target;
+
+            const select = document.getElementById(target);
+
+            select.value = value;
+
+            /* Trigger event lama */
+            select.dispatchEvent(new Event("change"));
+
+            /* Ganti tulisan tombol */
+            const text = button.querySelector("span");
+
+            const icon = text.querySelector("i").outerHTML;
+
+            text.innerHTML = icon + item.innerText;
+
+            dropdown.classList.remove("active");
+
+        });
+
+    });
+
+});
+
+document.addEventListener("click", () => {
+
+    dropdowns.forEach(dropdown => {
+
+        dropdown.classList.remove("active");
+
+    });
+
+});
