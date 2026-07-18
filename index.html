@@ -79,27 +79,31 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         id="search"
         placeholder="🔍 Cari Project...">
 
-    <div class="toolbar">
+    <div class="filter-toolbar">
 
-        <div class="toolbar-item">
+        <button class="filter-btn">
 
-            <label>Kategori</label>
+            <i class="fa-solid fa-list"></i>
+
+            <span>Kategori</span>
 
             <select id="filterStatus">
 
                 <option value="All">Semua Status</option>
-                <option value="Active">🟢 Active</option>
-                <option value="Pending">🟡 Pending</option>
-                <option value="Waitlist">🟣 Waitlist</option>
-                <option value="Complete">🔵 Complete</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Waitlist">Waitlist</option>
+                <option value="Complete">Complete</option>
 
             </select>
 
-        </div>
+        </button>
 
-        <div class="toolbar-item">
+        <button class="filter-btn">
 
-            <label>Filter</label>
+            <i class="fa-solid fa-sliders"></i>
+
+            <span>Filter</span>
 
             <select id="filterTask">
 
@@ -112,11 +116,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
             </select>
 
-        </div>
+        </button>
 
-        <div class="toolbar-item">
+        <button class="filter-btn">
 
-            <label>Urutkan</label>
+            <i class="fa-solid fa-arrow-down-wide-short"></i>
+
+            <span>Urutkan</span>
 
             <select id="sortBy">
 
@@ -126,7 +132,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
 
             </select>
 
-        </div>
+        </button>
 
     </div>
 
