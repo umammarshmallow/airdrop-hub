@@ -117,6 +117,46 @@ window.addEventListener("online", () => {
 
 });
 
+const homeBtn=document.getElementById("homeBtn");
+
+const profileBtn=document.getElementById("profileBtn");
+
+const addBottomBtn=document.getElementById("addBottomBtn");
+
+const searchBtn=document.getElementById("searchBtn");
+
+const homePage=document.getElementById("homePage");
+
+const profilePage=document.getElementById("profilePage");
+
+homeBtn.onclick=()=>{
+
+homePage.style.display="block";
+
+profilePage.style.display="none";
+
+}
+
+profileBtn.onclick=()=>{
+
+homePage.style.display="none";
+
+profilePage.style.display="block";
+
+}
+
+addBottomBtn.onclick=()=>{
+
+document.getElementById("addProjectBtn").click();
+
+}
+
+searchBtn.onclick=()=>{
+
+document.getElementById("search").focus();
+
+}
+
 /* ==========================================
    VERSION
 ========================================== */
