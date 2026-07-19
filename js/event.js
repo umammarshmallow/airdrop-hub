@@ -174,11 +174,13 @@ dropdowns.forEach(dropdown => {
             select.dispatchEvent(new Event("change"));
 
             /* Ganti tulisan tombol */
-            const text = button.querySelector("span");
+            const label = button.querySelector(".label");
 
-            const icon = text.querySelector("i").outerHTML;
+            if(label){
 
-            text.innerHTML = icon + item.innerText;
+                label.textContent = item.innerText;
+
+            }
 
             dropdown.classList.remove("active");
 
