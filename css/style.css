@@ -141,26 +141,87 @@ header button:hover{
 
 }
 
-.search input,
-.search select{
+/* =========================
+SEARCH
+========================= */
 
+.search{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.search input{
+    flex:1;
+    min-width:0;
+    width:100%;
+}
+
+.search input{
     padding:14px 16px;
-    background:var(--card);
-    color:white;
-    border:1px solid var(--border);
+    background:#1e293b;
+    color:#fff;
+    border:1px solid #334155;
     border-radius:12px;
     outline:none;
     font-size:15px;
+}
+
+.search input:focus{
+    border-color:#3b82f6;
+}
+
+/* ===== CUSTOM BUTTON SELECT ===== */
+
+.search select{
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    background:#2563eb;
+    color:#ffffff;
+
+    border:none;
+    border-radius:12px;
+
+    padding:14px 46px 14px 18px;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5L8 12l6.5-6.5' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+
+    background-repeat:no-repeat;
+    background-position:right 14px center;
 
 }
 
-.search input:focus,
+.search select:hover{
+
+    background:#1d4ed8;
+    transform:translateY(-2px);
+
+}
+
 .search select:focus{
 
-    border-color:var(--primary);
+    outline:none;
+    box-shadow:0 0 0 3px rgba(59,130,246,.35);
 
 }
 
+.search select option{
+
+    background:#1e293b;
+    color:white;
+
+}
 /* PROJECT */
 
 section h2{
