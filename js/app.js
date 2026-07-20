@@ -15,6 +15,10 @@ import { showLoading, hideLoading } from "./helpers.js";
 
 import { setProjects } from "./project.js";
 
+import { initWallet } from "./wallet.js";
+
+import { initChain } from "./chain.js";
+
 /* ==========================================
    INITIALIZE APPLICATION
 ========================================== */
@@ -59,6 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
         /* semua event */
 
         initEvents();
+
+        // Render halaman Wallet & Chain
+        initWallet();
+
+        initChain();
 
        // Mengecek pergantian hari setiap 1 menit
        setInterval(() => {
