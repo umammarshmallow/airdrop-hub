@@ -129,19 +129,33 @@ const homePage=document.getElementById("homePage");
 
 const profilePage=document.getElementById("profilePage");
 
+const walletPage=document.getElementById("walletPage");
+
+const chainPage=document.getElementById("chainPage");
+
+const allPages=[homePage, profilePage, walletPage, chainPage];
+
+function showPage(page){
+
+allPages.forEach(p=>{
+
+p.style.display="none";
+
+});
+
+page.style.display="block";
+
+}
+
 homeBtn.onclick=()=>{
 
-homePage.style.display="block";
-
-profilePage.style.display="none";
+showPage(homePage);
 
 }
 
 profileBtn.onclick=()=>{
 
-homePage.style.display="none";
-
-profilePage.style.display="block";
+showPage(profilePage);
 
 }
 
@@ -154,6 +168,62 @@ document.getElementById("addProjectBtn").click();
 searchBtn.onclick=()=>{
 
 document.getElementById("search").focus();
+
+}
+
+/* ==========================================
+   HAMBURGER MENU
+========================================== */
+
+const menuBtn=document.getElementById("menuBtn");
+
+const closeMenuBtn=document.getElementById("closeMenuBtn");
+
+const sideMenuOverlay=document.getElementById("sideMenuOverlay");
+
+const menuWalletBtn=document.getElementById("menuWalletBtn");
+
+const menuChainBtn=document.getElementById("menuChainBtn");
+
+function openMenu(){
+
+sideMenuOverlay.classList.add("active");
+
+}
+
+function closeMenu(){
+
+sideMenuOverlay.classList.remove("active");
+
+}
+
+menuBtn.onclick=openMenu;
+
+closeMenuBtn.onclick=closeMenu;
+
+sideMenuOverlay.addEventListener("click", (e)=>{
+
+if(e.target===sideMenuOverlay){
+
+closeMenu();
+
+}
+
+});
+
+menuWalletBtn.onclick=()=>{
+
+showPage(walletPage);
+
+closeMenu();
+
+}
+
+menuChainBtn.onclick=()=>{
+
+showPage(chainPage);
+
+closeMenu();
 
 }
 
