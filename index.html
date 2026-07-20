@@ -232,13 +232,25 @@ Belum ada project.
 
     <section>
 
-        <h2>Wallet</h2>
+        <div class="page-header">
 
-        <div class="card">
+            <h2>Wallet</h2>
 
-            <h3>Coming Soon</h3>
+            <button id="addWalletBtn" class="btn-add">
 
-            <p>Halaman wallet masih dalam pengembangan.</p>
+                <i class="fa-solid fa-plus"></i> Add Wallet
+
+            </button>
+
+        </div>
+
+        <div id="walletList">
+
+            <div class="empty">
+
+                Belum ada wallet.
+
+            </div>
 
         </div>
 
@@ -250,13 +262,25 @@ Belum ada project.
 
     <section>
 
-        <h2>Chain</h2>
+        <div class="page-header">
 
-        <div class="card">
+            <h2>Chain</h2>
 
-            <h3>Coming Soon</h3>
+            <button id="addChainBtn" class="btn-add">
 
-            <p>Halaman chain masih dalam pengembangan.</p>
+                <i class="fa-solid fa-plus"></i> Add Chain
+
+            </button>
+
+        </div>
+
+        <div id="chainList">
+
+            <div class="empty">
+
+                Belum ada chain.
+
+            </div>
 
         </div>
 
@@ -460,6 +484,81 @@ Batal
 Berhasil
 
 </span>
+
+</div>
+
+<!-- ==========================
+ADD WALLET
+========================== -->
+
+<div class="modal" id="walletModal">
+
+<div class="modal-content">
+
+<h2>Tambah Wallet</h2>
+
+<input
+type="text"
+id="walletAddress"
+placeholder="Address Wallet">
+
+<textarea
+id="walletNote"
+rows="4"
+placeholder="Keterangan"></textarea>
+
+<div class="modal-button">
+
+<button id="saveWallet">
+
+Simpan
+
+</button>
+
+<button id="closeWalletModal">
+
+Batal
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ==========================
+ADD CHAIN
+========================== -->
+
+<div class="modal" id="chainModal">
+
+<div class="modal-content">
+
+<h2>Tambah Chain</h2>
+
+<input
+type="text"
+id="chainName"
+placeholder="Nama Chain">
+
+<div class="modal-button">
+
+<button id="saveChain">
+
+Simpan
+
+</button>
+
+<button id="closeChainModal">
+
+Batal
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 
