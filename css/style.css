@@ -80,6 +80,134 @@ header button:hover{
 
 }
 
+/* HAMBURGER MENU BUTTON */
+
+header .menu-btn{
+
+    background:transparent;
+    color:white;
+    border:1px solid var(--border);
+    padding:10px 14px;
+    border-radius:10px;
+    font-size:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+
+}
+
+header .menu-btn:hover{
+
+    background:var(--card);
+
+}
+
+/* SIDE MENU (HAMBURGER OVERLAY) */
+
+.side-menu-overlay{
+
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:9998;
+
+}
+
+.side-menu-overlay.active{
+
+    display:block;
+
+}
+
+.side-menu{
+
+    position:fixed;
+    top:0;
+    right:0;
+    height:100%;
+    width:280px;
+    max-width:85%;
+    background:var(--card);
+    border-left:1px solid var(--border);
+    box-shadow:-10px 0 25px rgba(0,0,0,.35);
+    transform:translateX(100%);
+    transition:transform .25s ease;
+
+}
+
+.side-menu-overlay.active .side-menu{
+
+    transform:translateX(0);
+
+}
+
+.side-menu-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
+    border-bottom:1px solid var(--border);
+
+}
+
+.side-menu-header h2{
+
+    font-size:20px;
+
+}
+
+.close-menu-btn{
+
+    background:transparent;
+    color:var(--gray);
+    padding:6px 10px;
+    font-size:18px;
+
+}
+
+.close-menu-btn:hover{
+
+    color:white;
+    background:var(--cardHover);
+
+}
+
+.side-menu-content{
+
+    padding:10px 0;
+
+}
+
+.side-menu-item{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 20px;
+    cursor:pointer;
+    color:#e7ebf1;
+    transition:.2s;
+    border-bottom:1px solid var(--border);
+
+}
+
+.side-menu-item i{
+
+    width:20px;
+    text-align:center;
+    color:#38bdf8;
+
+}
+
+.side-menu-item:hover{
+
+    background:var(--cardHover);
+
+}
+
 /* DASHBOARD */
 
 .card{
@@ -498,14 +626,10 @@ footer{
 
 header{
 
-flex-direction:column;
+flex-direction:row;
+justify-content:space-between;
+align-items:center;
 gap:15px;
-
-}
-
-header button{
-
-width:100%;
 
 }
 
