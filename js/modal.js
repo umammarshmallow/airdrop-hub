@@ -6,6 +6,10 @@ import {
     clearAddForm
 } from "./helpers.js";
 
+import {
+    populateWalletSelect
+} from "./walletSelect.js";
+
 /* ==========================================
    ELEMENT
 ========================================== */
@@ -40,6 +44,11 @@ function unlockBodyScroll() {
 export function openAddModal() {
 
     clearAddForm();
+
+    populateWalletSelect(
+        document.getElementById("projectWallet"),
+        ""
+    );
 
     projectModal.style.display = "flex";
 
@@ -86,6 +95,12 @@ export function fillEditForm(project) {
     document.getElementById("editName").value = project.name;
 
     document.getElementById("editNetwork").value = project.network;
+
+    populateWalletSelect(
+        document.getElementById("editProjectWallet"),
+        project.network,
+        project.wallet
+    );
 
     document.getElementById("editWebsite").value = project.website;
 
