@@ -116,7 +116,7 @@ export function validateProject(project) {
 
     if (!project.network.trim()) {
 
-        alert("Network wajib diisi.");
+        alert("Chain wajib dipilih.");
 
         return false;
 
