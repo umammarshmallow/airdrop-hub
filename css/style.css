@@ -570,7 +570,7 @@ WAITLIST BADGE
     justify-content:center;
     align-items:center;
     padding:20px;
-    z-index:999;
+    z-index:10000;
 
 }
 
@@ -651,7 +651,9 @@ MODAL BUTTON
 /* Tombol Batal */
 
 #closeModal,
-#closeEditModal{
+#closeEditModal,
+#closeWalletModal,
+#closeChainModal{
 
     background:#475569;
     color:var(--white);
@@ -659,9 +661,28 @@ MODAL BUTTON
 }
 
 #closeModal:hover,
-#closeEditModal:hover{
+#closeEditModal:hover,
+#closeWalletModal:hover,
+#closeChainModal:hover{
 
     background:#334155;
+
+}
+
+/* Tombol Simpan Wallet & Chain */
+
+#saveWallet,
+#saveChain{
+
+    background:var(--primary);
+    color:var(--white);
+
+}
+
+#saveWallet:hover,
+#saveChain:hover{
+
+    background:var(--primaryHover);
 
 }
 
