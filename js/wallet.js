@@ -6,6 +6,16 @@ import { showToast } from "./helpers.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
+const CHAIN_ICONS = {
+
+    "Ethereum": "🔷",
+    "Solana": "🟣",
+    "BNB": "🟡",
+    "Gram (TON)": "💎",
+    "Lainnya": "🔗"
+
+};
+
 /* ==========================================
    DATA
 ========================================== */
@@ -65,6 +75,16 @@ export function addWallet(data) {
 
     const address = data.address.trim();
 
+    const chain = data.chain.trim();
+
+    if (!chain) {
+
+        alert("Chain wajib dipilih.");
+
+        return false;
+
+    }
+
     if (!address) {
 
         alert("Address wallet wajib diisi.");
@@ -76,6 +96,8 @@ export function addWallet(data) {
     wallets.push({
 
         id: Date.now(),
+
+        chain: chain,
 
         address: address,
 
@@ -141,12 +163,16 @@ export function renderWallets() {
 
     wallets.forEach(wallet => {
 
+        const icon = CHAIN_ICONS[wallet.chain] || "🔗";
+
         html += `
         <div class="simple-card">
 
             <div class="simple-card-info">
 
-                <p><b>${wallet.address}</b></p>
+                <p><b>${icon} ${wallet.chain || "-"}</b></p>
+
+                <p>${wallet.address}</p>
 
                 <p>${wallet.note || "-"}</p>
 
@@ -204,6 +230,8 @@ const saveWalletBtn = document.getElementById("saveWallet");
 
 function openWalletModal() {
 
+    document.getElementById("walletChain").selectedIndex = 0;
+
     document.getElementById("walletAddress").value = "";
 
     document.getElementById("walletNote").value = "";
@@ -249,6 +277,8 @@ document.addEventListener("keydown", (e) => {
 saveWalletBtn.addEventListener("click", () => {
 
     const success = addWallet({
+
+        chain: document.getElementById("walletChain").value,
 
         address: document.getElementById("walletAddress").value,
 
