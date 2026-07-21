@@ -74,7 +74,7 @@ export function renderProjects() {
             <div class="project-info">
 
                 <p>
-                    <b>Network</b><br>
+                    <b>Chain</b><br>
                     ${project.network}
                 </p>
 
