@@ -61,6 +61,8 @@ export function addProject(data) {
 
         network: data.network.trim(),
 
+        wallet: data.wallet || "",
+
         website: data.website.trim(),
 
         taskType: data.taskType,
@@ -154,6 +156,8 @@ export function updateProject(data) {
     project.name = data.name.trim();
 
     project.network = data.network.trim();
+
+    project.wallet = data.wallet || "";
 
     project.website = data.website.trim();
 
