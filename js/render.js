@@ -11,6 +11,7 @@ import {
     getProjects
 } from "./project.js";
 import { saveProjects } from "./storage.js";
+import { getWallets } from "./wallet.js";
 
 /* ==========================================
    ELEMENT
@@ -56,6 +57,10 @@ export function renderProjects() {
 
     projects.forEach(project => {
 
+        const linkedWallet = getWallets().find(
+            wallet => String(wallet.id) === String(project.wallet)
+        );
+
         html += `
         <div class="project-card">
 
@@ -76,6 +81,11 @@ export function renderProjects() {
                 <p>
                     <b>Chain</b><br>
                     ${project.network}
+                </p>
+
+                <p>
+                    <b>Wallet</b><br>
+                    ${linkedWallet ? linkedWallet.address : "-"}
                 </p>
 
                 <p>
