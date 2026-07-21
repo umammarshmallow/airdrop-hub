@@ -5,6 +5,7 @@
 import { addProject, updateProject } from "./project.js";
 import { renderProjects } from "./render.js";
 import { initModal } from "./modal.js";
+import { initWalletSelectSync } from "./walletSelect.js";
 
 /* ==========================================
    ELEMENT
@@ -25,6 +26,8 @@ const updateProjectBtn = document.getElementById("updateProject");
 export function initEvents() {
 
     initModal();
+
+    initWalletSelectSync();
 
     /* ==========================
        SEARCH
@@ -61,6 +64,8 @@ export function initEvents() {
 
             network: document.getElementById("network").value,
 
+            wallet: document.getElementById("projectWallet").value,
+
             website: document.getElementById("website").value,
 
             taskType: document.getElementById("taskType").value,
@@ -96,6 +101,8 @@ export function initEvents() {
             name: document.getElementById("editName").value,
 
             network: document.getElementById("editNetwork").value,
+
+            wallet: document.getElementById("editProjectWallet").value,
 
             website: document.getElementById("editWebsite").value,
 
