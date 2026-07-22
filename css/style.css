@@ -208,7 +208,7 @@ header .menu-btn:hover{
 
 }
 
-/* PAGE HEADER (WALLET / CHAIN) */
+/* PAGE HEADER (WALLET) */
 
 .page-header{
 
@@ -238,10 +238,9 @@ header .menu-btn:hover{
 
 }
 
-/* SIMPLE LIST (WALLET / CHAIN) */
+/* SIMPLE LIST (WALLET) */
 
-#walletList,
-#chainList{
+#walletList{
 
     display:flex;
     flex-direction:column;
@@ -652,8 +651,7 @@ MODAL BUTTON
 
 #closeModal,
 #closeEditModal,
-#closeWalletModal,
-#closeChainModal{
+#closeWalletModal{
 
     background:#475569;
     color:var(--white);
@@ -662,25 +660,22 @@ MODAL BUTTON
 
 #closeModal:hover,
 #closeEditModal:hover,
-#closeWalletModal:hover,
-#closeChainModal:hover{
+#closeWalletModal:hover{
 
     background:#334155;
 
 }
 
-/* Tombol Simpan Wallet & Chain */
+/* Tombol Simpan Wallet */
 
-#saveWallet,
-#saveChain{
+#saveWallet{
 
     background:var(--primary);
     color:var(--white);
 
 }
 
-#saveWallet:hover,
-#saveChain:hover{
+#saveWallet:hover{
 
     background:var(--primaryHover);
 
