@@ -17,8 +17,6 @@ import { setProjects } from "./project.js";
 
 import { initWallet } from "./wallet.js";
 
-import { initChain } from "./chain.js";
-
 /* ==========================================
    INITIALIZE APPLICATION
 ========================================== */
@@ -64,10 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         initEvents();
 
-        // Render halaman Wallet & Chain
+        // Render halaman Wallet
         initWallet();
-
-        initChain();
 
        // Mengecek pergantian hari setiap 1 menit
        setInterval(() => {
@@ -140,9 +136,7 @@ const profilePage=document.getElementById("profilePage");
 
 const walletPage=document.getElementById("walletPage");
 
-const chainPage=document.getElementById("chainPage");
-
-const allPages=[homePage, profilePage, walletPage, chainPage];
+const allPages=[homePage, profilePage, walletPage];
 
 function showPage(page){
 
@@ -192,8 +186,6 @@ const sideMenuOverlay=document.getElementById("sideMenuOverlay");
 
 const menuWalletBtn=document.getElementById("menuWalletBtn");
 
-const menuChainBtn=document.getElementById("menuChainBtn");
-
 function openMenu(){
 
 sideMenuOverlay.classList.add("active");
@@ -223,14 +215,6 @@ closeMenu();
 menuWalletBtn.onclick=()=>{
 
 showPage(walletPage);
-
-closeMenu();
-
-}
-
-menuChainBtn.onclick=()=>{
-
-showPage(chainPage);
 
 closeMenu();
 
