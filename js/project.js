@@ -75,8 +75,12 @@ export function addProject(data) {
 
         note: data.note.trim(),
 
-        dailyDone: false
-   
+        dailyDone: false,
+
+        createdAt: Date.now(),
+
+        updatedAt: Date.now()
+
     });
 
     save();
@@ -170,6 +174,8 @@ export function updateProject(data) {
     project.status = data.status;
 
     project.note = data.note.trim();
+
+    project.updatedAt = Date.now();
 
     if (!validateProject(project)) {
 
