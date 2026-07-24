@@ -79,3 +79,64 @@ export function resetDailyTasks(projects) {
     return projects;
 
 }
+
+/* ==========================================
+   AUTO DELETE PROJECT WAITLIST/PENDING
+   YANG TIDAK DIUPDATE SELAMA 2 BULAN
+========================================== */
+
+const STALE_STATUSES = ["Waitlist", "Pending"];
+
+// approx 2 bulan (60 hari)
+const STALE_THRESHOLD_MS = 60 * 24 * 60 * 60 * 1000;
+
+export function cleanupStaleProjects(projects) {
+
+    const now = Date.now();
+
+    const remaining = [];
+
+    let removedCount = 0;
+
+    projects.forEach(project => {
+
+        const lastActivity =
+            project.updatedAt ||
+            project.createdAt ||
+            now;
+
+        const isStale =
+            STALE_STATUSES.includes(project.status) &&
+            (now - lastActivity) > STALE_THRESHOLD_MS;
+
+        if (isStale) {
+
+            removedCount++;
+
+        } else {
+
+            remaining.push(project);
+
+        }
+
+    });
+
+    if (removedCount > 0) {
+
+        saveProjects(remaining);
+
+        console.log(
+            `${removedCount} project (Waitlist/Pending) dihapus otomatis karena tidak diupdate 2 bulan.`
+        );
+
+    }
+
+    return {
+
+        projects: remaining,
+
+        removedCount: removedCount
+
+    };
+
+}
