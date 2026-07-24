@@ -5,13 +5,13 @@
 
 import { initEvents } from "./event.js";
 
-import { loadProjects, resetDailyTasks } from "./storage.js";
+import { loadProjects, resetDailyTasks, cleanupStaleProjects } from "./storage.js";
 
 import { renderProjects } from "./render.js";
 
 import { updateDashboard } from "./dashboard.js";
 
-import { showLoading, hideLoading } from "./helpers.js";
+import { showLoading, hideLoading, showToast } from "./helpers.js";
 
 import { setProjects } from "./project.js";
 
@@ -28,6 +28,10 @@ document.addEventListener("visibilitychange", () => {
         let projects = loadProjects();
 
         projects = resetDailyTasks(projects);
+
+        const cleanup = cleanupStaleProjects(projects);
+
+        projects = cleanup.projects;
 
         setProjects(projects);
 
@@ -49,6 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // Reset task harian bila hari sudah berganti
         projects = resetDailyTasks(projects);
 
+        // Hapus otomatis project Waitlist/Pending yang tidak diupdate 2 bulan
+        const cleanup = cleanupStaleProjects(projects);
+
+        projects = cleanup.projects;
+
         // Sinkronkan data project di seluruh aplikasi
         setProjects(projects);
 
@@ -57,6 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Render ulang
         renderProjects();
+
+        if (cleanup.removedCount > 0) {
+
+            showToast(
+                `${cleanup.removedCount} project Waitlist/Pending dihapus otomatis (tidak diupdate 2 bulan).`,
+                4000
+            );
+
+        }
 
         /* semua event */
 
@@ -72,9 +90,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
        projects = resetDailyTasks(projects);
 
+       const cleanup = cleanupStaleProjects(projects);
+
+       projects = cleanup.projects;
+
        setProjects(projects);
 
        renderProjects();
+
+       if (cleanup.removedCount > 0) {
+
+           showToast(
+               `${cleanup.removedCount} project Waitlist/Pending dihapus otomatis (tidak diupdate 2 bulan).`,
+               4000
+           );
+
+       }
 
 }, 60000);
 
