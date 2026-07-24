@@ -2,7 +2,7 @@
    RENDER.JS
 ========================================== */
 
-import { formatUrl, sortProjects, statusClass } from "./helpers.js";
+import { formatUrl, sortProjects, statusClass, formatDate } from "./helpers.js";
 import { updateDashboard } from "./dashboard.js";
 import {
     filterProjects,
@@ -103,6 +103,16 @@ export function renderProjects() {
                     ${project.deadline || "-"}
                 </p>
 
+                <p>
+                    <b>Ditambahkan</b><br>
+                    ${formatDate(project.createdAt)}
+                </p>
+
+                <p>
+                    <b>Update Terakhir</b><br>
+                    ${formatDate(project.updatedAt)}
+                </p>
+
             </div>
 
             <div class="note">
@@ -193,6 +203,8 @@ projectList.addEventListener("click", (e) => {
             if (!project) return;
 
             project.dailyDone = true;
+
+            project.updatedAt = Date.now();
 
             saveProjects(getProjects());
 
