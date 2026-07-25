@@ -218,12 +218,35 @@ projectList.addEventListener("click", (e) => {
 
             if (!detail) return;
 
-            const isOpen = detail.classList.toggle("open");
+            const willOpen = !detail.classList.contains("open");
 
-            button.classList.toggle("open", isOpen);
+            // Tutup semua detail lain yang sedang terbuka
+            document.querySelectorAll(".project-detail.open").forEach(openDetail => {
+
+                if (openDetail === detail) return;
+
+                openDetail.classList.remove("open");
+
+                const otherToggle = openDetail
+                    .closest(".project-card")
+                    .querySelector(".detail-toggle");
+
+                if (otherToggle) {
+
+                    otherToggle.classList.remove("open");
+
+                    otherToggle.querySelector("span").textContent = "Lihat detail";
+
+                }
+
+            });
+
+            detail.classList.toggle("open", willOpen);
+
+            button.classList.toggle("open", willOpen);
 
             button.querySelector("span").textContent =
-                isOpen ? "Sembunyikan detail" : "Lihat detail";
+                willOpen ? "Sembunyikan detail" : "Lihat detail";
 
             break;
 
