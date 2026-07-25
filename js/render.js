@@ -53,6 +53,20 @@ export function renderProjects() {
         return;
     }
 
+    const PRIORITY_ICON = {
+        High: "🔴",
+        Medium: "🟡",
+        Low: "🟢"
+    };
+
+    const CHAIN_EMOJI = {
+        "Ethereum": "🔷",
+        "Solana": "🟣",
+        "BNB": "🟡",
+        "Gram (TON)": "💎",
+        "Lainnya": "🔗"
+    };
+
     let html = "";
 
     projects.forEach(project => {
@@ -60,6 +74,9 @@ export function renderProjects() {
         const linkedWallet = getWallets().find(
             wallet => String(wallet.id) === String(project.wallet)
         );
+
+        const chainIcon = CHAIN_EMOJI[project.network] || "🔗";
+        const priorityIcon = PRIORITY_ICON[project.priority] || "⚪";
 
         html += `
         <div class="project-card">
@@ -76,97 +93,114 @@ export function renderProjects() {
 
             </div>
 
-            <div class="project-info">
+            <button
+                class="detail-toggle"
+                data-action="toggle"
+                data-id="${project.id}">
 
-                <p>
-                    <b>Chain</b><br>
-                    ${project.network}
-                </p>
+                <span>Lihat detail</span>
+                <span class="detail-arrow">⌄</span>
 
-                <p>
-                    <b>Wallet</b><br>
-                    ${linkedWallet ? linkedWallet.address : "-"}
-                </p>
+            </button>
 
-                <p>
-                    <b>Task</b><br>
-                    ${project.taskType}
-                </p>
+            <div class="project-detail" id="detail-${project.id}">
 
-                <p>
-                    <b>Priority</b><br>
-                    ${project.priority}
-                </p>
+                <div class="chip-group">
 
-                <p>
-                    <b>Deadline</b><br>
-                    ${project.deadline || "-"}
-                </p>
+                    <span class="chip">${chainIcon} ${project.network}</span>
 
-                <p>
-                    <b>Ditambahkan</b><br>
-                    ${formatDate(project.createdAt)}
-                </p>
+                    <span class="chip ${linkedWallet ? "" : "chip-muted"}">
+                        💼 ${linkedWallet ? linkedWallet.address : "Belum ada wallet"}
+                    </span>
 
-                <p>
-                    <b>Update Terakhir</b><br>
-                    ${formatDate(project.updatedAt)}
-                </p>
+                </div>
 
-            </div>
+                <div class="info-grid">
 
-            <div class="note">
+                    <div class="info-tile">
+                        <span class="info-icon">📋</span>
+                        <div>
+                            <div class="info-label">Task</div>
+                            <div class="info-value">${project.taskType}</div>
+                        </div>
+                    </div>
 
-                ${project.note || "-"}
+                    <div class="info-tile">
+                        <span class="info-icon">${priorityIcon}</span>
+                        <div>
+                            <div class="info-label">Priority</div>
+                            <div class="info-value">${project.priority}</div>
+                        </div>
+                    </div>
 
-            </div>
+                    <div class="info-tile info-tile-full">
+                        <span class="info-icon">⏰</span>
+                        <div>
+                            <div class="info-label">Deadline</div>
+                            <div class="info-value">${project.deadline || "-"}</div>
+                        </div>
+                    </div>
 
-            <div class="link-group">
+                </div>
 
-                <a
-                    href="${formatUrl(project.website)}"
-                    target="_blank">
+                <div class="note">
 
-                    🌐 Website
+                    ${project.note || "-"}
 
-                </a>
+                </div>
 
-            </div>
+                <div class="link-group">
 
-            <div class="project-action">
+                    <a
+                        href="${formatUrl(project.website)}"
+                        target="_blank">
 
-                ${project.status === "Active"
-                    ? `
-                        <button
-                            class="daily-check-btn"
-                            data-action="daily"
-                            data-id="${project.id}"
-                            ${project.dailyDone ? "disabled" : ""}
-                        >
-                            ${project.dailyDone ? "✔ Completed" : "✓ Checklist"}
-                        </button>
-                   `
-                   : ""
-                }
-                
-                <button
+                        🌐 Website
 
-                    class="btn-gray"
-                    data-action="edit"
-                    data-id="${project.id}">
+                    </a>
 
-                    ✏️ Edit
+                </div>
 
-                </button>
+                <div class="project-action">
 
-                <button
-                    class="btn-red"
-                    data-action="delete"
-                    data-id="${project.id}">
+                    ${project.status === "Active"
+                        ? `
+                            <button
+                                class="daily-check-btn"
+                                data-action="daily"
+                                data-id="${project.id}"
+                                ${project.dailyDone ? "disabled" : ""}
+                            >
+                                ${project.dailyDone ? "✔ Completed" : "✓ Checklist"}
+                            </button>
+                       `
+                       : ""
+                    }
 
-                    🗑 Delete
+                    <button
 
-                </button>
+                        class="btn-gray"
+                        data-action="edit"
+                        data-id="${project.id}">
+
+                        ✏️ Edit
+
+                    </button>
+
+                    <button
+                        class="btn-red"
+                        data-action="delete"
+                        data-id="${project.id}">
+
+                        🗑 Delete
+
+                    </button>
+
+                </div>
+
+                <div class="project-meta">
+                    Ditambahkan ${formatDate(project.createdAt)} · Update terakhir ${formatDate(project.updatedAt)}
+                </div>
 
             </div>
 
@@ -193,6 +227,21 @@ projectList.addEventListener("click", (e) => {
     const id = Number(button.dataset.id);
 
     switch (action) {
+
+        case "toggle":
+
+            const detail = document.getElementById(`detail-${id}`);
+
+            if (!detail) return;
+
+            const isOpen = detail.classList.toggle("open");
+
+            button.classList.toggle("open", isOpen);
+
+            button.querySelector("span").textContent =
+                isOpen ? "Sembunyikan detail" : "Lihat detail";
+
+            break;
 
         case "daily":
 
