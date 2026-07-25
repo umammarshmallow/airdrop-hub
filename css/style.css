@@ -597,7 +597,10 @@ section h2{
 .project-action button{
 
     flex:1;
-    min-width:110px;
+    min-width:0;
+    padding:10px 8px;
+    font-size:13px;
+    white-space:nowrap;
 
 }
 
@@ -944,24 +947,6 @@ width:100%;
 flex-direction:column;
 align-items:flex-start;
 gap:10px;
-
-}
-
-.info-grid{
-
-grid-template-columns:1fr;
-
-}
-
-.project-action{
-
-flex-direction:column;
-
-}
-
-.project-action button{
-
-width:100%;
 
 }
 
