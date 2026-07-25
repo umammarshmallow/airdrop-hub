@@ -53,20 +53,6 @@ export function renderProjects() {
         return;
     }
 
-    const PRIORITY_ICON = {
-        High: "🔴",
-        Medium: "🟡",
-        Low: "🟢"
-    };
-
-    const CHAIN_EMOJI = {
-        "Ethereum": "🔷",
-        "Solana": "🟣",
-        "BNB": "🟡",
-        "Gram (TON)": "💎",
-        "Lainnya": "🔗"
-    };
-
     let html = "";
 
     projects.forEach(project => {
@@ -74,9 +60,6 @@ export function renderProjects() {
         const linkedWallet = getWallets().find(
             wallet => String(wallet.id) === String(project.wallet)
         );
-
-        const chainIcon = CHAIN_EMOJI[project.network] || "🔗";
-        const priorityIcon = PRIORITY_ICON[project.priority] || "⚪";
 
         html += `
         <div class="project-card">
@@ -99,7 +82,7 @@ export function renderProjects() {
                 data-id="${project.id}">
 
                 <span>Lihat detail</span>
-                <span class="detail-arrow">⌄</span>
+                <i class="ti ti-chevron-down detail-arrow" aria-hidden="true"></i>
 
             </button>
 
@@ -107,10 +90,10 @@ export function renderProjects() {
 
                 <div class="chip-group">
 
-                    <span class="chip">${chainIcon} ${project.network}</span>
+                    <span class="chip"><i class="ti ti-link" aria-hidden="true"></i> ${project.network}</span>
 
                     <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        💼 ${linkedWallet ? linkedWallet.address : "Belum ada wallet"}
+                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : "Belum ada wallet"}
                     </span>
 
                 </div>
@@ -118,7 +101,7 @@ export function renderProjects() {
                 <div class="info-grid">
 
                     <div class="info-tile">
-                        <span class="info-icon">📋</span>
+                        <i class="ti ti-list-check info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">Task</div>
                             <div class="info-value">${project.taskType}</div>
@@ -126,7 +109,7 @@ export function renderProjects() {
                     </div>
 
                     <div class="info-tile">
-                        <span class="info-icon">${priorityIcon}</span>
+                        <i class="ti ti-flag info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">Priority</div>
                             <div class="info-value">${project.priority}</div>
@@ -134,7 +117,7 @@ export function renderProjects() {
                     </div>
 
                     <div class="info-tile info-tile-full">
-                        <span class="info-icon">⏰</span>
+                        <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">Deadline</div>
                             <div class="info-value">${project.deadline || "-"}</div>
@@ -155,7 +138,7 @@ export function renderProjects() {
                         href="${formatUrl(project.website)}"
                         target="_blank">
 
-                        🌐 Website
+                        <i class="ti ti-world" aria-hidden="true"></i> Website
 
                     </a>
 
@@ -171,7 +154,8 @@ export function renderProjects() {
                                 data-id="${project.id}"
                                 ${project.dailyDone ? "disabled" : ""}
                             >
-                                ${project.dailyDone ? "✔ Completed" : "✓ Checklist"}
+                                <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
+                                ${project.dailyDone ? "Completed" : "Checklist"}
                             </button>
                        `
                        : ""
@@ -183,7 +167,7 @@ export function renderProjects() {
                         data-action="edit"
                         data-id="${project.id}">
 
-                        ✏️ Edit
+                        <i class="ti ti-edit" aria-hidden="true"></i> Edit
 
                     </button>
 
@@ -192,7 +176,7 @@ export function renderProjects() {
                         data-action="delete"
                         data-id="${project.id}">
 
-                        🗑 Delete
+                        <i class="ti ti-trash" aria-hidden="true"></i> Delete
 
                     </button>
 
