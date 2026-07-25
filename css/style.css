@@ -942,14 +942,6 @@ width:100%;
 
 }
 
-.project-title{
-
-flex-direction:column;
-align-items:flex-start;
-gap:10px;
-
-}
-
 .modal-button{
 
 flex-direction:column;
