@@ -439,6 +439,7 @@ section h2{
 
 .detail-arrow{
 
+    font-size:16px;
     transition:transform .2s;
 
 }
@@ -484,6 +485,12 @@ section h2{
 
 }
 
+.chip i{
+
+    font-size:14px;
+
+}
+
 .chip-muted{
 
     color:var(--gray);
@@ -518,7 +525,8 @@ section h2{
 
 .info-icon{
 
-    font-size:16px;
+    font-size:18px;
+    color:var(--gray);
 
 }
 
@@ -571,6 +579,9 @@ section h2{
     color:white;
     padding:10px 15px;
     border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
 
 }
 
@@ -583,6 +594,13 @@ section h2{
 
 }
 
+.project-action button{
+
+    flex:1;
+    min-width:110px;
+
+}
+
 .daily-check-btn{
     background:#16a34a;
     color:white;
@@ -591,6 +609,10 @@ section h2{
     border-radius:6px;
     cursor:pointer;
     font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
 }
 
 .daily-check-btn:hover{
@@ -612,6 +634,10 @@ button{
     border-radius:10px;
     padding:10px 16px;
     transition:.25s;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
 
 }
 
@@ -653,13 +679,15 @@ button{
 
 .active{
 
-    background:#16a34a;
+    background:#052e16;
+    color:#4ade80;
 
 }
 
 .pending{
 
-    background:#ca8a04;
+    background:#451a03;
+    color:#fbbf24;
 
 }
 
@@ -669,13 +697,15 @@ WAITLIST BADGE
 
 .waitlist{
 
-    background:#9333ea;
+    background:#3b0764;
+    color:#c084fc;
 
 }
 
 .complete{
 
-    background:#2563eb;
+    background:#172554;
+    color:#60a5fa;
 
 }
 
