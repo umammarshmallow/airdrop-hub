@@ -68,11 +68,41 @@ export function renderProjects() {
 
                 <h3>${project.name}</h3>
 
-                <span class="badge ${statusClass(project.status)}">
+                <div class="title-actions">
 
-                    ${project.status}
+                    <span class="badge ${statusClass(project.status)}">
 
-                </span>
+                        ${project.status}
+
+                    </span>
+
+                    <a
+                        class="icon-btn icon-btn-blue"
+                        href="${formatUrl(project.website)}"
+                        target="_blank"
+                        title="Website">
+
+                        <i class="ti ti-world" aria-hidden="true"></i>
+
+                    </a>
+
+                    ${project.status === "Active"
+                        ? `
+                            <button
+                                class="icon-btn icon-btn-green"
+                                data-action="daily"
+                                data-id="${project.id}"
+                                ${project.dailyDone ? "disabled" : ""}
+                                title="${project.dailyDone ? "Completed" : "Checklist"}">
+
+                                <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
+
+                            </button>
+                       `
+                       : ""
+                    }
+
+                </div>
 
             </div>
 
@@ -132,34 +162,7 @@ export function renderProjects() {
 
                 </div>
 
-                <div class="link-group">
-
-                    <a
-                        href="${formatUrl(project.website)}"
-                        target="_blank">
-
-                        <i class="ti ti-world" aria-hidden="true"></i> Website
-
-                    </a>
-
-                </div>
-
                 <div class="project-action">
-
-                    ${project.status === "Active"
-                        ? `
-                            <button
-                                class="daily-check-btn"
-                                data-action="daily"
-                                data-id="${project.id}"
-                                ${project.dailyDone ? "disabled" : ""}
-                            >
-                                <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
-                                ${project.dailyDone ? "Completed" : "Checklist"}
-                            </button>
-                       `
-                       : ""
-                    }
 
                     <button
 
