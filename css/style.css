@@ -408,7 +408,77 @@ section h2{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
     margin-bottom:15px;
+
+}
+
+.project-title h3{
+
+    flex:1;
+    min-width:0;
+
+}
+
+.title-actions{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+
+}
+
+.icon-btn{
+
+    width:34px;
+    height:34px;
+    padding:0;
+    border-radius:9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:white;
+    flex-shrink:0;
+
+}
+
+.icon-btn i{
+
+    font-size:17px;
+
+}
+
+.icon-btn-blue{
+
+    background:var(--primary);
+
+}
+
+.icon-btn-blue:hover{
+
+    background:var(--primaryHover);
+
+}
+
+.icon-btn-green{
+
+    background:#16a34a;
+
+}
+
+.icon-btn-green:hover{
+
+    background:#15803d;
+
+}
+
+.icon-btn:disabled{
+
+    background:#9ca3af;
+    cursor:not-allowed;
 
 }
 
@@ -563,28 +633,6 @@ section h2{
 
 }
 
-.link-group{
-
-    display:flex;
-    gap:10px;
-    margin-top:15px;
-    flex-wrap:wrap;
-
-}
-
-.link-group a{
-
-    text-decoration:none;
-    background:var(--primary);
-    color:white;
-    padding:10px 15px;
-    border-radius:10px;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-
-}
-
 .project-action{
 
     display:flex;
@@ -602,29 +650,6 @@ section h2{
     font-size:13px;
     white-space:nowrap;
 
-}
-
-.daily-check-btn{
-    background:#16a34a;
-    color:white;
-    border:none;
-    padding:6px 14px;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-}
-
-.daily-check-btn:hover{
-    background:#15803d;
-}
-
-.daily-check-btn:disabled{
-    background:#9ca3af;
-    cursor:not-allowed;
 }
 
 /* BUTTON */
