@@ -2,7 +2,7 @@
    RENDER.JS
 ========================================== */
 
-import { formatUrl, sortProjects, statusClass, formatDate } from "./helpers.js";
+import { formatUrl, sortProjects, statusClass, statusLabel, formatDate } from "./helpers.js";
 import { updateDashboard } from "./dashboard.js";
 import {
     filterProjects,
@@ -72,7 +72,7 @@ export function renderProjects() {
 
                     <span class="badge ${statusClass(project.status)}">
 
-                        ${project.status}
+                        ${statusLabel(project.status)}
 
                     </span>
 
