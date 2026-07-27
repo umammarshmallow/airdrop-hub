@@ -304,6 +304,51 @@ header .menu-btn:hover{
 
 }
 
+.wallet-address-row{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+}
+
+.wallet-address-text{
+
+    word-break:break-all;
+    flex:1;
+
+}
+
+.copy-btn{
+
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--gray);
+    width:30px;
+    height:30px;
+    padding:0;
+    border-radius:8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    cursor:pointer;
+
+}
+
+.copy-btn i{
+
+    font-size:15px;
+
+}
+
+.copy-btn:hover{
+
+    border-color:var(--primary);
+    color:white;
+
+}
+
 @media(max-width:768px){
 
     .simple-card{
