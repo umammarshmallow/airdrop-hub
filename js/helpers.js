@@ -231,3 +231,15 @@ export function statusClass(status) {
     }
 
   }
+
+/* ==========================
+STATUS LABEL (untuk ditampilkan)
+========================== */
+
+export function statusLabel(status) {
+
+    if (status === "Complete") return "Completed";
+
+    return status;
+
+}
