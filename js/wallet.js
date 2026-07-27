@@ -172,7 +172,16 @@ export function renderWallets() {
 
                 <p><b>${icon} ${wallet.chain || "-"}</b></p>
 
-                <p>${wallet.address}</p>
+                <p class="wallet-address-row">
+                    <span class="wallet-address-text">${wallet.address}</span>
+                    <button
+                        class="copy-btn"
+                        data-action="copy"
+                        data-address="${wallet.address}"
+                        title="Copy address">
+                        <i class="ti ti-copy" aria-hidden="true"></i>
+                    </button>
+                </p>
 
                 <p>${wallet.note || "-"}</p>
 
@@ -203,6 +212,17 @@ walletList.addEventListener("click", (e) => {
     if (!button) return;
 
     const action = button.dataset.action;
+
+    if (action === "copy") {
+
+        const address = button.dataset.address;
+
+        copyToClipboard(address);
+
+        return;
+
+    }
+
     const id = Number(button.dataset.id);
 
     if (action === "delete") {
@@ -218,6 +238,56 @@ walletList.addEventListener("click", (e) => {
     }
 
 });
+
+/* ==========================================
+   COPY ADDRESS
+========================================== */
+
+function copyToClipboard(text) {
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+
+        navigator.clipboard.writeText(text)
+            .then(() => showToast("Address wallet disalin."))
+            .catch(() => fallbackCopy(text));
+
+    } else {
+
+        fallbackCopy(text);
+
+    }
+
+}
+
+function fallbackCopy(text) {
+
+    const temp = document.createElement("textarea");
+
+    temp.value = text;
+
+    temp.style.position = "fixed";
+
+    temp.style.opacity = "0";
+
+    document.body.appendChild(temp);
+
+    temp.select();
+
+    try {
+
+        document.execCommand("copy");
+
+        showToast("Address wallet disalin.");
+
+    } catch (error) {
+
+        console.error("Gagal menyalin address:", error);
+
+    }
+
+    document.body.removeChild(temp);
+
+}
 
 /* ==========================================
    MODAL ADD WALLET
