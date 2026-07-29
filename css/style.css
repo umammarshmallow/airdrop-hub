@@ -316,6 +316,7 @@ header .menu-btn:hover{
 
     word-break:break-all;
     flex:1;
+    min-width:0;
 
 }
 
@@ -1166,6 +1167,8 @@ margin-bottom:25px;
 flex:1;
 
 background:#1e293b;
+
+color:white;
 
 padding:14px;
 
