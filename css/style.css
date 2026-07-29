@@ -359,6 +359,13 @@ header .menu-btn:hover{
 
     }
 
+    .simple-card-info{
+
+        width:100%;
+        min-width:0;
+
+    }
+
     .simple-card button{
 
         width:100%;
