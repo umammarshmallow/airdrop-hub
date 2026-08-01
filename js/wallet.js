@@ -3,6 +3,7 @@
 ========================================== */
 
 import { showToast } from "./helpers.js";
+import { showAlert, showConfirm } from "./dialog.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
@@ -71,7 +72,7 @@ export function getWallets() {
    ADD WALLET
 ========================================== */
 
-export function addWallet(data) {
+export async function addWallet(data) {
 
     const address = data.address.trim();
 
@@ -79,7 +80,7 @@ export function addWallet(data) {
 
     if (!chain) {
 
-        alert("Chain wajib dipilih.");
+        await showAlert("Chain wajib dipilih.");
 
         return false;
 
@@ -87,7 +88,7 @@ export function addWallet(data) {
 
     if (!address) {
 
-        alert("Address wallet wajib diisi.");
+        await showAlert("Address wallet wajib diisi.");
 
         return false;
 
@@ -117,9 +118,13 @@ export function addWallet(data) {
    DELETE WALLET
 ========================================== */
 
-export function deleteWallet(id) {
+export async function deleteWallet(id) {
 
-    if (!confirm("Hapus wallet ini?")) {
+    const confirmed = await showConfirm(
+        "Yakin ingin menghapus wallet ini? Tindakan ini tidak bisa dibatalkan."
+    );
+
+    if (!confirmed) {
 
         return false;
 
@@ -205,7 +210,7 @@ export function renderWallets() {
 
 }
 
-walletList.addEventListener("click", (e) => {
+walletList.addEventListener("click", async (e) => {
 
     const button = e.target.closest("button");
 
@@ -227,7 +232,7 @@ walletList.addEventListener("click", (e) => {
 
     if (action === "delete") {
 
-        const success = deleteWallet(id);
+        const success = await deleteWallet(id);
 
         if (success) {
 
@@ -344,9 +349,9 @@ document.addEventListener("keydown", (e) => {
 
 });
 
-saveWalletBtn.addEventListener("click", () => {
+saveWalletBtn.addEventListener("click", async () => {
 
-    const success = addWallet({
+    const success = await addWallet({
 
         chain: document.getElementById("walletChain").value,
 
