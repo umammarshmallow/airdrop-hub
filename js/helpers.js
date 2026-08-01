@@ -2,6 +2,8 @@
    HELPERS.JS
 ========================================== */
 
+import { showAlert } from "./dialog.js";
+
 /* ==========================
 FORMAT URL
 ========================== */
@@ -49,22 +51,33 @@ export function formatDate(timestamp) {
 TOAST
 ========================== */
 
-export function showToast(message, duration = 2000) {
+export function showToast(message, duration = 2500, type = "success") {
 
     const toast = document.getElementById("toast");
     const text = document.getElementById("toastText");
+    const icon = document.getElementById("toastIcon");
 
     if (!toast || !text) return;
 
     text.textContent = message;
 
-    toast.style.display = "block";
+    if (icon) {
+
+        icon.className = type === "error"
+            ? "ti ti-x"
+            : "ti ti-check";
+
+    }
+
+    toast.classList.toggle("toast-error", type === "error");
+
+    toast.classList.add("show");
 
     clearTimeout(toast.timer);
 
     toast.timer = setTimeout(() => {
 
-        toast.style.display = "none";
+        toast.classList.remove("show");
 
     }, duration);
 
@@ -126,11 +139,15 @@ export function clearAddForm() {
 VALIDASI PROJECT
 ========================== */
 
-export function validateProject(project) {
+/* ==========================
+VALIDASI PROJECT
+========================== */
+
+export async function validateProject(project) {
 
     if (!project.name.trim()) {
 
-        alert("Nama project wajib diisi.");
+        await showAlert("Nama project wajib diisi.");
 
         return false;
 
@@ -138,7 +155,7 @@ export function validateProject(project) {
 
     if (!project.network.trim()) {
 
-        alert("Chain wajib dipilih.");
+        await showAlert("Chain wajib dipilih.");
 
         return false;
 
