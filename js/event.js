@@ -56,9 +56,9 @@ export function initEvents() {
        ADD PROJECT
     ========================== */
 
-    saveProjectBtn.addEventListener("click", () => {
+    saveProjectBtn.addEventListener("click", async () => {
 
-        const success = addProject({
+        const success = await addProject({
 
             name: document.getElementById("name").value,
 
@@ -92,9 +92,9 @@ export function initEvents() {
        UPDATE PROJECT
     ========================== */
 
-    updateProjectBtn.addEventListener("click", () => {
+    updateProjectBtn.addEventListener("click", async () => {
 
-        const success = updateProject({
+        const success = await updateProject({
 
             id: document.getElementById("editId").value,
 
