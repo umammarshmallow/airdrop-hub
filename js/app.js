@@ -17,6 +17,8 @@ import { setProjects } from "./project.js";
 
 import { initWallet } from "./wallet.js";
 
+import { initDialog } from "./dialog.js";
+
 /* ==========================================
    INITIALIZE APPLICATION
 ========================================== */
@@ -43,6 +45,8 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener("DOMContentLoaded", () => {
 
     showLoading();
+
+    initDialog();
 
     try {
 
