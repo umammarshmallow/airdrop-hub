@@ -204,7 +204,7 @@ export function renderProjects() {
    EVENT DELEGATION
 ========================================== */
 
-projectList.addEventListener("click", (e) => {
+projectList.addEventListener("click", async (e) => {
 
     const button = e.target.closest("button");
 
@@ -279,9 +279,13 @@ projectList.addEventListener("click", (e) => {
 
         case "delete":
 
-            deleteProject(id);
+            const deleted = await deleteProject(id);
 
-            renderProjects();
+            if (deleted) {
+
+                renderProjects();
+
+            }
 
             break;
 
