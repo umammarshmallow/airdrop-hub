@@ -930,13 +930,175 @@ MODAL BUTTON
 
     display:none;
     position:fixed;
-    bottom:20px;
-    right:20px;
-    background:#16a34a;
+    bottom:85px;
+    left:50%;
+    transform:translateX(-50%) translateY(10px);
+    max-width:min(90vw, 380px);
+    background:#1e293b;
+    border:1px solid #334155;
+    border-left:4px solid #22c55e;
     color:white;
-    padding:15px 22px;
-    border-radius:10px;
+    padding:14px 18px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
     z-index:9999;
+    align-items:center;
+    gap:12px;
+    opacity:0;
+    transition:opacity .2s ease, transform .2s ease;
+
+}
+
+.toast.show{
+
+    display:flex;
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+
+}
+
+.toast-icon{
+
+    flex-shrink:0;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:#052e16;
+    color:#4ade80;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+}
+
+.toast-icon i{
+
+    font-size:15px;
+
+}
+
+#toastText{
+
+    font-size:14px;
+    line-height:1.4;
+
+}
+
+.toast-error{
+
+    border-left-color:#ef4444;
+
+}
+
+.toast-error .toast-icon{
+
+    background:#450a0a;
+    color:#f87171;
+
+}
+
+/* ==========================
+CUSTOM ALERT / CONFIRM DIALOG
+========================== */
+
+.dialog-content{
+
+    max-width:340px;
+    text-align:center;
+    padding:28px 24px 24px;
+
+}
+
+.dialog-icon{
+
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 16px;
+    font-size:26px;
+
+}
+
+.dialog-icon-info{
+
+    background:#172554;
+    color:#60a5fa;
+
+}
+
+.dialog-icon-warning{
+
+    background:#451a03;
+    color:#fbbf24;
+
+}
+
+.dialog-message{
+
+    font-size:15px;
+    line-height:1.5;
+    color:#e2e8f0;
+    margin-bottom:24px;
+
+}
+
+.dialog-button{
+
+    justify-content:center;
+
+}
+
+.dialog-btn-primary,
+.dialog-btn-secondary,
+.dialog-btn-danger{
+
+    flex:1;
+    padding:11px 16px;
+    border-radius:10px;
+    font-weight:600;
+    font-size:14px;
+
+}
+
+.dialog-btn-primary{
+
+    background:var(--primary);
+    color:white;
+
+}
+
+.dialog-btn-primary:hover{
+
+    background:var(--primaryHover);
+
+}
+
+.dialog-btn-secondary{
+
+    background:#334155;
+    color:white;
+
+}
+
+.dialog-btn-secondary:hover{
+
+    background:#475569;
+
+}
+
+.dialog-btn-danger{
+
+    background:#ef4444;
+    color:white;
+
+}
+
+.dialog-btn-danger:hover{
+
+    background:#dc2626;
 
 }
 
