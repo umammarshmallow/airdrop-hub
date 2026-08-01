@@ -23,9 +23,18 @@ import { initDialog } from "./dialog.js";
    INITIALIZE APPLICATION
 ========================================== */
 
+const searchInput = document.getElementById("search");
+
+let wasSearchFocused = false;
+
 document.addEventListener("visibilitychange", () => {
 
-    if (!document.hidden) {
+    if (document.hidden) {
+
+        // Simpan status fokus sebelum app di-background
+        wasSearchFocused = document.activeElement === searchInput;
+
+    } else {
 
         let projects = loadProjects();
 
@@ -38,6 +47,22 @@ document.addEventListener("visibilitychange", () => {
         setProjects(projects);
 
         renderProjects();
+
+        // Kembalikan fokus & keyboard ke kolom search jika sebelumnya sedang aktif
+        if (wasSearchFocused) {
+
+            setTimeout(() => {
+
+                searchInput.focus();
+
+                const len = searchInput.value.length;
+
+                searchInput.setSelectionRange(len, len);
+
+            }, 150);
+
+        }
+
     }
 
 });
