@@ -8,6 +8,8 @@ import {
     showToast
 } from "./helpers.js";
 
+import { showConfirm } from "./dialog.js";
+
 import {
     closeAddModal,
     closeEditModal,
@@ -45,9 +47,9 @@ function save() {
    ADD PROJECT
 ========================================== */
 
-export function addProject(data) {
+export async function addProject(data) {
 
-    if (!validateProject(data)) {
+    if (!(await validateProject(data))) {
 
         return false;
 
@@ -97,9 +99,13 @@ export function addProject(data) {
    DELETE PROJECT
 ========================================== */
 
-export function deleteProject(id) {
+export async function deleteProject(id) {
 
-    if (!confirm("Hapus project ini?")) {
+    const confirmed = await showConfirm(
+        "Yakin ingin menghapus project ini? Tindakan ini tidak bisa dibatalkan."
+    );
+
+    if (!confirmed) {
 
         return false;
 
@@ -143,7 +149,7 @@ export function editProject(id) {
    UPDATE PROJECT
 ========================================== */
 
-export function updateProject(data) {
+export async function updateProject(data) {
 
     const project = projects.find(
 
@@ -177,7 +183,7 @@ export function updateProject(data) {
 
     project.updatedAt = Date.now();
 
-    if (!validateProject(project)) {
+    if (!(await validateProject(project))) {
 
         return false;
 
