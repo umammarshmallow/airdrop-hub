@@ -188,6 +188,14 @@ header .menu-btn:hover{
 
 }
 
+#closeWalletPageBtn{
+
+    position:absolute;
+    top:0;
+    right:0;
+
+}
+
 .side-menu-content{
 
     padding:10px 0;
@@ -225,12 +233,14 @@ header .menu-btn:hover{
 
 .page-header{
 
+    position:relative;
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:20px;
     flex-wrap:wrap;
     gap:12px;
+    padding-right:44px;
 
 }
 
