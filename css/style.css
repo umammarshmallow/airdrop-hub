@@ -251,6 +251,14 @@ header .menu-btn:hover{
 
 }
 
+.wallet-add-btn{
+
+    width:100%;
+    justify-content:center;
+    margin-bottom:20px;
+
+}
+
 /* SIMPLE LIST (WALLET) */
 
 #walletList{
@@ -1316,6 +1324,21 @@ padding:6px;
 .bottom-nav button:hover{
 
 color:#38bdf8;
+
+}
+
+.bottom-nav button.active{
+
+background:rgba(37,99,235,.18);
+color:#60a5fa;
+border-radius:14px;
+
+}
+
+.bottom-nav button.active i,
+.bottom-nav button.active span{
+
+color:#60a5fa;
 
 }
 
