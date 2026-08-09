@@ -1,0 +1,176 @@
+/* ==========================================================
+   AIRDROP HUB — RESPONSIVE
+   Penyesuaian layar kecil (<= 768px).
+========================================================== */
+
+@media (max-width:768px){
+
+    .container{
+
+        padding:16px;
+        padding-bottom:100px;
+
+    }
+
+    header h1{
+
+        font-size:19px;
+
+    }
+
+    /* SEARCH & FILTER */
+
+    .search{
+
+        flex-direction:column;
+        align-items:stretch;
+
+    }
+
+    .search input{
+
+        width:100%;
+
+    }
+
+    .toolbar{
+
+        grid-template-columns:repeat(3,1fr);
+        gap:6px;
+
+    }
+
+    .dropbtn{
+
+        height:44px;
+        padding:0 8px;
+        font-size:11px;
+
+    }
+
+    .dropbtn span{
+
+        gap:4px;
+
+    }
+
+    .dropbtn i:first-child{
+
+        font-size:13px;
+
+    }
+
+    .arrow{
+
+        font-size:10px;
+
+    }
+
+    /* MODAL */
+
+    .modal-button{
+
+        flex-direction:column;
+
+    }
+
+    /* WALLET CARD */
+
+    .simple-card{
+
+        flex-direction:column;
+        align-items:flex-start;
+
+    }
+
+    .simple-card-info{
+
+        width:100%;
+        min-width:0;
+
+    }
+
+    .simple-card button{
+
+        width:100%;
+
+    }
+
+    .page-header{
+
+        flex-direction:column;
+        align-items:flex-start;
+
+    }
+
+    .btn-add{
+
+        width:100%;
+        justify-content:center;
+
+    }
+
+    /* DASHBOARD */
+
+    .dashboard-summary{
+
+        padding:18px 14px;
+
+    }
+
+    .summary-item span{
+
+        font-size:26px;
+
+    }
+
+}
+
+/* ==========================================================
+   LEBAR MENENGAH KE ATAS — dashboard bisa 3 kolom
+========================================================== */
+
+@media (min-width:640px){
+
+    .summary-grid{
+
+        grid-template-columns:repeat(3,1fr);
+
+    }
+
+    .summary-item:nth-child(2n){
+
+        border-right:1px solid var(--border);
+
+    }
+
+    .summary-item:nth-child(3n){
+
+        border-right:none;
+
+    }
+
+    .summary-item:nth-last-child(-n+3){
+
+        border-bottom:none;
+
+    }
+
+}
+
+/* ==========================================================
+   LAYAR LEBAR — project list 2 kolom
+========================================================== */
+
+@media (min-width:900px){
+
+    #projectList{
+
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        align-items:start;
+        gap:14px;
+
+    }
+
+}
