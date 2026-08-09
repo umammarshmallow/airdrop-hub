@@ -1,0 +1,377 @@
+/* ==========================================================
+   AIRDROP HUB — FORMS
+   Search, filter dropdown, modal, input/select/textarea.
+========================================================== */
+
+/* ==========================================================
+   SEARCH
+========================================================== */
+
+.search{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+
+}
+
+.search input{
+
+    flex:1;
+    background:var(--surface);
+    color:var(--text);
+    padding:13px 16px;
+    border-radius:var(--r-md);
+    border:1px solid var(--border);
+    font-size:14px;
+    font-family:var(--font-body);
+    transition:border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+
+}
+
+.search input::placeholder{
+
+    color:var(--text-faint);
+
+}
+
+.search input:hover{
+
+    border-color:var(--border-strong);
+
+}
+
+.search input:focus-visible{
+
+    border-color:var(--accent);
+    background:var(--surface-2);
+
+}
+
+/* ==========================================================
+   TOOLBAR / CUSTOM DROPDOWN (filter pill)
+========================================================== */
+
+.toolbar{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    width:100%;
+    margin:0 0 20px;
+    align-items:start;
+
+}
+
+.dropdown{
+
+    position:relative;
+    width:100%;
+
+}
+
+.dropbtn{
+
+    width:100%;
+    height:46px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 14px;
+    background:var(--surface);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:var(--r-pill);
+    cursor:pointer;
+    font-size:13px;
+
+}
+
+.dropbtn span{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--text);
+    font-weight:500;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+
+}
+
+.dropbtn:hover{
+
+    background:var(--surface-2);
+    border-color:var(--border-strong);
+
+}
+
+.dropbtn i:first-child{
+
+    font-size:15px;
+    color:var(--text-faint);
+
+}
+
+.arrow{
+
+    color:var(--text-faint);
+    font-size:12px;
+    transition:transform var(--fast) var(--ease);
+    flex-shrink:0;
+
+}
+
+.dropdown.active .dropbtn{
+
+    border-color:var(--accent);
+    background:var(--accent-soft);
+
+}
+
+.dropdown.active .arrow{
+
+    transform:rotate(180deg);
+    color:var(--accent);
+
+}
+
+.dropdown-content{
+
+    position:absolute;
+    top:calc(100% + 8px);
+    left:0;
+    width:max(100%, 180px);
+    display:none;
+    background:var(--surface-2);
+    border:1px solid var(--border-strong);
+    border-radius:var(--r-md);
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+    z-index:9999;
+
+}
+
+.dropdown.active .dropdown-content{
+
+    display:block;
+    animation:fadeSlide .15s var(--ease);
+
+}
+
+.dropdown-content div{
+
+    padding:12px 16px;
+    cursor:pointer;
+    color:var(--text-muted);
+    transition:background var(--fast) var(--ease), color var(--fast) var(--ease);
+    font-size:13px;
+
+}
+
+.dropdown-content div:hover{
+
+    background:var(--surface-3);
+    color:var(--text);
+
+}
+
+.dropdown-content .selected{
+
+    background:var(--accent-soft);
+    color:var(--accent);
+    font-weight:600;
+
+}
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.modal{
+
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(6,8,12,.75);
+    backdrop-filter:blur(3px);
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    z-index:10000;
+
+}
+
+.modal-content{
+
+    width:600px;
+    max-width:100%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--r-lg);
+    padding:24px;
+    box-shadow:var(--shadow-lg);
+
+}
+
+.modal-content h2{
+
+    font-size:18px;
+    margin-bottom:18px;
+
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea{
+
+    width:100%;
+    margin-bottom:14px;
+    padding:12px 14px;
+    border-radius:var(--r-md);
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text);
+    font-family:var(--font-body);
+    font-size:14px;
+    outline:none;
+    transition:border-color var(--fast) var(--ease);
+
+}
+
+.modal-content input::placeholder,
+.modal-content textarea::placeholder{
+
+    color:var(--text-faint);
+
+}
+
+.modal-content input:focus-visible,
+.modal-content select:focus-visible,
+.modal-content textarea:focus-visible{
+
+    border-color:var(--accent);
+
+}
+
+.modal-content select:disabled{
+
+    color:var(--text-faint);
+    cursor:not-allowed;
+    opacity:.6;
+
+}
+
+.modal-content textarea{
+
+    resize:vertical;
+    min-height:110px;
+    font-family:var(--font-body);
+
+}
+
+/* ==========================================================
+   MODAL BUTTON
+========================================================== */
+
+.modal-button{
+
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+
+}
+
+.modal-button button{
+
+    flex:1;
+    padding:13px;
+    border:none;
+    border-radius:var(--r-md);
+    font-size:14px;
+    font-weight:600;
+
+}
+
+/* Tombol Simpan & Update */
+
+#saveProject,
+#updateProject{
+
+    background:var(--accent);
+    color:var(--text-on-accent);
+
+}
+
+#saveProject:hover,
+#updateProject:hover{
+
+    background:var(--accent-hover);
+
+}
+
+/* Tombol Batal */
+
+#closeModal,
+#closeEditModal,
+#closeWalletModal{
+
+    background:var(--surface-3);
+    color:var(--text-muted);
+    border:1px solid var(--border);
+
+}
+
+#closeModal:hover,
+#closeEditModal:hover,
+#closeWalletModal:hover{
+
+    background:var(--surface-2);
+    color:var(--text);
+
+}
+
+/* Tombol Simpan Wallet */
+
+#saveWallet{
+
+    background:var(--accent);
+    color:var(--text-on-accent);
+
+}
+
+#saveWallet:hover{
+
+    background:var(--accent-hover);
+
+}
+
+/* ==========================================================
+   FIX MODAL SCROLL
+========================================================== */
+
+body.modal-open{
+
+    overflow:hidden;
+    height:100vh;
+    touch-action:none;
+
+}
+
+#projectModal,
+#editModal{
+
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+
+}
+
+#projectModal .modal-content,
+#editModal .modal-content{
+
+    max-height:90vh;
+    overflow-y:auto;
+
+}
