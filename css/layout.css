@@ -1,0 +1,313 @@
+/* ==========================================================
+   AIRDROP HUB — LAYOUT
+   Header, side menu, bottom nav, page header, footer.
+========================================================== */
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    margin-bottom:24px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--border);
+
+}
+
+header h1{
+
+    font-size:22px;
+    letter-spacing:-.02em;
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+}
+
+/* Ikon roket ditonjolkan lewat plat kecil beraksen emas —
+   satu-satunya tempat gold dipakai sebagai penanda "brand" */
+
+header h1::before{
+
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:var(--r-pill);
+    background:var(--gold);
+    box-shadow:0 0 0 4px var(--gold-soft);
+    flex-shrink:0;
+
+}
+
+/* HAMBURGER MENU BUTTON */
+
+header .menu-btn{
+
+    background:var(--surface);
+    color:var(--text);
+    border:1px solid var(--border);
+    padding:10px 14px;
+    border-radius:var(--r-md);
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    transition:border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+
+}
+
+header .menu-btn:hover{
+
+    background:var(--surface-2);
+    border-color:var(--border-strong);
+
+}
+
+/* generic header button reset (dipakai elemen lama jika ada) */
+
+header button{
+
+    border:none;
+    cursor:pointer;
+    transition:.25s;
+
+}
+
+/* ==========================================================
+   SIDE MENU (HAMBURGER OVERLAY)
+========================================================== */
+
+.side-menu-overlay{
+
+    display:none;
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    background:rgba(6,8,12,.72);
+    backdrop-filter:blur(2px);
+    z-index:9998;
+
+}
+
+.side-menu-overlay.active{
+
+    display:block;
+
+}
+
+.side-menu{
+
+    position:fixed;
+    top:0;
+    right:0;
+    height:100%;
+    width:280px;
+    max-width:85%;
+    background:var(--surface);
+    border-left:1px solid var(--border);
+    box-shadow:var(--shadow-lg);
+    transform:translateX(100%);
+    transition:transform var(--normal) var(--ease);
+
+}
+
+.side-menu-overlay.active .side-menu{
+
+    transform:translateX(0);
+
+}
+
+.side-menu-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px;
+    border-bottom:1px solid var(--border);
+
+}
+
+.side-menu-header h2{
+
+    font-size:17px;
+
+}
+
+.close-menu-btn{
+
+    background:transparent;
+    color:var(--text-muted);
+    padding:6px 10px;
+    font-size:17px;
+    border-radius:var(--r-sm);
+    transition:color var(--fast) var(--ease), background var(--fast) var(--ease);
+
+}
+
+.close-menu-btn:hover{
+
+    color:var(--text);
+    background:var(--surface-3);
+
+}
+
+#closeWalletPageBtn{
+
+    position:absolute;
+    top:0;
+    right:0;
+
+}
+
+.side-menu-content{
+
+    padding:8px 0;
+
+}
+
+.side-menu-item{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 20px;
+    cursor:pointer;
+    color:var(--text);
+    transition:background var(--fast) var(--ease);
+    border-bottom:1px solid var(--border);
+
+}
+
+.side-menu-item i{
+
+    width:20px;
+    text-align:center;
+    color:var(--accent);
+    font-size:16px;
+
+}
+
+.side-menu-item:hover{
+
+    background:var(--surface-2);
+
+}
+
+/* ==========================================================
+   PAGE HEADER (mis. halaman Wallet)
+========================================================== */
+
+.page-header{
+
+    position:relative;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:12px;
+    padding-right:44px;
+
+}
+
+.page-header h2{
+
+    font-size:20px;
+
+}
+
+/* ==========================================================
+   BOTTOM NAV
+========================================================== */
+
+.bottom-nav{
+
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(18,21,29,.92);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    z-index:999;
+
+}
+
+.bottom-nav button{
+
+    background:none;
+    border:none;
+    color:var(--text-faint);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
+    font-size:12px;
+    font-family:var(--font-body);
+    padding:8px 14px;
+    border-radius:var(--r-md);
+    cursor:pointer;
+    transition:color var(--fast) var(--ease), background var(--fast) var(--ease);
+
+}
+
+.bottom-nav button:hover{
+
+    color:var(--text-muted);
+
+}
+
+.bottom-nav button.active{
+
+    background:var(--accent-soft);
+    color:var(--accent);
+
+}
+
+.bottom-nav button.active i,
+.bottom-nav button.active span{
+
+    color:var(--accent);
+
+}
+
+/* Tombol tengah (Add Project) sedikit ditonjolkan */
+
+#addBottomBtn{
+
+    color:var(--gold);
+
+}
+
+#addBottomBtn:hover{
+
+    color:var(--gold);
+    background:var(--gold-soft);
+
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+footer{
+
+    margin-top:40px;
+    padding:20px;
+    text-align:center;
+    color:var(--text-faint);
+    font-size:12px;
+    letter-spacing:.02em;
+
+}
