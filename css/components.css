@@ -501,7 +501,7 @@ section h2{
 .info-grid{
 
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:repeat(3,1fr);
     gap:8px;
     margin-top:12px;
 
@@ -512,22 +512,26 @@ section h2{
     background:var(--surface-2);
     border:1px solid var(--border);
     border-radius:var(--r-md);
-    padding:10px 12px;
+    padding:10px 8px;
     display:flex;
-    gap:10px;
-    align-items:center;
+    flex-direction:column;
+    gap:6px;
+    align-items:flex-start;
+    min-width:0;
 
 }
 
 .info-tile-full{
 
     grid-column:1 / -1;
+    flex-direction:row;
+    align-items:center;
 
 }
 
 .info-icon{
 
-    font-size:17px;
+    font-size:15px;
     color:var(--text-faint);
 
 }
@@ -535,18 +539,21 @@ section h2{
 .info-label{
 
     color:var(--text-faint);
-    font-size:10px;
+    font-size:9px;
     text-transform:uppercase;
     letter-spacing:.04em;
+    white-space:nowrap;
 
 }
 
 .info-value{
 
-    font-size:13px;
+    font-size:12px;
     font-family:var(--font-mono);
     color:var(--text);
-    margin-top:2px;
+    margin-top:1px;
+    overflow-wrap:break-word;
+    word-break:break-word;
 
 }
 
