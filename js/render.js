@@ -146,7 +146,7 @@ export function renderProjects() {
                         </div>
                     </div>
 
-                    <div class="info-tile info-tile-full">
+                    <div class="info-tile">
                         <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">Deadline</div>
