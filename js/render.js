@@ -249,7 +249,7 @@ projectList.addEventListener("click", async (e) => {
             button.classList.toggle("open", willOpen);
 
             button.querySelector("span").textContent =
-                willOpen ? "Sembunyikan detail" : "View details";
+                willOpen ? "Hide details" : "View details";
 
             break;
 
