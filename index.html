@@ -43,32 +43,34 @@
     </header>
 
     <section class="dashboard-summary">
-      <h2>📊 Dashboard</h2>
+      <div class="section-heading" style="margin-bottom:16px;">
+        <h2><i class="ti ti-layout-dashboard"></i> Overview</h2>
+      </div>
 
       <div class="summary-grid">
-        <div class="summary-item">
-          <span id="todayTask">0</span>
-          <p>Today's Task</p>
+        <div class="summary-item" data-tone="accent">
+          <span class="val" id="todayTask">0</span>
+          <p class="lbl">Today's Task</p>
         </div>
-        <div class="summary-item">
-          <span id="deadlineToday">0</span>
-          <p>Deadline Today</p>
+        <div class="summary-item" data-tone="warning">
+          <span class="val" id="deadlineToday">0</span>
+          <p class="lbl">Deadline Today</p>
         </div>
-        <div class="summary-item">
-          <span id="activeProject">0</span>
-          <p>Active</p>
+        <div class="summary-item" data-tone="success">
+          <span class="val" id="activeProject">0</span>
+          <p class="lbl">Active</p>
         </div>
-        <div class="summary-item">
-          <span id="pendingProject">0</span>
-          <p>Pending</p>
+        <div class="summary-item" data-tone="pending">
+          <span class="val" id="pendingProject">0</span>
+          <p class="lbl">Pending</p>
         </div>
-        <div class="summary-item">
-          <span id="waitlistProject">0</span>
-          <p>Waitlist</p>
+        <div class="summary-item" data-tone="waitlist">
+          <span class="val" id="waitlistProject">0</span>
+          <p class="lbl">Waitlist</p>
         </div>
-        <div class="summary-item">
-          <span id="completedProject">0</span>
-          <p>Completed</p>
+        <div class="summary-item" data-tone="complete">
+          <span class="val" id="completedProject">0</span>
+          <p class="lbl">Completed</p>
         </div>
       </div>
     </section>
