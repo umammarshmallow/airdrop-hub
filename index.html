@@ -1,26 +1,18 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="en">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Airdrop Hub v4.1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Airdrop Hub — Farming Command Center</title>
+<meta name="description" content="Track every airdrop farm, deadline and wallet in one clean dashboard.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<!-- ==========================
-CSS MODULAR (dipecah per fungsi agar mudah dirawat)
-========================== -->
+<!-- CSS modular -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/components.css">
@@ -34,690 +26,384 @@ CSS MODULAR (dipecah per fungsi agar mudah dirawat)
 
 <div class="container">
 
-<div id="homePage">
+  <!-- ================= HOME PAGE ================= -->
+  <div id="homePage">
 
-<header>
-
-<h1>🚀 AIRDROP HUB</h1>
-
-<button id="menuBtn" class="menu-btn" aria-label="Menu">
-
-<i class="fa-solid fa-bars"></i>
-
-</button>
-
-</header>
-
-<section class="dashboard-summary">
-
-    <h2>📊 Dashboard</h2>
-
-    <div class="summary-grid">
-
-        <div class="summary-item">
-            <span id="todayTask">0</span>
-            <p>Today's Task</p>
+    <header>
+      <div class="brand">
+        <div class="brand-mark"><i class="ti ti-rocket"></i></div>
+        <div class="brand-text">
+          <span class="wordmark">Airdrop <span class="tag">HUB</span></span>
+          <span class="status-line"><span class="status-dot"></span> Tracking active</span>
         </div>
+      </div>
+      <button id="menuBtn" class="menu-btn" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
 
-        <div class="summary-item">
-            <span id="deadlineToday">0</span>
-            <p>Deadline Today</p>
+    <section class="dashboard-summary">
+      <div class="section-heading" style="margin-bottom:16px;">
+        <h2><i class="ti ti-layout-dashboard"></i> Overview</h2>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item" data-tone="accent">
+          <span class="val" id="todayTask">0</span>
+          <p class="lbl">Today's Task</p>
         </div>
-        
-        <div class="summary-item">
-            <span id="activeProject">0</span>
-            <p>Active</p>
+        <div class="summary-item" data-tone="warning">
+          <span class="val" id="deadlineToday">0</span>
+          <p class="lbl">Deadline Today</p>
         </div>
-
-        <div class="summary-item">
-            <span id="pendingProject">0</span>
-            <p>Pending</p>
+        <div class="summary-item" data-tone="success">
+          <span class="val" id="activeProject">0</span>
+          <p class="lbl">Active</p>
         </div>
-
-        <div class="summary-item">
-            <span id="waitlistProject">0</span>
-            <p>Waitlist</p>
+        <div class="summary-item" data-tone="pending">
+          <span class="val" id="pendingProject">0</span>
+          <p class="lbl">Pending</p>
         </div>
-
-        <div class="summary-item">
-            <span id="completedProject">0</span>
-            <p>Completed</p>
+        <div class="summary-item" data-tone="waitlist">
+          <span class="val" id="waitlistProject">0</span>
+          <p class="lbl">Waitlist</p>
         </div>
+        <div class="summary-item" data-tone="complete">
+          <span class="val" id="completedProject">0</span>
+          <p class="lbl">Completed</p>
+        </div>
+      </div>
+    </section>
 
-    </div>
-
-</section>
-
-<section class="search">
-
-    <input
-        type="text"
-        id="search"
-        placeholder="🔍 Cari Project...">
+    <section class="search">
+      <input type="text" id="search" placeholder="Search projects by name or chain...">
+    </section>
 
     <div class="toolbar">
-
-        <!-- STATUS -->
-        <div class="dropdown">
-
-            <button class="dropbtn">
-
-                <span>
-                    <i class="fa-solid fa-list"></i>
-                    <span class="label">Kategori</span>
-                </span>
-
-                <i class="fa-solid fa-chevron-down arrow"></i>
-
-            </button>
-
-            <div class="dropdown-content">
-
-                <div data-target="filterStatus" data-value="All">Semua Status</div>
-                <div data-target="filterStatus" data-value="Active">Active</div>
-                <div data-target="filterStatus" data-value="Pending">Pending</div>
-                <div data-target="filterStatus" data-value="Waitlist">Waitlist</div>
-                <div data-target="filterStatus" data-value="Complete">Completed</div>
-
-            </div>
-
+      <div class="dropdown">
+        <button class="dropbtn">
+          <span><i class="fa-solid fa-list"></i> <span class="label">Status</span></span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </button>
+        <div class="dropdown-content">
+          <div data-target="filterStatus" data-value="All" class="selected">All Status</div>
+          <div data-target="filterStatus" data-value="Active">Active</div>
+          <div data-target="filterStatus" data-value="Pending">Pending</div>
+          <div data-target="filterStatus" data-value="Waitlist">Waitlist</div>
+          <div data-target="filterStatus" data-value="Complete">Completed</div>
         </div>
+      </div>
 
-        <!-- TASK -->
-        <div class="dropdown">
-
-            <button class="dropbtn">
-
-                <span>
-                    <i class="fa-solid fa-sliders"></i>
-                    <span class="label">Filter</span>
-                </span>
-
-                <i class="fa-solid fa-chevron-down arrow"></i>
-
-            </button>
-
-            <div class="dropdown-content">
-
-                <div data-target="filterTask" data-value="All">Semua Task</div>
-                <div data-target="filterTask" data-value="Daily">Daily</div>
-                <div data-target="filterTask" data-value="Weekly">Weekly</div>
-                <div data-target="filterTask" data-value="Testnet">Testnet</div>
-                <div data-target="filterTask" data-value="Mainnet">Mainnet</div>
-                <div data-target="filterTask" data-value="One Time">One Time</div>
-
-            </div>
-
+      <div class="dropdown">
+        <button class="dropbtn">
+          <span><i class="fa-solid fa-sliders"></i> <span class="label">Task Type</span></span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </button>
+        <div class="dropdown-content">
+          <div data-target="filterTask" data-value="All" class="selected">All Tasks</div>
+          <div data-target="filterTask" data-value="Daily">Daily</div>
+          <div data-target="filterTask" data-value="Weekly">Weekly</div>
+          <div data-target="filterTask" data-value="Testnet">Testnet</div>
+          <div data-target="filterTask" data-value="Mainnet">Mainnet</div>
+          <div data-target="filterTask" data-value="One Time">One Time</div>
         </div>
+      </div>
 
-        <!-- SORT -->
-        <div class="dropdown">
-
-            <button class="dropbtn">
-
-                <span>
-                    <i class="fa-solid fa-arrow-down-wide-short"></i>
-                    <span class="label">Urutkan</span>
-                </span>
-
-                <i class="fa-solid fa-chevron-down arrow"></i>
-
-            </button>
-
-            <div class="dropdown-content">
-
-                <div data-target="sortBy" data-value="default">Default</div>
-                <div data-target="sortBy" data-value="deadline">Deadline Terdekat</div>
-                <div data-target="sortBy" data-value="newest">Project Terbaru</div>
-
-            </div>
-
+      <div class="dropdown">
+        <button class="dropbtn">
+          <span><i class="fa-solid fa-arrow-down-wide-short"></i> <span class="label">Sort</span></span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </button>
+        <div class="dropdown-content">
+          <div data-target="sortBy" data-value="default" class="selected">Default</div>
+          <div data-target="sortBy" data-value="deadline">Nearest Deadline</div>
+          <div data-target="sortBy" data-value="newest">Newest Project</div>
         </div>
-
+      </div>
     </div>
 
-    <!-- Hidden Select -->
     <select id="filterStatus" hidden>
-        <option value="All"></option>
-        <option value="Active"></option>
-        <option value="Pending"></option>
-        <option value="Waitlist"></option>
-        <option value="Complete"></option>
+      <option value="All"></option>
+      <option value="Active"></option>
+      <option value="Pending"></option>
+      <option value="Waitlist"></option>
+      <option value="Complete"></option>
     </select>
-
     <select id="filterTask" hidden>
-        <option value="All"></option>
-        <option value="Daily"></option>
-        <option value="Weekly"></option>
-        <option value="Testnet"></option>
-        <option value="Mainnet"></option>
-        <option value="One Time"></option>
+      <option value="All"></option>
+      <option value="Daily"></option>
+      <option value="Weekly"></option>
+      <option value="Testnet"></option>
+      <option value="Mainnet"></option>
+      <option value="One Time"></option>
     </select>
-
     <select id="sortBy" hidden>
-        <option value="default"></option>
-        <option value="deadline"></option>
-        <option value="newest"></option>
+      <option value="default"></option>
+      <option value="deadline"></option>
+      <option value="newest"></option>
     </select>
 
-</section>
-
-<section>
-
-<h2>Project List</h2>
-
-<div id="projectList">
-
-<div class="empty">
-
-Belum ada project.
-
-</div>
-
-</div>
-
-</section>
-
-</div>
-
-<div id="profilePage" style="display:none;">
-
     <section>
-
-        <h2>Profile</h2>
-
-        <div class="card">
-
-            <h3>Coming Soon</h3>
-
-            <p>Halaman profile masih dalam pengembangan.</p>
-
-        </div>
-
+      <div class="section-heading">
+        <h2><i class="ti ti-list-details"></i> Projects</h2>
+      </div>
+      <div id="projectList">
+        <div class="empty">No projects yet. Tap "Add Project" below to start tracking.</div>
+      </div>
     </section>
 
-</div>
+  </div>
 
-<div id="walletPage" style="display:none;">
-
+  <!-- ================= PROFILE PAGE ================= -->
+  <div id="profilePage" style="display:none;">
     <section>
+      <div class="section-heading"><h2><i class="ti ti-user"></i> Profile</h2></div>
+      <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; text-align:center;">
+        <i class="ti ti-tools" style="font-size:28px; color:var(--accent); margin-bottom:10px; display:inline-block;"></i>
+        <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;">Coming Soon</h3>
+        <p style="color:var(--text-muted); font-size:13.5px;">The profile page is still under development.</p>
+      </div>
+    </section>
+  </div>
 
-        <div class="page-header">
-
-            <h2>Wallet</h2>
-
-            <button id="closeWalletPageBtn" class="close-menu-btn" aria-label="Tutup">
-
-                <i class="fa-solid fa-xmark"></i>
-
-            </button>
-
-        </div>
-
-        <button id="addWalletBtn" class="btn-add wallet-add-btn">
-
-            <i class="fa-solid fa-plus"></i> Add Wallet
-
+  <!-- ================= WALLET PAGE ================= -->
+  <div id="walletPage" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="ti ti-wallet"></i> Wallets</h2>
+        <button id="closeWalletPageBtn" class="close-menu-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
         </button>
+      </div>
 
-        <div id="walletList">
+      <button id="addWalletBtn" class="btn-add wallet-add-btn">
+        <i class="fa-solid fa-plus"></i> Add Wallet
+      </button>
 
-            <div class="empty">
-
-                Belum ada wallet.
-
-            </div>
-
-        </div>
-
+      <div id="walletList">
+        <div class="empty">No wallets yet.</div>
+      </div>
     </section>
-
-</div>
-
-<button
-id="addProjectBtn"
-style="display:none;">
-</button>
-
-<!-- ==========================
-ADD PROJECT
-========================== -->
-
-<div class="modal" id="projectModal">
-
-<div class="modal-content">
-
-<h2>Tambah Project</h2>
-
-<input
-type="text"
-id="name"
-placeholder="Nama Project">
-
-<select id="network">
-
-<option value="" disabled selected>Pilih Chain</option>
-
-<option value="Ethereum">🔷 Ethereum</option>
-
-<option value="Solana">🟣 Solana</option>
-
-<option value="BNB">🟡 BNB</option>
-
-<option value="Gram (TON)">💎 Gram (TON)</option>
-
-<option value="Lainnya">🔗 Lainnya</option>
-
-</select>
-
-<select id="projectWallet" disabled>
-
-<option value="" disabled selected>Pilih chain dahulu</option>
-
-</select>
-
-<input
-type="text"
-id="website"
-placeholder="Website">
-
-<select id="taskType">
-
-<option value="Daily">Daily</option>
-
-<option value="Weekly">Weekly</option>
-
-<option value="Testnet">Testnet</option>
-
-<option value="Mainnet">Mainnet</option>
-
-<option value="One Time">One Time</option>
-
-</select>
-
-<input
-type="date"
-id="deadline">
-
-<select id="priority">
-
-<option value="Low">🟢 Low</option>
-
-<option value="Medium">🟡 Medium</option>
-
-<option value="High">🔴 High</option>
-
-</select>
-
-<select id="status">
-
-<option value="Waitlist">🟣 Waitlist</option>
-
-<option value="Active">🟢 Active</option>
-
-<option value="Pending">🟡 Pending</option>
-
-<option value="Complete">🔵 Completed</option>
-
-</select>
-
-<textarea
-id="note"
-rows="5"
-placeholder="Catatan"></textarea>
-
-<div class="modal-button">
-
-<button id="saveProject">
-
-Simpan
-
-</button>
-
-<button id="closeModal">
-
-Batal
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ==========================
-EDIT PROJECT
-========================== -->
-
-<div class="modal" id="editModal">
-
-<div class="modal-content">
-
-<h2>Edit Project</h2>
-
-<input
-type="hidden"
-id="editId">
-
-<input
-type="text"
-id="editName"
-placeholder="Nama Project">
-
-<select id="editNetwork">
-
-<option value="" disabled>Pilih Chain</option>
-
-<option value="Ethereum">🔷 Ethereum</option>
-
-<option value="Solana">🟣 Solana</option>
-
-<option value="BNB">🟡 BNB</option>
-
-<option value="Gram (TON)">💎 Gram (TON)</option>
-
-<option value="Lainnya">🔗 Lainnya</option>
-
-</select>
-
-<select id="editProjectWallet" disabled>
-
-<option value="" disabled selected>Pilih chain dahulu</option>
-
-</select>
-
-<input
-type="text"
-id="editWebsite"
-placeholder="Website">
-
-<select id="editTaskType">
-
-<option value="Daily">Daily</option>
-
-<option value="Weekly">Weekly</option>
-
-<option value="Testnet">Testnet</option>
-
-<option value="Mainnet">Mainnet</option>
-
-<option value="One Time">One Time</option>
-
-</select>
-
-<input
-type="date"
-id="editDeadline">
-
-<select id="editPriority">
-
-<option value="Low">🟢 Low</option>
-
-<option value="Medium">🟡 Medium</option>
-
-<option value="High">🔴 High</option>
-
-</select>
-
-<select id="editStatus">
-
-<option value="Waitlist">🟣 Waitlist</option>
-
-<option value="Active">🟢 Active</option>
-
-<option value="Pending">🟡 Pending</option>
-
-<option value="Complete">🔵 Completed</option>
-
-</select>
-
-<textarea
-id="editNote"
-rows="5"
-placeholder="Catatan"></textarea>
-
-<div class="modal-button">
-
-<button id="updateProject">
-
-Update
-
-</button>
-
-<button id="closeEditModal">
-
-Batal
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ==========================
-CUSTOM ALERT
-========================== -->
-
-<div class="modal" id="customAlertModal">
-
-<div class="modal-content dialog-content">
-
-<div class="dialog-icon dialog-icon-info">
-    <i class="ti ti-info-circle" aria-hidden="true"></i>
-</div>
-
-<p class="dialog-message" id="customAlertMessage"></p>
-
-<div class="modal-button dialog-button">
-
-<button id="customAlertOk" class="dialog-btn-primary">
-
-Oke
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- ==========================
-CUSTOM CONFIRM
-========================== -->
-
-<div class="modal" id="customConfirmModal">
-
-<div class="modal-content dialog-content">
-
-<div class="dialog-icon dialog-icon-warning">
-    <i class="ti ti-alert-triangle" aria-hidden="true"></i>
-</div>
-
-<p class="dialog-message" id="customConfirmMessage"></p>
-
-<div class="modal-button dialog-button">
-
-<button id="customConfirmCancel" class="dialog-btn-secondary">
-
-Batal
-
-</button>
-
-<button id="customConfirmOk" class="dialog-btn-danger">
-
-Hapus
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="toast" class="toast">
-
-<span class="toast-icon"><i class="ti ti-check" id="toastIcon" aria-hidden="true"></i></span>
-
-<span id="toastText">
-
-Berhasil
-
-</span>
-
-</div>
-
-<!-- ==========================
-ADD WALLET
-========================== -->
-
-<div class="modal" id="walletModal">
-
-<div class="modal-content">
-
-<h2>Tambah Wallet</h2>
-
-<select id="walletChain">
-
-<option value="" disabled selected>Pilih Chain</option>
-
-<option value="Ethereum">🔷 Ethereum</option>
-
-<option value="Solana">🟣 Solana</option>
-
-<option value="BNB">🟡 BNB</option>
-
-<option value="Gram (TON)">💎 Gram (TON)</option>
-
-<option value="Lainnya">🔗 Lainnya</option>
-
-</select>
-
-<input
-type="text"
-id="walletAddress"
-placeholder="Address Wallet">
-
-<textarea
-id="walletNote"
-rows="4"
-placeholder="Keterangan"></textarea>
-
-<div class="modal-button">
-
-<button id="saveWallet">
-
-Simpan
-
-</button>
-
-<button id="closeWalletModal">
-
-Batal
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="loading" class="loading">
-
-<div class="spinner"></div>
-
-<p>Loading...</p>
-
-</div>
-
-<footer>
-
-<p>
-
-Airdrop Hub v4.1
-
-</p>
-
-</footer>
+  </div>
+
+  <button id="addProjectBtn" style="display:none;"></button>
+
+  <!-- ================= ADD PROJECT MODAL ================= -->
+  <div class="modal" id="projectModal">
+    <div class="modal-content">
+      <h2><i class="ti ti-square-rounded-plus" style="color:var(--accent);"></i> Add Project</h2>
+
+      <label class="field-label">Project Name</label>
+      <input type="text" id="name" placeholder="e.g. LayerZero">
+
+      <label class="field-label">Chain</label>
+      <select id="network">
+        <option value="" disabled selected>Choose chain</option>
+        <option value="Ethereum">🔷 Ethereum</option>
+        <option value="Solana">🟣 Solana</option>
+        <option value="BNB">🟡 BNB</option>
+        <option value="Gram (TON)">💎 Gram (TON)</option>
+        <option value="Lainnya">🔗 Other</option>
+      </select>
+
+      <label class="field-label">Linked Wallet</label>
+      <select id="projectWallet" disabled>
+        <option value="" disabled selected>Choose chain first</option>
+      </select>
+
+      <label class="field-label">Website</label>
+      <input type="text" id="website" placeholder="https://...">
+
+      <label class="field-label">Task Type</label>
+      <select id="taskType">
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="Testnet">Testnet</option>
+        <option value="Mainnet">Mainnet</option>
+        <option value="One Time">One Time</option>
+      </select>
+
+      <label class="field-label">Deadline</label>
+      <input type="date" id="deadline">
+
+      <label class="field-label">Priority</label>
+      <select id="priority">
+        <option value="Low">🟢 Low</option>
+        <option value="Medium">🟡 Medium</option>
+        <option value="High">🔴 High</option>
+      </select>
+
+      <label class="field-label">Status</label>
+      <select id="status">
+        <option value="Waitlist">🟣 Waitlist</option>
+        <option value="Active">🟢 Active</option>
+        <option value="Pending">🟡 Pending</option>
+        <option value="Complete">🔵 Completed</option>
+      </select>
+
+      <label class="field-label">Notes</label>
+      <textarea id="note" rows="4" placeholder="Optional notes..."></textarea>
+
+      <div class="modal-button">
+        <button id="saveProject">Save</button>
+        <button id="closeModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= EDIT PROJECT MODAL ================= -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <h2><i class="ti ti-edit" style="color:var(--accent);"></i> Edit Project</h2>
+      <input type="hidden" id="editId">
+
+      <label class="field-label">Project Name</label>
+      <input type="text" id="editName" placeholder="Project name">
+
+      <label class="field-label">Chain</label>
+      <select id="editNetwork">
+        <option value="" disabled>Choose chain</option>
+        <option value="Ethereum">🔷 Ethereum</option>
+        <option value="Solana">🟣 Solana</option>
+        <option value="BNB">🟡 BNB</option>
+        <option value="Gram (TON)">💎 Gram (TON)</option>
+        <option value="Lainnya">🔗 Other</option>
+      </select>
+
+      <label class="field-label">Linked Wallet</label>
+      <select id="editProjectWallet" disabled>
+        <option value="" disabled selected>Choose chain first</option>
+      </select>
+
+      <label class="field-label">Website</label>
+      <input type="text" id="editWebsite" placeholder="https://...">
+
+      <label class="field-label">Task Type</label>
+      <select id="editTaskType">
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="Testnet">Testnet</option>
+        <option value="Mainnet">Mainnet</option>
+        <option value="One Time">One Time</option>
+      </select>
+
+      <label class="field-label">Deadline</label>
+      <input type="date" id="editDeadline">
+
+      <label class="field-label">Priority</label>
+      <select id="editPriority">
+        <option value="Low">🟢 Low</option>
+        <option value="Medium">🟡 Medium</option>
+        <option value="High">🔴 High</option>
+      </select>
+
+      <label class="field-label">Status</label>
+      <select id="editStatus">
+        <option value="Waitlist">🟣 Waitlist</option>
+        <option value="Active">🟢 Active</option>
+        <option value="Pending">🟡 Pending</option>
+        <option value="Complete">🔵 Completed</option>
+      </select>
+
+      <label class="field-label">Notes</label>
+      <textarea id="editNote" rows="4" placeholder="Optional notes..."></textarea>
+
+      <div class="modal-button">
+        <button id="updateProject">Update</button>
+        <button id="closeEditModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CUSTOM ALERT ================= -->
+  <div class="modal" id="customAlertModal">
+    <div class="modal-content dialog-content">
+      <div class="dialog-icon dialog-icon-info"><i class="ti ti-info-circle"></i></div>
+      <p class="dialog-message" id="customAlertMessage"></p>
+      <div class="modal-button dialog-button">
+        <button id="customAlertOk" class="dialog-btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CUSTOM CONFIRM ================= -->
+  <div class="modal" id="customConfirmModal">
+    <div class="modal-content dialog-content">
+      <div class="dialog-icon dialog-icon-warning"><i class="ti ti-alert-triangle"></i></div>
+      <p class="dialog-message" id="customConfirmMessage"></p>
+      <div class="modal-button dialog-button">
+        <button id="customConfirmCancel" class="dialog-btn-secondary">Cancel</button>
+        <button id="customConfirmOk" class="dialog-btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <span class="toast-icon"><i class="ti ti-check" id="toastIcon"></i></span>
+    <span id="toastText">Success</span>
+  </div>
+
+  <!-- ================= ADD WALLET MODAL ================= -->
+  <div class="modal" id="walletModal">
+    <div class="modal-content">
+      <h2><i class="ti ti-wallet" style="color:var(--accent);"></i> Add Wallet</h2>
+
+      <label class="field-label">Chain</label>
+      <select id="walletChain">
+        <option value="" disabled selected>Choose chain</option>
+        <option value="Ethereum">🔷 Ethereum</option>
+        <option value="Solana">🟣 Solana</option>
+        <option value="BNB">🟡 BNB</option>
+        <option value="Gram (TON)">💎 Gram (TON)</option>
+        <option value="Lainnya">🔗 Other</option>
+      </select>
+
+      <label class="field-label">Wallet Address</label>
+      <input type="text" id="walletAddress" placeholder="0x...">
+
+      <label class="field-label">Note</label>
+      <textarea id="walletNote" rows="3" placeholder="Optional note..."></textarea>
+
+      <div class="modal-button">
+        <button id="saveWallet">Save</button>
+        <button id="closeWalletModal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>LOADING...</p>
+  </div>
+
+  <footer>
+    <p>AIRDROP HUB · BUILT FOR FARMERS</p>
+  </footer>
 
 </div>
 
 <div class="side-menu-overlay" id="sideMenuOverlay">
-
-<div class="side-menu">
-
-<div class="side-menu-header">
-
-<h2>Menu</h2>
-
-<button id="closeMenuBtn" class="close-menu-btn" aria-label="Tutup">
-
-<i class="fa-solid fa-xmark"></i>
-
-</button>
-
-</div>
-
-<div class="side-menu-content">
-
-<div class="side-menu-item" id="menuWalletBtn">
-
-<i class="fa-solid fa-wallet"></i>
-
-<span>Wallet</span>
-
-</div>
-
-</div>
-
-</div>
-
+  <div class="side-menu">
+    <div class="side-menu-header">
+      <h2>Menu</h2>
+      <button id="closeMenuBtn" class="close-menu-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="side-menu-content">
+      <div class="side-menu-item" id="menuWalletBtn">
+        <i class="fa-solid fa-wallet"></i>
+        <span>Wallets</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <nav class="bottom-nav">
-
-<button id="homeBtn">
-
-🏠
-
-<span>Home</span>
-
-</button>
-
-<button id="searchBtn">
-
-🔍
-
-<span>Search</span>
-
-</button>
-
-<button id="addBottomBtn">
-
-➕
-
-<span>Add Project</span>
-
-</button>
-
-<button id="profileBtn">
-
-👤
-
-<span>Profile</span>
-
-</button>
-
+  <button id="homeBtn"><i class="ti ti-home"></i><span>Home</span></button>
+  <button id="searchBtn"><i class="ti ti-search"></i><span>Search</span></button>
+  <button id="addBottomBtn" class="add-btn"><i class="ti ti-square-rounded-plus"></i><span>Add</span></button>
+  <button id="profileBtn"><i class="ti ti-user"></i><span>Profile</span></button>
 </nav>
 
-<!-- ES MODULE -->
 <script type="module" src="js/app.js"></script>
-
 </body>
-
-  </html>
+</html>
