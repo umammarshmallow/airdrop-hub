@@ -1,722 +1,278 @@
 /* ==========================================================
-   AIRDROP HUB — COMPONENTS
-   Dashboard strip, project card, wallet card, badge, chip, button.
+   DASHBOARD
 ========================================================== */
-
-/* ==========================================================
-   BUTTON (base)
-========================================================== */
-
-button{
-
-    border:none;
-    cursor:pointer;
-    color:var(--text);
-    font-family:var(--font-body);
-    border-radius:var(--r-md);
-    padding:10px 16px;
-    font-size:14px;
-    font-weight:500;
-    transition:background var(--fast) var(--ease),
-               border-color var(--fast) var(--ease),
-               transform var(--fast) var(--ease),
-               opacity var(--fast) var(--ease);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-
-}
-
-button:active{
-
-    transform:scale(.97);
-
-}
-
-.btn-add{
-
-    background:var(--accent);
-    color:var(--text-on-accent);
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-weight:600;
-
-}
-
-.btn-add:hover{
-
-    background:var(--accent-hover);
-
-}
-
-.wallet-add-btn{
-
-    width:100%;
-    justify-content:center;
-    margin-bottom:20px;
-    padding:13px;
-
-}
-
-.btn-gray{
-
-    background:var(--surface-3);
-    color:var(--text-muted);
-    border:1px solid var(--border);
-
-}
-
-.btn-gray:hover{
-
-    background:var(--surface-2);
-    color:var(--text);
-    border-color:var(--border-strong);
-
-}
-
-.btn-red{
-
-    background:var(--danger-soft);
-    color:var(--danger);
-
-}
-
-.btn-red:hover{
-
-    background:var(--danger);
-    color:var(--text-on-accent);
-
-}
-
-/* ==========================================================
-   DASHBOARD — LEDGER STRIP (elemen signature halaman ini)
-========================================================== */
-
 .dashboard-summary{
-
-    position:relative;
-    background:
-        linear-gradient(180deg, rgba(240,180,41,.04), transparent 60%),
-        var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--r-xl);
-    padding:22px 20px;
-    margin:0 0 24px;
-    overflow:hidden;
-
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:22px;
+  margin-bottom:28px;
+  box-shadow:var(--shadow-md);
+  position:relative;
+  overflow:hidden;
 }
-
-/* garis tick tipis di tepi atas — nuansa panel instrumen */
 
 .dashboard-summary::before{
-
-    content:"";
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    height:2px;
-    background:linear-gradient(90deg, var(--gold), transparent 70%);
-
-}
-
-.dashboard-summary h2{
-
-    color:var(--text);
-    font-size:15px;
-    font-weight:600;
-    margin-bottom:18px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    color:var(--text-muted);
-
+  content:"";
+  position:absolute; inset:0 0 auto 0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--accent-line), transparent);
 }
 
 .summary-grid{
-
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:0;
-
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
 }
 
 .summary-item{
-
-    text-align:center;
-    padding:12px 8px;
-    border-right:1px solid var(--border);
-    border-bottom:1px solid var(--border);
-
+  background:var(--surface-3);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-md);
+  padding:14px 12px;
+  text-align:left;
+  border-left:3px solid var(--border);
+  transition:.2s;
 }
 
-.summary-item:nth-child(2n){
+.summary-item[data-tone="accent"]{ border-left-color:var(--accent); }
+.summary-item[data-tone="warning"]{ border-left-color:var(--warning); }
+.summary-item[data-tone="success"]{ border-left-color:var(--success); }
+.summary-item[data-tone="pending"]{ border-left-color:#f0616b; }
+.summary-item[data-tone="waitlist"]{ border-left-color:var(--purple); }
+.summary-item[data-tone="complete"]{ border-left-color:#4bb4ff; }
 
-    border-right:none;
-
+.summary-item .val{
+  display:block;
+  font-family:var(--font-mono);
+  font-weight:600;
+  font-size:26px;
+  color:var(--text);
 }
 
-.summary-item:nth-last-child(-n+2){
-
-    border-bottom:none;
-
+.summary-item .lbl{
+  margin-top:4px;
+  font-size:11.5px;
+  color:var(--text-muted);
 }
-
-.summary-item span{
-
-    display:block;
-    font-size:30px;
-    font-weight:600;
-    font-family:var(--font-mono);
-    letter-spacing:-.02em;
-    color:var(--text);
-
-}
-
-.summary-item p{
-
-    color:var(--text-faint);
-    margin-top:4px;
-    font-size:12px;
-
-}
-
-/* Kode warna tiap statistik, senada dengan warna badge status di bawah */
-
-#todayTask{ color:var(--accent); }
-#deadlineToday{ color:var(--danger); }
-#activeProject{ color:var(--success); }
-#pendingProject{ color:var(--warning); }
-#waitlistProject{ color:var(--purple); }
-#completedProject{ color:var(--info); }
 
 /* ==========================================================
-   PROJECT LIST
+   PROJECT CARDS
 ========================================================== */
-
-section h2{
-
-    margin-bottom:16px;
-    font-size:17px;
-
-}
-
-#projectList{
-
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-
-}
+#projectList{ display:flex; flex-direction:column; gap:14px; }
 
 .project-card{
-
-    position:relative;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-left:3px solid var(--border-strong);
-    border-radius:var(--r-lg);
-    padding:18px;
-    transition:background var(--fast) var(--ease), border-color var(--fast) var(--ease);
-
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:18px;
+  transition:.2s;
 }
 
-.project-card:hover{
+.project-card[data-status="Active"]{ border-left-color:var(--success); }
+.project-card[data-status="Pending"]{ border-left-color:var(--warning); }
+.project-card[data-status="Waitlist"]{ border-left-color:var(--purple); }
+.project-card[data-status="Complete"]{ border-left-color:#4bb4ff; }
 
-    background:var(--surface-2);
-    border-color:var(--border-strong);
-
-}
-
-/* Rail warna kiri kartu mengikuti status project — sistem "ledger"
-   yang membuat status langsung terbaca tanpa perlu baca badge */
-
-.project-card:has(.badge.active){ border-left-color:var(--success); }
-.project-card:has(.badge.pending){ border-left-color:var(--warning); }
-.project-card:has(.badge.waitlist){ border-left-color:var(--purple); }
-.project-card:has(.badge.complete){ border-left-color:var(--info); }
+.project-card:hover{ border-color:var(--accent-line); background:var(--surface-2); }
 
 .project-title{
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:14px;
-
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:10px; margin-bottom:14px;
 }
 
 .project-title h3{
-
-    flex:1;
-    min-width:0;
-    font-size:15px;
-    font-weight:600;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-
+  flex:1; min-width:0;
+  font-family:var(--font-display);
+  font-size:16.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-.title-actions{
-
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-shrink:0;
-
-}
-
-/* ==========================================================
-   BADGE — status project (dot + label)
-========================================================== */
+.title-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
 
 .badge{
-
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    padding:6px 12px 6px 10px;
-    border-radius:var(--r-pill);
-    font-size:12px;
-    font-weight:600;
-
+  font-size:11px; font-weight:600;
+  padding:5px 11px; border-radius:999px;
+  letter-spacing:.02em;
+  border:1px solid transparent;
 }
 
-.badge::before{
-
-    content:"";
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:currentColor;
-    flex-shrink:0;
-
-}
-
-.active{
-
-    background:var(--success-soft);
-    color:var(--success);
-
-}
-
-.pending{
-
-    background:var(--warning-soft);
-    color:var(--warning);
-
-}
-
-.waitlist{
-
-    background:var(--purple-soft);
-    color:var(--purple);
-
-}
-
-.complete{
-
-    background:var(--info-soft);
-    color:var(--info);
-
-}
-
-/* ==========================================================
-   ICON BUTTON
-========================================================== */
+.badge.active{ background:var(--success-soft); color:var(--success); border-color:rgba(51,214,166,.3); }
+.badge.pending{ background:var(--warning-soft); color:var(--warning); border-color:rgba(245,185,66,.3); }
+.badge.waitlist{ background:var(--purple-soft); color:var(--purple); border-color:rgba(167,139,250,.3); }
+.badge.complete{ background:rgba(75,180,255,.13); color:#4bb4ff; border-color:rgba(75,180,255,.3); }
 
 .icon-btn{
-
-    width:34px;
-    height:34px;
-    padding:0;
-    border-radius:var(--r-sm);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    text-decoration:none;
-    color:var(--text-on-accent);
-    flex-shrink:0;
-
+  width:34px; height:34px; padding:0;
+  border-radius:9px;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:white; flex-shrink:0; border:none;
+  transition:.2s;
 }
 
-.icon-btn i{
-
-    font-size:16px;
-
-}
-
-.icon-btn-blue{
-
-    background:var(--accent);
-
-}
-
-.icon-btn-blue:hover{
-
-    background:var(--accent-hover);
-
-}
-
-.icon-btn-green{
-
-    background:var(--success);
-
-}
-
-.icon-btn-green:hover{
-
-    filter:brightness(.92);
-
-}
-
-.icon-btn:disabled{
-
-    background:var(--surface-3);
-    color:var(--text-faint);
-    cursor:not-allowed;
-
-}
-
-/* ==========================================================
-   DETAIL TOGGLE + DETAIL PANEL
-========================================================== */
+.icon-btn i{ font-size:16px; }
+.icon-btn-blue{ background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border); }
+.icon-btn-blue:hover{ color:var(--accent); border-color:var(--accent-line); }
+.icon-btn-green{ background:var(--success); color:#062018; }
+.icon-btn-green:hover{ filter:brightness(1.1); }
+.icon-btn:disabled{ background:var(--surface-3); color:var(--text-faint); cursor:not-allowed; }
 
 .detail-toggle{
-
-    width:100%;
-    background:transparent;
-    border:1px dashed var(--border);
-    color:var(--text-muted);
-    padding:9px;
-    border-radius:var(--r-md);
-    font-size:12px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    cursor:pointer;
-
+  width:100%;
+  background:transparent;
+  border:1px dashed var(--border);
+  color:var(--text-muted);
+  padding:10px;
+  border-radius:var(--radius-sm);
+  font-size:12.5px;
+  font-weight:500;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:.2s;
 }
 
-.detail-toggle:hover{
+.detail-toggle:hover{ border-color:var(--accent-line); color:var(--accent); border-style:solid; }
+.detail-arrow{ font-size:15px; transition:transform .2s; }
+.detail-toggle.open .detail-arrow{ transform:rotate(180deg); }
 
-    border-color:var(--accent);
-    border-style:solid;
-    color:var(--text);
-
-}
-
-.detail-arrow{
-
-    font-size:15px;
-    transition:transform var(--fast) var(--ease);
-
-}
-
-.detail-toggle.open .detail-arrow{
-
-    transform:rotate(180deg);
-
-}
-
-.project-detail{
-
-    display:none;
-    margin-top:14px;
-
-}
-
-.project-detail.open{
-
-    display:block;
-    animation:fadeSlide .2s var(--ease);
-
-}
+.project-detail{ display:none; margin-top:16px; }
+.project-detail.open{ display:block; animation:fadeSlide .18s ease; }
 
 @keyframes fadeSlide{
-
-    from{ opacity:0; transform:translateY(-4px); }
-    to{ opacity:1; transform:translateY(0); }
-
+  from{ opacity:0; transform:translateY(-4px); }
+  to{ opacity:1; transform:translateY(0); }
 }
 
-/* ==========================================================
-   CHIP
-========================================================== */
-
-.chip-group{
-
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-
-}
+.chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
 
 .chip{
-
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    padding:6px 12px;
-    border-radius:var(--r-pill);
-    font-size:12px;
-    font-family:var(--font-mono);
-    color:var(--text-muted);
-    word-break:break-all;
-
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-family:var(--font-mono);
+  word-break:break-all;
 }
 
-.chip i{
+.chip i{ font-size:13px; color:var(--accent); }
+.chip-muted{ color:var(--text-faint); }
+.chip-muted i{ color:var(--text-faint); }
 
-    font-size:13px;
-    color:var(--accent);
-
-}
-
-.chip-muted{
-
-    color:var(--text-faint);
-
-}
-
-.chip-muted i{
-
-    color:var(--text-faint);
-
-}
-
-/* ==========================================================
-   INFO GRID
-========================================================== */
-
-.info-grid{
-
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-    margin-top:12px;
-
-}
+.info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
 
 .info-tile{
-
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    border-radius:var(--r-md);
-    padding:10px 8px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    align-items:flex-start;
-    min-width:0;
-
+  background:var(--surface-3);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm);
+  padding:11px 13px;
+  display:flex; gap:11px; align-items:center;
 }
 
-.info-tile-full{
-
-    grid-column:1 / -1;
-    flex-direction:row;
-    align-items:center;
-
-}
-
-.info-icon{
-
-    font-size:15px;
-    color:var(--text-faint);
-
-}
-
-.info-label{
-
-    color:var(--text-faint);
-    font-size:9px;
-    text-transform:uppercase;
-    letter-spacing:.04em;
-    white-space:nowrap;
-
-}
-
-.info-value{
-
-    font-size:12px;
-    font-family:var(--font-mono);
-    color:var(--text);
-    margin-top:1px;
-    overflow-wrap:break-word;
-    word-break:break-word;
-
-}
-
-.project-meta{
-
-    margin-top:14px;
-    padding-top:10px;
-    border-top:1px solid var(--border);
-    font-size:11px;
-    color:var(--text-faint);
-
-}
+.info-tile-full{ grid-column:1 / -1; }
+.info-icon{ font-size:17px; color:var(--accent); flex-shrink:0; }
+.info-label{ color:var(--text-faint); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; }
+.info-value{ font-size:13.5px; font-weight:500; margin-top:2px; }
 
 .note{
-
-    margin-top:14px;
-    background:var(--surface-2);
-    border:1px solid var(--border);
-    padding:14px;
-    border-radius:var(--r-md);
-    line-height:1.6;
-    font-size:13px;
-    color:var(--text-muted);
-
+  margin-top:12px;
+  background:var(--surface-3);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.55;
+  white-space:pre-wrap;
 }
 
-.project-action{
+.project-action{ display:flex; gap:10px; margin-top:14px; }
 
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-top:18px;
-
+.btn-gray, .btn-red{
+  flex:1;
+  padding:11px;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  font-weight:600;
+  border:1px solid var(--border);
+  background:var(--surface-3);
+  color:var(--text-muted);
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  transition:.2s;
 }
 
-.project-action button{
+.btn-gray:hover{ color:var(--text); border-color:var(--accent-line); }
+.btn-red{ color:var(--danger); }
+.btn-red:hover{ background:var(--danger-soft); border-color:rgba(240,97,107,.4); }
 
-    flex:1;
-    min-width:0;
-    padding:10px 8px;
-    font-size:13px;
-    white-space:nowrap;
-
+.project-meta{
+  margin-top:12px;
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  color:var(--text-faint);
 }
-
-/* ==========================================================
-   EMPTY STATE
-========================================================== */
 
 .empty{
-
-    background:var(--surface);
-    border:1px dashed var(--border);
-    padding:48px 24px;
-    border-radius:var(--r-lg);
-    text-align:center;
-    color:var(--text-faint);
-    font-size:13px;
-
+  text-align:center;
+  padding:50px 20px;
+  color:var(--text-faint);
+  background:var(--surface);
+  border:1px dashed var(--border);
+  border-radius:var(--radius-md);
+  font-size:13.5px;
 }
 
 /* ==========================================================
-   WALLET LIST (simple card)
+   WALLET LIST
 ========================================================== */
-
-#walletList{
-
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-
+.btn-add{
+  background:var(--accent);
+  color:#0a0d14;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  font-weight:600;
+  font-size:13.5px;
+  padding:12px 18px;
+  border-radius:var(--radius-sm);
+  border:none;
+  transition:.2s;
 }
+
+.btn-add:hover{ background:var(--accent-hover); color:white; }
+.wallet-add-btn{ width:100%; margin-bottom:22px; }
+
+#walletList{ display:flex; flex-direction:column; gap:13px; }
 
 .simple-card{
-
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--r-lg);
-    padding:18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-    flex-wrap:wrap;
-    transition:background var(--fast) var(--ease), border-color var(--fast) var(--ease);
-
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:18px;
+  display:flex; justify-content:space-between; align-items:center;
+  gap:15px; flex-wrap:wrap;
+  transition:.2s;
 }
 
-.simple-card:hover{
+.simple-card:hover{ border-color:var(--accent-line); background:var(--surface-2); }
+.simple-card-info{ flex:1; min-width:200px; }
 
-    background:var(--surface-2);
-    border-color:var(--border-strong);
-
+.simple-card-info .chain-name{
+  font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px; margin-bottom:8px;
 }
 
-.simple-card-info{
+.chain-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
 
-    flex:1;
-    min-width:200px;
-
-}
-
-.simple-card-info p{
-
-    color:var(--text-muted);
-    word-break:break-all;
-    font-size:13px;
-
-}
-
-.simple-card-info p:first-child{
-
-    color:var(--text);
-    margin-bottom:6px;
-    font-size:14px;
-    font-weight:600;
-
-}
-
-.wallet-address-row{
-
-    display:block;
-    overflow:hidden;
-
-}
-
-.wallet-address-text{
-
-    display:block;
-    word-break:break-all;
-    overflow-wrap:break-word;
-    font-size:12px;
-    color:var(--text-muted);
-
-}
+.simple-card-info p{ color:var(--text-muted); word-break:break-all; font-size:13px; }
+.wallet-address-row{ display:block; overflow:hidden; margin-bottom:6px; }
+.wallet-address-text{ display:block; word-break:break-all; font-family:var(--font-mono); font-size:12.5px; color:var(--text); }
 
 .copy-btn{
-
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text-faint);
-    width:30px;
-    height:30px;
-    padding:0;
-    border-radius:var(--r-sm);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    float:right;
-    margin-left:8px;
-    cursor:pointer;
-
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  color:var(--text-muted);
+  width:30px; height:30px; padding:0;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  float:right; margin-left:8px;
 }
 
-.copy-btn i{
-
-    font-size:14px;
-
-}
-
-.copy-btn:hover{
-
-    border-color:var(--accent);
-    color:var(--accent);
-
-}
+.copy-btn:hover{ border-color:var(--accent-line); color:var(--accent); }
