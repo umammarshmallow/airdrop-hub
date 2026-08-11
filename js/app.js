@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (cleanup.removedCount > 0) {
 
             showToast(
-                `${cleanup.removedCount} project Waitlist/Pending dihapus otomatis (tidak diupdate 2 bulan).`,
+                `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
                 4000
             );
 
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
        if (cleanup.removedCount > 0) {
 
            showToast(
-               `${cleanup.removedCount} project Waitlist/Pending dihapus otomatis (tidak diupdate 2 bulan).`,
+               `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
                4000
            );
 
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.error(error);
 
-        alert("Terjadi kesalahan saat memuat aplikasi.");
+        showToast("Something went wrong while loading the app.", 4000, "error");
 
     } finally {
 

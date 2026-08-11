@@ -26,7 +26,7 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
     if (!chain) {
 
-        selectEl.innerHTML = `<option value="" disabled selected>Pilih chain dahulu</option>`;
+        selectEl.innerHTML = `<option value="" disabled selected>Choose chain first</option>`;
 
         selectEl.disabled = true;
 
@@ -42,7 +42,7 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
     if (wallets.length === 0) {
 
-        selectEl.innerHTML = `<option value="" disabled selected>Belum ada wallet ${chain}</option>`;
+        selectEl.innerHTML = `<option value="" disabled selected>No ${chain} wallet yet</option>`;
 
         selectEl.disabled = true;
 
@@ -54,7 +54,7 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
     const icon = CHAIN_ICONS[chain] || "🔗";
 
-    let html = `<option value="" disabled ${selectedId ? "" : "selected"}>Pilih Wallet</option>`;
+    let html = `<option value="" disabled ${selectedId ? "" : "selected"}>Select wallet</option>`;
 
     wallets.forEach(wallet => {
 

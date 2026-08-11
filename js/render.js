@@ -46,7 +46,7 @@ export function renderProjects() {
 
         projectList.innerHTML = `
             <div class="empty">
-                Belum ada project.
+                No projects match your filters.
             </div>
         `;
 
@@ -62,7 +62,7 @@ export function renderProjects() {
         );
 
         html += `
-        <div class="project-card">
+        <div class="project-card" data-status="${project.status}">
 
             <div class="project-title">
 
@@ -93,7 +93,7 @@ export function renderProjects() {
                                 data-action="daily"
                                 data-id="${project.id}"
                                 ${project.dailyDone ? "disabled" : ""}
-                                title="${project.dailyDone ? "Completed" : "Checklist"}">
+                                title="${project.dailyDone ? "Completed" : "Mark done"}">
 
                                 <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
 
@@ -111,7 +111,7 @@ export function renderProjects() {
                 data-action="toggle"
                 data-id="${project.id}">
 
-                <span>Lihat detail</span>
+                <span>View details</span>
                 <i class="ti ti-chevron-down detail-arrow" aria-hidden="true"></i>
 
             </button>
@@ -123,7 +123,7 @@ export function renderProjects() {
                     <span class="chip"><i class="ti ti-link" aria-hidden="true"></i> ${project.network}</span>
 
                     <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : "Belum ada wallet"}
+                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : "No wallet linked"}
                     </span>
 
                 </div>
@@ -146,7 +146,7 @@ export function renderProjects() {
                         </div>
                     </div>
 
-                    <div class="info-tile">
+                    <div class="info-tile info-tile-full">
                         <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">Deadline</div>
@@ -186,7 +186,7 @@ export function renderProjects() {
                 </div>
 
                 <div class="project-meta">
-                    Ditambahkan ${formatDate(project.createdAt)} · Update terakhir ${formatDate(project.updatedAt)}
+                    Added ${formatDate(project.createdAt)} · Last updated ${formatDate(project.updatedAt)}
                 </div>
 
             </div>
@@ -238,7 +238,7 @@ projectList.addEventListener("click", async (e) => {
 
                     otherToggle.classList.remove("open");
 
-                    otherToggle.querySelector("span").textContent = "Lihat detail";
+                    otherToggle.querySelector("span").textContent = "View details";
 
                 }
 
@@ -249,7 +249,7 @@ projectList.addEventListener("click", async (e) => {
             button.classList.toggle("open", willOpen);
 
             button.querySelector("span").textContent =
-                willOpen ? "Sembunyikan detail" : "Lihat detail";
+                willOpen ? "Sembunyikan detail" : "View details";
 
             break;
 

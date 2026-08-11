@@ -17,6 +17,16 @@ const CHAIN_ICONS = {
 
 };
 
+const CHAIN_COLORS = {
+
+    "Ethereum": "#5b8cff",
+    "Solana": "#a78bfa",
+    "BNB": "#f5b942",
+    "Gram (TON)": "#33d6a6",
+    "Lainnya": "#8b93a6"
+
+};
+
 /* ==========================================
    DATA
 ========================================== */
@@ -80,7 +90,7 @@ export async function addWallet(data) {
 
     if (!chain) {
 
-        await showAlert("Chain wajib dipilih.");
+        await showAlert("Chain is required.");
 
         return false;
 
@@ -88,7 +98,7 @@ export async function addWallet(data) {
 
     if (!address) {
 
-        await showAlert("Address wallet wajib diisi.");
+        await showAlert("Wallet address is required.");
 
         return false;
 
@@ -108,7 +118,7 @@ export async function addWallet(data) {
 
     save();
 
-    showToast("Wallet berhasil ditambahkan.");
+    showToast("Wallet added successfully.");
 
     return true;
 
@@ -121,7 +131,7 @@ export async function addWallet(data) {
 export async function deleteWallet(id) {
 
     const confirmed = await showConfirm(
-        "Yakin ingin menghapus wallet ini? Tindakan ini tidak bisa dibatalkan."
+        "Delete this wallet? This action cannot be undone."
     );
 
     if (!confirmed) {
@@ -138,7 +148,7 @@ export async function deleteWallet(id) {
 
     save();
 
-    showToast("Wallet berhasil dihapus.");
+    showToast("Wallet deleted successfully.");
 
     return true;
 
@@ -156,7 +166,7 @@ export function renderWallets() {
 
         walletList.innerHTML = `
             <div class="empty">
-                Belum ada wallet.
+                No wallets yet.
             </div>
         `;
 
@@ -169,13 +179,14 @@ export function renderWallets() {
     wallets.forEach(wallet => {
 
         const icon = CHAIN_ICONS[wallet.chain] || "🔗";
+        const dot = CHAIN_COLORS[wallet.chain] || "#8b93a6";
 
         html += `
         <div class="simple-card">
 
             <div class="simple-card-info">
 
-                <p><b>${icon} ${wallet.chain || "-"}</b></p>
+                <p class="chain-name"><span class="chain-dot" style="background:${dot}"></span>${icon} ${wallet.chain || "-"}</p>
 
                 <p class="wallet-address-row">
                     <span class="wallet-address-text">${wallet.address}</span>
@@ -195,9 +206,10 @@ export function renderWallets() {
             <button
                 class="btn-red"
                 data-action="delete"
-                data-id="${wallet.id}">
+                data-id="${wallet.id}"
+                style="flex:none; padding:11px 16px;">
 
-                🗑 Delete
+                <i class="ti ti-trash" aria-hidden="true"></i> Delete
 
             </button>
 
@@ -253,7 +265,7 @@ function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
 
         navigator.clipboard.writeText(text)
-            .then(() => showToast("Address wallet disalin."))
+            .then(() => showToast("Wallet address copied."))
             .catch(() => fallbackCopy(text));
 
     } else {
@@ -282,7 +294,7 @@ function fallbackCopy(text) {
 
         document.execCommand("copy");
 
-        showToast("Address wallet disalin.");
+        showToast("Wallet address copied.");
 
     } catch (error) {
 

@@ -37,7 +37,7 @@ export function formatDate(timestamp) {
 
     if (isNaN(date.getTime())) return "-";
 
-    return date.toLocaleDateString("id-ID", {
+    return date.toLocaleDateString("en-US", {
 
         day: "numeric",
         month: "short",
@@ -147,7 +147,7 @@ export async function validateProject(project) {
 
     if (!project.name.trim()) {
 
-        await showAlert("Nama project wajib diisi.");
+        await showAlert("Project name is required.");
 
         return false;
 
@@ -155,7 +155,7 @@ export async function validateProject(project) {
 
     if (!project.network.trim()) {
 
-        await showAlert("Chain wajib dipilih.");
+        await showAlert("Chain is required.");
 
         return false;
 
@@ -176,7 +176,7 @@ export function sortProjects(projects, mode = "default") {
         return [...projects].sort((a, b) => {
 
             if (!a.deadline && !b.deadline)
-                return a.name.localeCompare(b.name, "id");
+                return a.name.localeCompare(b.name, "en");
 
             if (!a.deadline) return 1;
             if (!b.deadline) return -1;
@@ -214,7 +214,7 @@ export function sortProjects(projects, mode = "default") {
 
         return a.name.localeCompare(
             b.name,
-            "id",
+            "en",
             { sensitivity: "base" }
         );
 

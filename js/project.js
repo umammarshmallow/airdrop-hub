@@ -89,7 +89,7 @@ export async function addProject(data) {
 
     closeAddModal();
 
-    showToast("Project berhasil ditambahkan.");
+    showToast("Project added successfully.");
 
     return true;
 
@@ -102,7 +102,7 @@ export async function addProject(data) {
 export async function deleteProject(id) {
 
     const confirmed = await showConfirm(
-        "Yakin ingin menghapus project ini? Tindakan ini tidak bisa dibatalkan."
+        "Delete this project? This action cannot be undone."
     );
 
     if (!confirmed) {
@@ -119,7 +119,7 @@ export async function deleteProject(id) {
 
     save();
 
-    showToast("Project berhasil dihapus.");
+    showToast("Project deleted successfully.");
 
     return true;
 
@@ -193,7 +193,7 @@ export async function updateProject(data) {
 
     closeEditModal();
 
-    showToast("Project berhasil diperbarui.");
+    showToast("Project updated successfully.");
 
     return true;
 

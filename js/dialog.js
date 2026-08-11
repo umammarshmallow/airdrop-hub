@@ -59,7 +59,7 @@ export function showAlert(message) {
    Resolve dengan true/false
 ========================================== */
 
-export function showConfirm(message, confirmLabel = "Hapus") {
+export function showConfirm(message, confirmLabel = "Delete") {
 
     return new Promise((resolve) => {
 
