@@ -7,7 +7,10 @@
   .dropbtn{ padding:0 8px; font-size:11.5px; }
   .dropbtn span{ gap:4px; }
   .dropbtn i:first-child{ font-size:13px; }
-  .info-grid{ grid-template-columns:1fr; }
+  .info-grid{ grid-template-columns:repeat(3,1fr); gap:6px; }
+  .info-tile{ padding:8px 5px; }
+  .info-label{ font-size:9px; }
+  .info-value{ font-size:11.5px; }
   .modal-button{ flex-direction:column; }
   .simple-card{ flex-direction:column; align-items:flex-start; }
   .simple-card-info{ width:100%; min-width:0; }
