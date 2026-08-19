@@ -28,6 +28,9 @@
   --purple:#a78bfa;
   --purple-soft:rgba(167,139,250,.13);
 
+  /* Dipakai khusus untuk garis aksen di kartu Dashboard (dipertahankan) */
+  --gold:#f0b429;
+
   --radius-sm:10px;
   --radius-md:14px;
   --radius-lg:20px;
