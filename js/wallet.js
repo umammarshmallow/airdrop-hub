@@ -4,6 +4,7 @@
 
 import { showToast } from "./helpers.js";
 import { showAlert, showConfirm } from "./dialog.js";
+import { pushToCloud } from "./cloudSync.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
@@ -63,6 +64,8 @@ function save() {
             STORAGE_KEY,
             JSON.stringify(wallets)
         );
+
+        pushToCloud();
 
     } catch (error) {
 

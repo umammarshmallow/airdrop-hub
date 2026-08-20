@@ -5,7 +5,7 @@
 
 import { initEvents } from "./event.js";
 
-import { loadProjects, resetDailyTasks, cleanupStaleProjects } from "./storage.js";
+import { loadProjects, resetDailyTasks, cleanupStaleProjects, exportBackup, importBackup } from "./storage.js";
 
 import { renderProjects } from "./render.js";
 
@@ -17,7 +17,17 @@ import { setProjects } from "./project.js";
 
 import { initWallet } from "./wallet.js";
 
-import { initDialog } from "./dialog.js";
+import { initDialog, showAlert, showConfirm } from "./dialog.js";
+
+import {
+    initFirebaseApp,
+    waitForPersistedSession,
+    loginWithEmail,
+    registerWithEmail,
+    logoutCloud,
+    isCloudSyncEnabled,
+    getCurrentUser
+} from "./cloudSync.js";
 
 /* ==========================================
    INITIALIZE APPLICATION
@@ -42,13 +52,35 @@ document.addEventListener("visibilitychange", () => {
 
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     showLoading();
 
     initDialog();
 
     try {
+
+        // Siapkan koneksi Firebase (kalau sudah dikonfigurasi) & cek
+        // apakah user sudah pernah login sebelumnya di device ini.
+        const configured = initFirebaseApp();
+
+        if (configured) {
+
+            const existingUser = await waitForPersistedSession();
+
+            if (existingUser) {
+
+                showToast("Cloud sync aktif — login sebagai " + existingUser.email, 2500);
+                updateAccountMenuLabel(existingUser.email);
+
+            } else {
+
+                showCloudAuthModal();
+                updateAccountMenuLabel(null);
+
+            }
+
+        }
 
         /* memastikan data localStorage terbaca */
 
@@ -289,6 +321,267 @@ sideMenuOverlay.classList.remove("active");
 menuBtn.onclick=openMenu;
 
 closeMenuBtn.onclick=closeMenu;
+
+/* ==========================================
+   BACKUP & RESTORE
+========================================== */
+
+const menuExportBtn=document.getElementById("menuExportBtn");
+
+const menuImportBtn=document.getElementById("menuImportBtn");
+
+const importFileInput=document.getElementById("importFileInput");
+
+menuExportBtn.onclick=()=>{
+
+    const json=exportBackup();
+
+    const blob=new Blob([json],{type:"application/json"});
+
+    const url=URL.createObjectURL(blob);
+
+    const today=new Date().toISOString().slice(0,10);
+
+    const link=document.createElement("a");
+
+    link.href=url;
+
+    link.download=`airdrophub-backup-${today}.json`;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    showToast("Backup berhasil diunduh");
+
+    closeMenu();
+
+};
+
+menuImportBtn.onclick=()=>{
+
+    importFileInput.click();
+
+};
+
+importFileInput.onchange=async()=>{
+
+    const file=importFileInput.files[0];
+
+    if(!file) return;
+
+    const confirmed=await showConfirm(
+        "Import akan MENIMPA seluruh data project & wallet yang ada saat ini dengan isi file backup. Lanjutkan?",
+        "Import"
+    );
+
+    if(!confirmed){
+
+        importFileInput.value="";
+
+        return;
+
+    }
+
+    try{
+
+        const text=await file.text();
+
+        await importBackup(text);
+
+        showToast("Data berhasil dipulihkan, memuat ulang...");
+
+        setTimeout(()=>location.reload(),900);
+
+    }catch(error){
+
+        console.error("Gagal import backup:",error);
+
+        await showAlert("Gagal import: file backup tidak valid atau rusak.");
+
+    }
+
+    importFileInput.value="";
+
+};
+
+/* ==========================================
+   CLOUD AUTH (Login / Daftar / Logout)
+========================================== */
+
+const cloudAuthModal=document.getElementById("cloudAuthModal");
+
+const cloudAuthEmail=document.getElementById("cloudAuthEmail");
+
+const cloudAuthPassword=document.getElementById("cloudAuthPassword");
+
+const cloudAuthError=document.getElementById("cloudAuthError");
+
+const cloudAuthSkip=document.getElementById("cloudAuthSkip");
+
+const cloudAuthLoginBtn=document.getElementById("cloudAuthLoginBtn");
+
+const cloudAuthRegisterLink=document.getElementById("cloudAuthRegisterLink");
+
+const menuAccountBtn=document.getElementById("menuAccountBtn");
+
+const menuAccountLabel=document.getElementById("menuAccountLabel");
+
+let cloudAuthMode="login"; // "login" atau "register"
+
+function showCloudAuthModal(){
+
+    cloudAuthError.style.display="none";
+
+    cloudAuthModal.style.display="flex";
+
+    document.body.classList.add("modal-open");
+
+}
+
+function closeCloudAuthModal(){
+
+    cloudAuthModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+}
+
+function setCloudAuthError(message){
+
+    cloudAuthError.textContent=message;
+
+    cloudAuthError.style.display="block";
+
+}
+
+function updateAccountMenuLabel(email){
+
+    menuAccountLabel.textContent = email ? email : "Login Cloud Sync";
+
+}
+
+function friendlyAuthError(error){
+
+    const code = error && error.code ? error.code : "";
+
+    if(code.includes("invalid-email")) return "Format email tidak valid.";
+
+    if(code.includes("user-not-found") || code.includes("invalid-credential")) return "Email/password salah atau belum terdaftar.";
+
+    if(code.includes("wrong-password")) return "Password salah.";
+
+    if(code.includes("email-already-in-use")) return "Email ini sudah terdaftar, coba Login.";
+
+    if(code.includes("weak-password")) return "Password minimal 6 karakter.";
+
+    return "Gagal login/daftar, coba lagi.";
+
+}
+
+cloudAuthRegisterLink.onclick=(e)=>{
+
+    e.preventDefault();
+
+    cloudAuthMode = cloudAuthMode==="login" ? "register" : "login";
+
+    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
+
+    cloudAuthRegisterLink.textContent = cloudAuthMode==="login" ? "Daftar sekarang" : "Login di sini";
+
+    cloudAuthRegisterLink.previousSibling.textContent = cloudAuthMode==="login" ? "Belum punya akun? " : "Sudah punya akun? ";
+
+    cloudAuthError.style.display="none";
+
+};
+
+cloudAuthSkip.onclick=()=>{
+
+    closeCloudAuthModal();
+
+    showToast("Mode offline — data hanya tersimpan di device ini.", 3000, "warning");
+
+};
+
+cloudAuthLoginBtn.onclick=async()=>{
+
+    const email=cloudAuthEmail.value.trim();
+
+    const password=cloudAuthPassword.value;
+
+    if(!email || !password){
+
+        setCloudAuthError("Email & password wajib diisi.");
+
+        return;
+
+    }
+
+    cloudAuthLoginBtn.disabled=true;
+
+    cloudAuthLoginBtn.textContent="Memproses...";
+
+    try{
+
+        const user = cloudAuthMode==="login"
+            ? await loginWithEmail(email,password)
+            : await registerWithEmail(email,password);
+
+        closeCloudAuthModal();
+
+        updateAccountMenuLabel(user.email);
+
+        showToast("Berhasil login, memuat data...");
+
+        setTimeout(()=>location.reload(),700);
+
+    }catch(error){
+
+        console.error("[CloudAuth]",error);
+
+        setCloudAuthError(friendlyAuthError(error));
+
+    }
+
+    cloudAuthLoginBtn.disabled=false;
+
+    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
+
+};
+
+menuAccountBtn.onclick=async()=>{
+
+    const user=getCurrentUser();
+
+    if(!user){
+
+        closeMenu();
+
+        showCloudAuthModal();
+
+        return;
+
+    }
+
+    const confirmed=await showConfirm(`Logout dari ${user.email}? Data tetap tersimpan di cloud.`,"Logout");
+
+    if(confirmed){
+
+        await logoutCloud();
+
+        closeMenu();
+
+        showToast("Berhasil logout.");
+
+        updateAccountMenuLabel(null);
+
+    }
+
+};
 
 sideMenuOverlay.addEventListener("click", (e)=>{
 
