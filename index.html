@@ -315,6 +315,68 @@
     </div>
   </div>
 
+  <!-- ================= PROFILE MODAL ================= -->
+  <div class="modal" id="profileModal">
+    <div class="modal-content">
+      <h2><i class="fa-solid fa-id-badge"></i> Profile</h2>
+
+      <div id="profileLoggedInView">
+        <label class="field-label">Email</label>
+        <input type="text" id="profileEmailDisplay" disabled>
+
+        <p style="color:var(--text-muted); font-size:12.5px; margin:14px 0 0;">
+          Data project & wallet kamu tersinkron otomatis lewat akun ini.
+        </p>
+      </div>
+
+      <div id="profileLoggedOutView" style="display:none;">
+        <p style="color:var(--text-muted); font-size:13px; margin:0 0 4px;">
+          Kamu belum login. Login supaya data tersinkron otomatis di semua device.
+        </p>
+      </div>
+
+      <div class="modal-button">
+        <button id="closeProfileModal" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Tutup</button>
+        <button id="profileLoginBtn" style="background:var(--accent); color:#0a0d14;">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SECURITY MODAL ================= -->
+  <div class="modal" id="securityModal">
+    <div class="modal-content">
+      <h2><i class="fa-solid fa-shield-halved"></i> Security</h2>
+
+      <div id="securityLoggedInView">
+        <p style="color:var(--text-muted); font-size:12.5px; margin:-6px 0 16px;">
+          Masukkan password lama & password baru untuk mengganti password akun.
+        </p>
+
+        <label class="field-label">Password Saat Ini</label>
+        <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password">
+
+        <label class="field-label">Password Baru</label>
+        <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password">
+
+        <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+
+        <div class="modal-button">
+          <button id="closeSecurityModal" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Batal</button>
+          <button id="securityUpdateBtn" style="background:var(--accent); color:#0a0d14;">Update Password</button>
+        </div>
+      </div>
+
+      <div id="securityLoggedOutView" style="display:none;">
+        <p style="color:var(--text-muted); font-size:13px; margin:0 0 16px;">
+          Login dulu untuk mengatur keamanan akun.
+        </p>
+        <div class="modal-button">
+          <button id="closeSecurityModalAlt" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
     <div class="modal-content">
@@ -418,21 +480,36 @@
     <div class="side-menu-content">
       <div class="side-menu-item" id="menuWalletBtn">
         <i class="fa-solid fa-wallet"></i>
-        <span>Wallets</span>
+        <span>Wallet</span>
       </div>
-      <div class="side-menu-item" id="menuAccountBtn">
+
+      <div class="side-menu-item expandable" id="menuAccountToggle" aria-expanded="false">
         <i class="fa-solid fa-user"></i>
-        <span id="menuAccountLabel">Login Cloud Sync</span>
+        <span id="menuAccountLabel">Account</span>
+        <i class="fa-solid fa-chevron-down side-menu-chevron"></i>
       </div>
+      <div class="side-menu-submenu" id="menuAccountSubmenu">
+        <div class="side-menu-subitem" id="menuProfileBtn">
+          <i class="fa-solid fa-id-badge"></i>
+          <span>Profile</span>
+        </div>
+        <div class="side-menu-subitem" id="menuSecurityBtn">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Security</span>
+        </div>
+      </div>
+
       <div class="side-menu-item" id="menuExportBtn">
         <i class="fa-solid fa-download"></i>
-        <span>Backup Data (Export)</span>
+        <span>Backup Data</span>
       </div>
       <div class="side-menu-item" id="menuImportBtn">
         <i class="fa-solid fa-upload"></i>
-        <span>Restore Data (Import)</span>
+        <span>Restore Data</span>
       </div>
       <input type="file" id="importFileInput" accept="application/json" hidden>
+
+      <button class="side-menu-logout" id="menuLogoutBtn">Log out</button>
     </div>
   </div>
 </div>
