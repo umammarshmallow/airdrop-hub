@@ -20,7 +20,10 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    signOut
+    signOut,
+    updatePassword,
+    EmailAuthProvider,
+    reauthenticateWithCredential
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
     getFirestore,
@@ -87,14 +90,28 @@ export function initFirebaseApp() {
    jadi user tidak perlu login ulang tiap buka app)
 ========================================== */
 
+function withTimeout(promise, ms, fallbackValue) {
+
+    return Promise.race([
+        promise,
+        new Promise((resolve) => setTimeout(() => resolve(fallbackValue), ms))
+    ]);
+
+}
+
 export function waitForPersistedSession() {
 
     if (!auth) return Promise.resolve(null);
 
     return new Promise((resolve) => {
 
+        let settled = false;
+
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
 
+            if (settled) return; // sudah keburu timeout, abaikan callback telat
+
+            settled = true;
             unsubscribe();
 
             if (user) {
@@ -109,6 +126,16 @@ export function waitForPersistedSession() {
             resolve(user);
 
         });
+
+        // Jangan pernah tahan app lebih dari 4 detik hanya buat cek sesi login.
+        setTimeout(() => {
+
+            if (!settled) {
+                settled = true;
+                resolve(null);
+            }
+
+        }, 4000);
 
     });
 
@@ -155,6 +182,24 @@ export async function logoutCloud() {
 }
 
 /* ==========================================
+   GANTI PASSWORD
+========================================== */
+
+export async function changePassword(currentPassword, newPassword) {
+
+    const user = auth ? auth.currentUser : null;
+
+    if (!user) throw new Error("NOT_LOGGED_IN");
+
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+
+    await reauthenticateWithCredential(user, credential);
+
+    await updatePassword(user, newPassword);
+
+}
+
+/* ==========================================
    PULL (cloud -> localStorage)
 ========================================== */
 
@@ -164,7 +209,14 @@ export async function pullFromCloud() {
 
     try {
 
-        const snap = await getDoc(userDocRef());
+        const snap = await withTimeout(getDoc(userDocRef()), 6000, null);
+
+        if (snap === null) {
+
+            console.warn("[CloudSync] Timeout ambil data cloud, pakai data lokal dulu.");
+            return;
+
+        }
 
         if (snap.exists()) {
 

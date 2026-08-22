@@ -26,7 +26,8 @@ import {
     registerWithEmail,
     logoutCloud,
     isCloudSyncEnabled,
-    getCurrentUser
+    getCurrentUser,
+    changePassword
 } from "./cloudSync.js";
 
 /* ==========================================
@@ -429,8 +430,6 @@ const cloudAuthLoginBtn=document.getElementById("cloudAuthLoginBtn");
 
 const cloudAuthRegisterLink=document.getElementById("cloudAuthRegisterLink");
 
-const menuAccountBtn=document.getElementById("menuAccountBtn");
-
 const menuAccountLabel=document.getElementById("menuAccountLabel");
 
 let cloudAuthMode="login"; // "login" atau "register"
@@ -461,9 +460,10 @@ function setCloudAuthError(message){
 
 }
 
-function updateAccountMenuLabel(email){
+function updateAccountMenuLabel(){
 
-    menuAccountLabel.textContent = email ? email : "Login Cloud Sync";
+    // Item menu "Account" sekarang statis — status login ditampilkan
+    // langsung di dalam modal Profile & Security saat dibuka.
 
 }
 
@@ -509,6 +509,15 @@ cloudAuthSkip.onclick=()=>{
 
 };
 
+function withUiTimeout(promise, ms) {
+
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT")), ms))
+    ]);
+
+}
+
 cloudAuthLoginBtn.onclick=async()=>{
 
     const email=cloudAuthEmail.value.trim();
@@ -529,9 +538,13 @@ cloudAuthLoginBtn.onclick=async()=>{
 
     try{
 
-        const user = cloudAuthMode==="login"
-            ? await loginWithEmail(email,password)
-            : await registerWithEmail(email,password);
+        const action = cloudAuthMode==="login"
+            ? loginWithEmail(email,password)
+            : registerWithEmail(email,password);
+
+        // Batas waktu 3 detik — tombol tidak boleh macet selamanya
+        // walau koneksi ke server lambat/gagal total.
+        const user = await withUiTimeout(action, 3000);
 
         closeCloudAuthModal();
 
@@ -541,11 +554,21 @@ cloudAuthLoginBtn.onclick=async()=>{
 
         setTimeout(()=>location.reload(),700);
 
+        return;
+
     }catch(error){
 
         console.error("[CloudAuth]",error);
 
-        setCloudAuthError(friendlyAuthError(error));
+        if(error.message==="TIMEOUT"){
+
+            setCloudAuthError("Koneksi ke server lambat/gagal. Periksa jaringan lalu coba lagi.");
+
+        }else{
+
+            setCloudAuthError(friendlyAuthError(error));
+
+        }
 
     }
 
@@ -555,7 +578,201 @@ cloudAuthLoginBtn.onclick=async()=>{
 
 };
 
-menuAccountBtn.onclick=async()=>{
+/* ==========================================
+   ACCOUNT ACCORDION (Profile / Security / Logout)
+========================================== */
+
+const menuAccountToggle=document.getElementById("menuAccountToggle");
+
+const menuAccountSubmenu=document.getElementById("menuAccountSubmenu");
+
+const menuProfileBtn=document.getElementById("menuProfileBtn");
+
+const menuSecurityBtn=document.getElementById("menuSecurityBtn");
+
+const menuLogoutBtn=document.getElementById("menuLogoutBtn");
+
+menuAccountToggle.onclick=()=>{
+
+    const isOpen = menuAccountSubmenu.classList.toggle("open");
+
+    menuAccountToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+};
+
+/* -------- PROFILE MODAL -------- */
+
+const profileModal=document.getElementById("profileModal");
+
+const profileLoggedInView=document.getElementById("profileLoggedInView");
+
+const profileLoggedOutView=document.getElementById("profileLoggedOutView");
+
+const profileEmailDisplay=document.getElementById("profileEmailDisplay");
+
+const closeProfileModal=document.getElementById("closeProfileModal");
+
+const profileLoginBtn=document.getElementById("profileLoginBtn");
+
+menuProfileBtn.onclick=()=>{
+
+    closeMenu();
+
+    const user=getCurrentUser();
+
+    if(user){
+
+        profileLoggedInView.style.display="block";
+        profileLoggedOutView.style.display="none";
+        profileEmailDisplay.value=user.email;
+        profileLoginBtn.style.display="none";
+
+    }else{
+
+        profileLoggedInView.style.display="none";
+        profileLoggedOutView.style.display="block";
+        profileLoginBtn.style.display="inline-block";
+
+    }
+
+    profileModal.style.display="flex";
+
+    document.body.classList.add("modal-open");
+
+};
+
+closeProfileModal.onclick=()=>{
+
+    profileModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+};
+
+profileLoginBtn.onclick=()=>{
+
+    profileModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+    showCloudAuthModal();
+
+};
+
+/* -------- SECURITY MODAL -------- */
+
+const securityModal=document.getElementById("securityModal");
+
+const securityLoggedInView=document.getElementById("securityLoggedInView");
+
+const securityLoggedOutView=document.getElementById("securityLoggedOutView");
+
+const securityCurrentPassword=document.getElementById("securityCurrentPassword");
+
+const securityNewPassword=document.getElementById("securityNewPassword");
+
+const securityError=document.getElementById("securityError");
+
+const securityUpdateBtn=document.getElementById("securityUpdateBtn");
+
+const closeSecurityModal=document.getElementById("closeSecurityModal");
+
+const closeSecurityModalAlt=document.getElementById("closeSecurityModalAlt");
+
+function closeSecurityModalFn(){
+
+    securityModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+    securityCurrentPassword.value="";
+
+    securityNewPassword.value="";
+
+    securityError.style.display="none";
+
+}
+
+menuSecurityBtn.onclick=()=>{
+
+    closeMenu();
+
+    const user=getCurrentUser();
+
+    securityLoggedInView.style.display = user ? "block" : "none";
+
+    securityLoggedOutView.style.display = user ? "none" : "block";
+
+    securityModal.style.display="flex";
+
+    document.body.classList.add("modal-open");
+
+};
+
+closeSecurityModal.onclick=closeSecurityModalFn;
+
+closeSecurityModalAlt.onclick=closeSecurityModalFn;
+
+securityUpdateBtn.onclick=async()=>{
+
+    const current=securityCurrentPassword.value;
+
+    const next=securityNewPassword.value;
+
+    if(!current || !next){
+
+        securityError.textContent="Semua field wajib diisi.";
+        securityError.style.display="block";
+
+        return;
+
+    }
+
+    if(next.length<6){
+
+        securityError.textContent="Password baru minimal 6 karakter.";
+        securityError.style.display="block";
+
+        return;
+
+    }
+
+    securityUpdateBtn.disabled=true;
+
+    securityUpdateBtn.textContent="Memproses...";
+
+    try{
+
+        await withUiTimeout(changePassword(current,next), 8000);
+
+        closeSecurityModalFn();
+
+        showToast("Password berhasil diubah.");
+
+    }catch(error){
+
+        console.error("[Security]",error);
+
+        let msg="Gagal mengubah password.";
+
+        if(error.message==="TIMEOUT") msg="Koneksi lambat/gagal, coba lagi.";
+        else if(error.code && error.code.includes("wrong-password")) msg="Password saat ini salah.";
+        else if(error.code && error.code.includes("weak-password")) msg="Password baru terlalu lemah.";
+
+        securityError.textContent=msg;
+        securityError.style.display="block";
+
+    }
+
+    securityUpdateBtn.disabled=false;
+
+    securityUpdateBtn.textContent="Update Password";
+
+};
+
+/* -------- LOGOUT -------- */
+
+menuLogoutBtn.onclick=async()=>{
 
     const user=getCurrentUser();
 
@@ -578,8 +795,6 @@ menuAccountBtn.onclick=async()=>{
         closeMenu();
 
         showToast("Berhasil logout.");
-
-        updateAccountMenuLabel(null);
 
     }
 
