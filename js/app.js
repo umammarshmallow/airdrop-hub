@@ -52,6 +52,72 @@ document.addEventListener("visibilitychange", () => {
 
 });
 
+function refreshProjectsView(showStaleToast = true) {
+
+    let projects = loadProjects();
+
+    // Reset task harian bila hari sudah berganti
+    projects = resetDailyTasks(projects);
+
+    // Hapus otomatis project Waitlist/Pending yang tidak diupdate 2 bulan
+    const cleanup = cleanupStaleProjects(projects);
+
+    projects = cleanup.projects;
+
+    // Sinkronkan data project di seluruh aplikasi
+    setProjects(projects);
+
+    // Update dashboard
+    updateDashboard(projects);
+
+    // Render ulang
+    renderProjects();
+
+    if (showStaleToast && cleanup.removedCount > 0) {
+
+        showToast(
+            `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
+            4000
+        );
+
+    }
+
+}
+
+// Cloud sync jalan di background, TIDAK menahan tampilnya app.
+// Kalau ternyata user sudah login & ada data cloud, tampilan
+// otomatis di-refresh diam-diam begitu data cloud selesai ditarik.
+async function runCloudSyncInBackground(configured) {
+
+    if (!configured) return;
+
+    try {
+
+        const existingUser = await waitForPersistedSession();
+
+        if (existingUser) {
+
+            showToast("Cloud sync aktif — login sebagai " + existingUser.email, 2500);
+            updateAccountMenuLabel(existingUser.email);
+
+            // Data lokal mungkin baru saja ditimpa oleh data cloud, refresh tampilan.
+            refreshProjectsView(false);
+
+        } else {
+
+            showCloudAuthModal();
+            updateAccountMenuLabel(null);
+
+        }
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal sync di background, tetap pakai data lokal:", error);
+
+    }
+
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     showLoading();
@@ -60,57 +126,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
 
-        // Siapkan koneksi Firebase (kalau sudah dikonfigurasi) & cek
-        // apakah user sudah pernah login sebelumnya di device ini.
+        // Siapkan koneksi Firebase (kalau sudah dikonfigurasi), tapi JANGAN
+        // ditunggu (await) di sini — biar app langsung tampil pakai data
+        // lokal dulu, cloud sync menyusul di belakang layar.
         const configured = initFirebaseApp();
 
-        if (configured) {
-
-            const existingUser = await waitForPersistedSession();
-
-            if (existingUser) {
-
-                showToast("Cloud sync aktif — login sebagai " + existingUser.email, 2500);
-                updateAccountMenuLabel(existingUser.email);
-
-            } else {
-
-                showCloudAuthModal();
-                updateAccountMenuLabel(null);
-
-            }
-
-        }
+        runCloudSyncInBackground(configured);
 
         /* memastikan data localStorage terbaca */
 
-        let projects = loadProjects();
-
-        // Reset task harian bila hari sudah berganti
-        projects = resetDailyTasks(projects);
-
-        // Hapus otomatis project Waitlist/Pending yang tidak diupdate 2 bulan
-        const cleanup = cleanupStaleProjects(projects);
-
-        projects = cleanup.projects;
-
-        // Sinkronkan data project di seluruh aplikasi
-        setProjects(projects);
-
-        // Update dashboard
-        updateDashboard(projects);
-
-        // Render ulang
-        renderProjects();
-
-        if (cleanup.removedCount > 0) {
-
-            showToast(
-                `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
-                4000
-            );
-
-        }
+        refreshProjectsView();
 
         /* semua event */
 
@@ -122,28 +147,9 @@ document.addEventListener("DOMContentLoaded", async () => {
        // Mengecek pergantian hari setiap 1 menit
        setInterval(() => {
 
-       let projects = loadProjects();
+           refreshProjectsView();
 
-       projects = resetDailyTasks(projects);
-
-       const cleanup = cleanupStaleProjects(projects);
-
-       projects = cleanup.projects;
-
-       setProjects(projects);
-
-       renderProjects();
-
-       if (cleanup.removedCount > 0) {
-
-           showToast(
-               `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
-               4000
-           );
-
-       }
-
-}, 60000);
+       }, 60000);
 
     } catch (error) {
 
@@ -153,11 +159,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } finally {
 
-        setTimeout(() => {
-
-            hideLoading();
-
-        }, 400);
+        hideLoading();
 
     }
 
