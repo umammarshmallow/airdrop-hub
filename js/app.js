@@ -691,7 +691,7 @@ cloudAuthLoginBtn.onclick=async()=>{
             ? loginWithEmail(email,password)
             : registerWithEmail(email,password);
 
-        // Batas waktu 10 detik — tombol tidak boleh macet selamanya
+        // Batas waktu 12 detik — tombol tidak boleh macet selamanya
         // walau koneksi ke server lambat/gagal total.
         const user = await withUiTimeout(action, 5000);
 
