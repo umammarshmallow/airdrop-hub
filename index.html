@@ -315,6 +315,29 @@
     </div>
   </div>
 
+  <!-- ================= RESTORE DATA MODAL ================= -->
+  <div class="modal" id="restoreModal">
+    <div class="modal-content">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Restore Data</h2>
+
+      <p style="color:var(--text-muted); font-size:12.5px; margin:-8px 0 14px;">
+        Cloud backup tersimpan otomatis tiap hari (7 hari terakhir). Pilih titik pemulihan, atau upload file backup manual.
+      </p>
+
+      <div id="restoreCloudSection" style="display:none;">
+        <label class="field-label">Cloud Backup (Otomatis)</label>
+        <div id="restoreCloudList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;"></div>
+      </div>
+
+      <p id="restoreCloudEmpty" style="color:var(--text-faint); font-size:12.5px; margin:0 0 16px; display:none;"></p>
+
+      <div class="modal-button">
+        <button id="restoreFromFileBtn" style="background:var(--surface-3); color:var(--text); border:1px solid var(--border) !important;">Upload File Backup (.json)</button>
+        <button id="closeRestoreModal" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Batal</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= PROFILE MODAL ================= -->
   <div class="modal" id="profileModal">
     <div class="modal-content">
