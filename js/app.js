@@ -27,7 +27,9 @@ import {
     logoutCloud,
     isCloudSyncEnabled,
     getCurrentUser,
-    changePassword
+    changePassword,
+    listCloudBackups,
+    restoreFromCloudBackup
 } from "./cloudSync.js";
 
 /* ==========================================
@@ -367,7 +369,9 @@ menuExportBtn.onclick=()=>{
 
 menuImportBtn.onclick=()=>{
 
-    importFileInput.click();
+    closeMenu();
+
+    openRestoreModal();
 
 };
 
@@ -409,6 +413,151 @@ importFileInput.onchange=async()=>{
     }
 
     importFileInput.value="";
+
+};
+
+/* ==========================================
+   RESTORE DATA MODAL (pilih cloud backup / file)
+========================================== */
+
+const restoreModal=document.getElementById("restoreModal");
+
+const restoreCloudSection=document.getElementById("restoreCloudSection");
+
+const restoreCloudList=document.getElementById("restoreCloudList");
+
+const restoreCloudEmpty=document.getElementById("restoreCloudEmpty");
+
+const restoreFromFileBtn=document.getElementById("restoreFromFileBtn");
+
+const closeRestoreModal=document.getElementById("closeRestoreModal");
+
+function formatBackupDate(dateKey){
+
+    const d=new Date(dateKey+"T00:00:00");
+
+    const todayKey=new Date().toISOString().slice(0,10);
+
+    if(dateKey===todayKey) return "Hari ini";
+
+    return d.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+
+}
+
+async function openRestoreModal(){
+
+    restoreModal.style.display="flex";
+
+    document.body.classList.add("modal-open");
+
+    restoreCloudSection.style.display="none";
+
+    restoreCloudEmpty.style.display="block";
+
+    restoreCloudEmpty.textContent="Memuat cloud backup...";
+
+    restoreCloudList.innerHTML="";
+
+    const user=getCurrentUser();
+
+    if(!user){
+
+        restoreCloudEmpty.textContent="Login dulu (menu Account) untuk memakai cloud backup otomatis.";
+
+        return;
+
+    }
+
+    const backups=await listCloudBackups();
+
+    if(!backups.length){
+
+        restoreCloudEmpty.textContent="Belum ada cloud backup. Backup otomatis akan tersedia setelah kamu login & buka app besok.";
+
+        return;
+
+    }
+
+    restoreCloudEmpty.style.display="none";
+
+    restoreCloudSection.style.display="block";
+
+    backups.forEach((b)=>{
+
+        const item=document.createElement("div");
+
+        item.className="cloud-backup-item";
+
+        const label=document.createElement("span");
+
+        label.textContent=formatBackupDate(b.id);
+
+        const btn=document.createElement("button");
+
+        btn.textContent="Restore";
+
+        btn.onclick=async()=>{
+
+            const confirmed=await showConfirm(
+                `Restore data ke kondisi "${formatBackupDate(b.id)}"? Data saat ini akan ditimpa.`,
+                "Restore"
+            );
+
+            if(!confirmed) return;
+
+            btn.disabled=true;
+
+            btn.textContent="...";
+
+            try{
+
+                await withUiTimeout(restoreFromCloudBackup(b.id), 8000);
+
+                closeRestoreModalFn();
+
+                showToast("Data berhasil dipulihkan, memuat ulang...");
+
+                setTimeout(()=>location.reload(),700);
+
+            }catch(error){
+
+                console.error("[Restore]",error);
+
+                await showAlert("Gagal restore, coba lagi.");
+
+                btn.disabled=false;
+
+                btn.textContent="Restore";
+
+            }
+
+        };
+
+        item.appendChild(label);
+
+        item.appendChild(btn);
+
+        restoreCloudList.appendChild(item);
+
+    });
+
+}
+
+function closeRestoreModalFn(){
+
+    restoreModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+}
+
+closeRestoreModal.onclick=closeRestoreModalFn;
+
+restoreFromFileBtn.onclick=()=>{
+
+    closeRestoreModalFn();
+
+    importFileInput.click();
 
 };
 
@@ -542,9 +691,9 @@ cloudAuthLoginBtn.onclick=async()=>{
             ? loginWithEmail(email,password)
             : registerWithEmail(email,password);
 
-        // Batas waktu 3 detik — tombol tidak boleh macet selamanya
+        // Batas waktu 5 detik — tombol tidak boleh macet selamanya
         // walau koneksi ke server lambat/gagal total.
-        const user = await withUiTimeout(action, 3000);
+        const user = await withUiTimeout(action, 5000);
 
         closeCloudAuthModal();
 
