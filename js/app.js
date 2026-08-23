@@ -691,9 +691,10 @@ cloudAuthLoginBtn.onclick=async()=>{
             ? loginWithEmail(email,password)
             : registerWithEmail(email,password);
 
-        // Batas waktu 20 detik — tombol tidak boleh macet selamanya
+        // Batas waktu 8 detik (nilai yang disarankan) — cukup toleran untuk
+        // jaringan 4G yang agak lambat, tapi tombol tetap tidak akan macet selamanya.
         // walau koneksi ke server lambat/gagal total.
-        const user = await withUiTimeout(action, 5000);
+        const user = await withUiTimeout(action, 8000);
 
         closeCloudAuthModal();
 
