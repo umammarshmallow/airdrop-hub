@@ -224,6 +224,23 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
 .side-menu-logout:hover{ background:rgba(240,97,107,.12); border-color:#f0616b; }
 .side-menu-logout:disabled{ opacity:.5; cursor:not-allowed; }
 
+.cloud-backup-item{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 14px;
+  background:var(--surface-3);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-md);
+  font-size:13.5px;
+}
+.cloud-backup-item span{ color:var(--text-muted); }
+.cloud-backup-item button{
+  background:var(--accent); color:#0a0d14;
+  border:none; border-radius:7px;
+  padding:6px 12px; font-size:12.5px; font-weight:600;
+  cursor:pointer;
+}
+.cloud-backup-item button:disabled{ opacity:.5; cursor:not-allowed; }
+
 /* ==========================================================
    BOTTOM NAV
 ========================================================== */
