@@ -776,9 +776,9 @@ menuLogoutBtn.onclick=async()=>{
 
     const user=getCurrentUser();
 
-    if(!user){
+    closeMenu();
 
-        closeMenu();
+    if(!user){
 
         showCloudAuthModal();
 
@@ -792,9 +792,9 @@ menuLogoutBtn.onclick=async()=>{
 
         await logoutCloud();
 
-        closeMenu();
-
         showToast("Berhasil logout.");
+
+        showCloudAuthModal();
 
     }
 
