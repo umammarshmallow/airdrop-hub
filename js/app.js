@@ -315,11 +315,15 @@ function openMenu(){
 
 sideMenuOverlay.classList.add("active");
 
+document.body.classList.add("modal-open");
+
 }
 
 function closeMenu(){
 
 sideMenuOverlay.classList.remove("active");
+
+document.body.classList.remove("modal-open");
 
 }
 
