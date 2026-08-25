@@ -30,10 +30,7 @@ import {
     doc,
     getDoc,
     setDoc,
-    serverTimestamp,
-    collection,
-    getDocs,
-    deleteDoc
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseConfig.js";
@@ -66,16 +63,6 @@ export function getCurrentUser() {
 
 function userDocRef() {
     return doc(db, "airdropHubUsers", currentUid);
-}
-
-const MAX_BACKUPS = 7;
-
-function backupsCollectionRef() {
-    return collection(db, "airdropHubUsers", currentUid, "backups");
-}
-
-function todayKey() {
-    return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
 /* ==========================================
@@ -251,103 +238,6 @@ export async function pullFromCloud() {
         console.warn("[CloudSync] Gagal ambil data cloud, pakai data lokal:", error);
 
     }
-
-    // Ambil snapshot harian sebagai titik pemulihan (bukan cuma cermin live).
-    // Dipanggil sekali per sesi/login, bukan tiap kali data disimpan.
-    writeDailySnapshot();
-
-}
-
-/* ==========================================
-   BACKUP HARIAN OTOMATIS (titik pemulihan)
-   - 1 dokumen per tanggal, ditulis saat login/buka app.
-   - Otomatis hapus yang lebih tua dari 7 hari.
-========================================== */
-
-export async function writeDailySnapshot() {
-
-    if (!ready) return;
-
-    try {
-
-        const key = todayKey();
-
-        await setDoc(doc(backupsCollectionRef(), key), {
-            projects: localStorage.getItem(PROJECTS_KEY) || "[]",
-            wallets: localStorage.getItem(WALLETS_KEY) || "[]",
-            savedAt: serverTimestamp()
-        });
-
-        await cleanupOldSnapshots();
-
-    } catch (error) {
-
-        console.warn("[CloudSync] Gagal simpan snapshot harian:", error);
-
-    }
-
-}
-
-async function cleanupOldSnapshots() {
-
-    try {
-
-        const snap = await getDocs(backupsCollectionRef());
-
-        const dates = snap.docs.map((d) => d.id).sort(); // YYYY-MM-DD urut kronologis
-
-        const excess = dates.length - MAX_BACKUPS;
-
-        for (let i = 0; i < excess; i++) {
-
-            await deleteDoc(doc(backupsCollectionRef(), dates[i]));
-
-        }
-
-    } catch (error) {
-
-        console.warn("[CloudSync] Gagal bersihkan snapshot lama:", error);
-
-    }
-
-}
-
-export async function listCloudBackups() {
-
-    if (!ready) return [];
-
-    try {
-
-        const snap = await withTimeout(getDocs(backupsCollectionRef()), 6000, null);
-
-        if (!snap) return [];
-
-        return snap.docs
-            .map((d) => ({ id: d.id, ...d.data() }))
-            .sort((a, b) => b.id.localeCompare(a.id)); // terbaru dulu
-
-    } catch (error) {
-
-        console.warn("[CloudSync] Gagal ambil daftar backup:", error);
-        return [];
-
-    }
-
-}
-
-export async function restoreFromCloudBackup(dateKey) {
-
-    const snap = await getDoc(doc(backupsCollectionRef(), dateKey));
-
-    if (!snap.exists()) throw new Error("Backup tanggal ini tidak ditemukan.");
-
-    const data = snap.data();
-
-    if (typeof data.projects === "string") localStorage.setItem(PROJECTS_KEY, data.projects);
-    if (typeof data.wallets === "string") localStorage.setItem(WALLETS_KEY, data.wallets);
-
-    // Sinkronkan balik ke doc live supaya semua device ikut ter-update.
-    await pushToCloud(true);
 
 }
 
