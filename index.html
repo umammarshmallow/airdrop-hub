@@ -37,9 +37,15 @@
           <span class="status-line"><span class="status-dot"></span> Tracking active</span>
         </div>
       </div>
-      <button id="menuBtn" class="menu-btn" aria-label="Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
+      <div class="header-actions">
+        <button id="notifBtn" class="menu-btn" aria-label="Notifications" style="position:relative;">
+          <i class="fa-solid fa-bell"></i>
+          <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+        </button>
+        <button id="menuBtn" class="menu-btn" aria-label="Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
     </header>
 
     <section class="dashboard-summary">
@@ -47,30 +53,36 @@
         <h2><i class="ti ti-layout-dashboard"></i> Overview</h2>
       </div>
 
-      <div class="summary-grid">
-        <div class="summary-item" data-tone="accent">
-          <span class="val" id="todayTask">0</span>
-          <p class="lbl">Today's Task</p>
+      <div class="hero-stats">
+        <div class="hero-stat" id="todayTaskCard" data-state="clear">
+          <p class="hero-label">Today's Task</p>
+          <span class="hero-val" id="todayTask">0</span>
         </div>
-        <div class="summary-item" data-tone="warning">
-          <span class="val" id="deadlineToday">0</span>
-          <p class="lbl">Deadline Today</p>
+        <div class="hero-stat" id="deadlineTodayCard" data-state="clear">
+          <p class="hero-label">Deadline Today</p>
+          <span class="hero-val" id="deadlineToday">0</span>
         </div>
-        <div class="summary-item" data-tone="success">
-          <span class="val" id="activeProject">0</span>
-          <p class="lbl">Active</p>
+      </div>
+
+      <div class="flow-strip">
+        <div class="flow-step">
+          <span class="flow-val" id="waitlistProject">0</span>
+          <p class="flow-lbl">Waitlist</p>
         </div>
-        <div class="summary-item" data-tone="pending">
-          <span class="val" id="pendingProject">0</span>
-          <p class="lbl">Pending</p>
+        <i class="fa-solid fa-arrow-right flow-arrow"></i>
+        <div class="flow-step">
+          <span class="flow-val" id="pendingProject">0</span>
+          <p class="flow-lbl">Pending</p>
         </div>
-        <div class="summary-item" data-tone="waitlist">
-          <span class="val" id="waitlistProject">0</span>
-          <p class="lbl">Waitlist</p>
+        <i class="fa-solid fa-arrow-right flow-arrow"></i>
+        <div class="flow-step">
+          <span class="flow-val flow-val-accent" id="activeProject">0</span>
+          <p class="flow-lbl">Active</p>
         </div>
-        <div class="summary-item" data-tone="complete">
-          <span class="val" id="completedProject">0</span>
-          <p class="lbl">Completed</p>
+        <i class="fa-solid fa-arrow-right flow-arrow"></i>
+        <div class="flow-step">
+          <span class="flow-val" id="completedProject">0</span>
+          <p class="flow-lbl">Completed</p>
         </div>
       </div>
     </section>
@@ -158,10 +170,45 @@
   <div id="profilePage" style="display:none;">
     <section>
       <div class="section-heading"><h2><i class="ti ti-user"></i> Profile</h2></div>
-      <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; text-align:center;">
-        <i class="ti ti-tools" style="font-size:28px; color:var(--accent); margin-bottom:10px; display:inline-block;"></i>
-        <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;">Coming Soon</h3>
-        <p style="color:var(--text-muted); font-size:13.5px;">The profile page is still under development.</p>
+
+      <!-- Sudah login -->
+      <div id="profileLoggedInView" style="display:none;">
+        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:22px; margin-bottom:16px; display:flex; align-items:center; gap:14px;">
+          <div id="profileAvatar" style="width:46px; height:46px; border-radius:50%; background:var(--accent); color:#0a0d14; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:18px; font-weight:700; flex-shrink:0;"></div>
+          <div style="min-width:0;">
+            <p id="profileEmailDisplay" style="font-size:14.5px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></p>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:2px;">Cloud sync aktif</p>
+          </div>
+        </div>
+
+        <div class="section-heading"><h3 style="font-size:14px; color:var(--text-muted);"><i class="fa-solid fa-shield-halved"></i> Security</h3></div>
+        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px;">
+          <p style="color:var(--text-muted); font-size:12.5px; margin:0 0 14px;">
+            Masukkan password lama & password baru untuk mengganti password akun.
+          </p>
+
+          <label class="field-label">Password Saat Ini</label>
+          <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password">
+
+          <label class="field-label">Password Baru</label>
+          <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password">
+
+          <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+
+          <button id="securityUpdateBtn" class="btn-add" style="width:100%;">Update Password</button>
+        </div>
+
+        <button id="profileLogoutBtn" class="side-menu-logout" style="width:100%; margin:0;">Log out</button>
+      </div>
+
+      <!-- Belum login -->
+      <div id="profileLoggedOutView" style="display:none;">
+        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; text-align:center;">
+          <i class="fa-solid fa-user-plus" style="font-size:28px; color:var(--accent); margin-bottom:10px; display:inline-block;"></i>
+          <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;">Belum Login</h3>
+          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:16px;">Login supaya data project & wallet kamu tersinkron otomatis di semua device.</p>
+          <button id="profileLoginBtn" class="btn-add" style="width:100%;">Login / Daftar</button>
+        </div>
       </div>
     </section>
   </div>
@@ -315,65 +362,25 @@
     </div>
   </div>
 
-  <!-- ================= PROFILE MODAL ================= -->
-  <div class="modal" id="profileModal">
+  <!-- ================= NOTIFICATIONS MODAL ================= -->
+  <div class="modal" id="notifModal">
     <div class="modal-content">
-      <h2><i class="fa-solid fa-id-badge"></i> Profile</h2>
-
-      <div id="profileLoggedInView">
-        <label class="field-label">Email</label>
-        <input type="text" id="profileEmailDisplay" disabled>
-
-        <p style="color:var(--text-muted); font-size:12.5px; margin:14px 0 0;">
-          Data project & wallet kamu tersinkron otomatis lewat akun ini.
-        </p>
+      <div class="page-header" style="margin-bottom:14px;">
+        <h2><i class="fa-solid fa-bell"></i> Notifications</h2>
+        <button id="closeNotifModal" class="close-menu-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
-      <div id="profileLoggedOutView" style="display:none;">
-        <p style="color:var(--text-muted); font-size:13px; margin:0 0 4px;">
-          Kamu belum login. Login supaya data tersinkron otomatis di semua device.
-        </p>
-      </div>
+      <div id="notifList" style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow-y:auto;"></div>
 
-      <div class="modal-button">
-        <button id="closeProfileModal" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Tutup</button>
-        <button id="profileLoginBtn" style="background:var(--accent); color:#0a0d14;">Login</button>
-      </div>
-    </div>
-  </div>
+      <p id="notifEmpty" style="color:var(--text-faint); font-size:13px; text-align:center; padding:20px 0; display:none;">
+        Belum ada notifikasi.
+      </p>
 
-  <!-- ================= SECURITY MODAL ================= -->
-  <div class="modal" id="securityModal">
-    <div class="modal-content">
-      <h2><i class="fa-solid fa-shield-halved"></i> Security</h2>
-
-      <div id="securityLoggedInView">
-        <p style="color:var(--text-muted); font-size:12.5px; margin:-6px 0 16px;">
-          Masukkan password lama & password baru untuk mengganti password akun.
-        </p>
-
-        <label class="field-label">Password Saat Ini</label>
-        <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password">
-
-        <label class="field-label">Password Baru</label>
-        <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password">
-
-        <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
-
-        <div class="modal-button">
-          <button id="closeSecurityModal" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Batal</button>
-          <button id="securityUpdateBtn" style="background:var(--accent); color:#0a0d14;">Update Password</button>
-        </div>
-      </div>
-
-      <div id="securityLoggedOutView" style="display:none;">
-        <p style="color:var(--text-muted); font-size:13px; margin:0 0 16px;">
-          Login dulu untuk mengatur keamanan akun.
-        </p>
-        <div class="modal-button">
-          <button id="closeSecurityModalAlt" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;">Tutup</button>
-        </div>
-      </div>
+      <button id="notifClearBtn" style="margin-top:14px; width:100%; background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border); border-radius:var(--radius-md); padding:11px; font-size:13.5px; cursor:pointer;">
+        Hapus Semua
+      </button>
     </div>
   </div>
 
@@ -482,24 +489,6 @@
         <i class="fa-solid fa-wallet"></i>
         <span>Wallet</span>
       </div>
-
-      <div class="side-menu-item expandable" id="menuAccountToggle" aria-expanded="false">
-        <i class="fa-solid fa-user"></i>
-        <span id="menuAccountLabel">Account</span>
-        <i class="fa-solid fa-chevron-down side-menu-chevron"></i>
-      </div>
-      <div class="side-menu-submenu" id="menuAccountSubmenu">
-        <div class="side-menu-subitem" id="menuProfileBtn">
-          <i class="fa-solid fa-id-badge"></i>
-          <span>Profile</span>
-        </div>
-        <div class="side-menu-subitem" id="menuSecurityBtn">
-          <i class="fa-solid fa-shield-halved"></i>
-          <span>Security</span>
-        </div>
-      </div>
-
-      <button class="side-menu-logout" id="menuLogoutBtn">Log out</button>
     </div>
   </div>
 </div>
