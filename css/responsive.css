@@ -1,7 +1,3 @@
-@media(min-width:640px){
-  .summary-grid{ grid-template-columns:repeat(6,1fr); }
-}
-
 @media(max-width:768px){
   .toolbar{ gap:6px; }
   .dropbtn{ padding:0 8px; font-size:11.5px; }

@@ -73,6 +73,35 @@ header{
 
 .menu-btn:hover{ background:var(--surface-2); border-color:var(--accent-line); color:var(--accent); }
 
+.header-actions{ display:flex; align-items:center; gap:10px; }
+
+.notif-badge{
+  position:absolute; top:-4px; right:-4px;
+  min-width:18px; height:18px; padding:0 4px;
+  background:#f0616b; color:#fff;
+  border-radius:9px;
+  font-size:10.5px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  line-height:1;
+}
+
+.notif-item{
+  display:flex; gap:10px;
+  padding:12px 14px;
+  background:var(--surface-3);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-md);
+  font-size:13px;
+}
+.notif-item.unread{ border-left:3px solid var(--accent); }
+.notif-item .notif-icon{ font-size:14px; margin-top:1px; flex-shrink:0; }
+.notif-item[data-type="error"] .notif-icon{ color:#f0616b; }
+.notif-item[data-type="warning"] .notif-icon{ color:var(--warning); }
+.notif-item[data-type="info"] .notif-icon{ color:var(--accent); }
+.notif-item .notif-body{ min-width:0; }
+.notif-item .notif-message{ color:var(--text); line-height:1.4; }
+.notif-item .notif-time{ color:var(--text-faint); font-size:11px; margin-top:4px; }
+
 /* ==========================================================
    SECTION HEADINGS
 ========================================================== */
