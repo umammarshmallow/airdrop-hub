@@ -84,6 +84,73 @@ export function showToast(message, duration = 2500, type = "success") {
 }
 
 /* ==========================
+NOTIFICATION CENTER
+(riwayat error/peringatan sistem, terpisah dari toast sekilas)
+========================== */
+
+const NOTIF_KEY = "airdropHub_notifications";
+const MAX_NOTIFS = 20;
+
+export function addNotification(message, type = "info") {
+
+    const list = getNotifications();
+
+    list.unshift({
+        id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+        message,
+        type, // "info" | "warning" | "error"
+        createdAt: new Date().toISOString(),
+        read: false
+    });
+
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(list.slice(0, MAX_NOTIFS)));
+
+    window.dispatchEvent(new CustomEvent("airdrophub:notification"));
+
+}
+
+export function getNotifications() {
+
+    try {
+
+        const raw = localStorage.getItem(NOTIF_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+
+        return Array.isArray(parsed) ? parsed : [];
+
+    } catch (error) {
+
+        return [];
+
+    }
+
+}
+
+export function unreadNotificationCount() {
+
+    return getNotifications().filter((n) => !n.read).length;
+
+}
+
+export function markAllNotificationsRead() {
+
+    const list = getNotifications().map((n) => ({ ...n, read: true }));
+
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(list));
+
+    window.dispatchEvent(new CustomEvent("airdrophub:notification"));
+
+}
+
+export function clearNotifications() {
+
+    localStorage.setItem(NOTIF_KEY, "[]");
+
+    window.dispatchEvent(new CustomEvent("airdrophub:notification"));
+
+}
+
+/* ==========================
 LOADING
 ========================== */
 

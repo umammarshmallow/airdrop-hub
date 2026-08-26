@@ -11,7 +11,7 @@ import { renderProjects } from "./render.js";
 
 import { updateDashboard } from "./dashboard.js";
 
-import { showLoading, hideLoading, showToast } from "./helpers.js";
+import { showLoading, hideLoading, showToast, addNotification, getNotifications, unreadNotificationCount, markAllNotificationsRead, clearNotifications } from "./helpers.js";
 
 import { setProjects } from "./project.js";
 
@@ -76,10 +76,11 @@ function refreshProjectsView(showStaleToast = true) {
 
     if (showStaleToast && cleanup.removedCount > 0) {
 
-        showToast(
-            `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`,
-            4000
-        );
+        const msg = `${cleanup.removedCount} stale Waitlist/Pending project(s) auto-removed (no update in 2 months).`;
+
+        showToast(msg, 4000);
+
+        addNotification(msg, "warning");
 
     }
 
@@ -252,6 +253,8 @@ showPage(profilePage);
 
 setActiveNav(profileBtn);
 
+refreshProfilePage();
+
 }
 
 addBottomBtn.onclick=()=>{
@@ -330,6 +333,147 @@ menuBtn.onclick=openMenu;
 closeMenuBtn.onclick=closeMenu;
 
 /* ==========================================
+   NOTIFICATION CENTER
+========================================== */
+
+const notifBtn=document.getElementById("notifBtn");
+
+const notifBadge=document.getElementById("notifBadge");
+
+const notifModal=document.getElementById("notifModal");
+
+const notifList=document.getElementById("notifList");
+
+const notifEmpty=document.getElementById("notifEmpty");
+
+const closeNotifModal=document.getElementById("closeNotifModal");
+
+const notifClearBtn=document.getElementById("notifClearBtn");
+
+function timeAgo(isoString){
+
+    const diffMs=Date.now()-new Date(isoString).getTime();
+
+    const mins=Math.floor(diffMs/60000);
+
+    if(mins<1) return "Baru saja";
+
+    if(mins<60) return `${mins} menit lalu`;
+
+    const hours=Math.floor(mins/60);
+
+    if(hours<24) return `${hours} jam lalu`;
+
+    const days=Math.floor(hours/24);
+
+    return `${days} hari lalu`;
+
+}
+
+const NOTIF_ICON={ error:"fa-solid fa-circle-exclamation", warning:"fa-solid fa-triangle-exclamation", info:"fa-solid fa-circle-info" };
+
+function refreshNotifBadge(){
+
+    const count=unreadNotificationCount();
+
+    if(count>0){
+
+        notifBadge.textContent = count>9 ? "9+" : String(count);
+        notifBadge.style.display="flex";
+
+    }else{
+
+        notifBadge.style.display="none";
+
+    }
+
+}
+
+function renderNotifList(){
+
+    const list=getNotifications();
+
+    notifList.innerHTML="";
+
+    if(!list.length){
+
+        notifEmpty.style.display="block";
+        return;
+
+    }
+
+    notifEmpty.style.display="none";
+
+    list.forEach((n)=>{
+
+        const item=document.createElement("div");
+
+        item.className="notif-item"+(n.read?"":" unread");
+
+        item.dataset.type=n.type||"info";
+
+        item.innerHTML=`
+            <i class="notif-icon ${NOTIF_ICON[n.type]||NOTIF_ICON.info}"></i>
+            <div class="notif-body">
+                <div class="notif-message"></div>
+                <div class="notif-time">${timeAgo(n.createdAt)}</div>
+            </div>
+        `;
+
+        item.querySelector(".notif-message").textContent=n.message;
+
+        notifList.appendChild(item);
+
+    });
+
+}
+
+notifBtn.onclick=()=>{
+
+    renderNotifList();
+
+    notifModal.style.display="flex";
+
+    document.body.classList.add("modal-open");
+
+    markAllNotificationsRead();
+
+    refreshNotifBadge();
+
+};
+
+function closeNotifModalFn(){
+
+    notifModal.style.display="none";
+
+    document.body.classList.remove("modal-open");
+
+}
+
+closeNotifModal.onclick=closeNotifModalFn;
+
+notifClearBtn.onclick=async()=>{
+
+    const confirmed=await showConfirm("Hapus semua riwayat notifikasi?","Hapus");
+
+    if(confirmed){
+
+        clearNotifications();
+
+        renderNotifList();
+
+        refreshNotifBadge();
+
+    }
+
+};
+
+window.addEventListener("airdrophub:notification", refreshNotifBadge);
+
+refreshNotifBadge();
+
+
+/* ==========================================
    CLOUD AUTH (Login / Daftar / Logout)
 ========================================== */
 
@@ -347,7 +491,25 @@ const cloudAuthLoginBtn=document.getElementById("cloudAuthLoginBtn");
 
 const cloudAuthRegisterLink=document.getElementById("cloudAuthRegisterLink");
 
-const menuAccountLabel=document.getElementById("menuAccountLabel");
+const profileLoggedInView=document.getElementById("profileLoggedInView");
+
+const profileLoggedOutView=document.getElementById("profileLoggedOutView");
+
+const profileEmailDisplay=document.getElementById("profileEmailDisplay");
+
+const profileAvatar=document.getElementById("profileAvatar");
+
+const profileLoginBtn=document.getElementById("profileLoginBtn");
+
+const profileLogoutBtn=document.getElementById("profileLogoutBtn");
+
+const securityCurrentPassword=document.getElementById("securityCurrentPassword");
+
+const securityNewPassword=document.getElementById("securityNewPassword");
+
+const securityError=document.getElementById("securityError");
+
+const securityUpdateBtn=document.getElementById("securityUpdateBtn");
 
 let cloudAuthMode="login"; // "login" atau "register"
 
@@ -379,8 +541,32 @@ function setCloudAuthError(message){
 
 function updateAccountMenuLabel(){
 
-    // Item menu "Account" sekarang statis — status login ditampilkan
-    // langsung di dalam modal Profile & Security saat dibuka.
+    refreshProfilePage();
+
+}
+
+function refreshProfilePage(){
+
+    const user=getCurrentUser();
+
+    if(user){
+
+        profileLoggedInView.style.display="block";
+        profileLoggedOutView.style.display="none";
+
+        profileEmailDisplay.textContent=user.email;
+        profileAvatar.textContent=user.email.charAt(0).toUpperCase();
+
+    }else{
+
+        profileLoggedInView.style.display="none";
+        profileLoggedOutView.style.display="block";
+
+        securityCurrentPassword.value="";
+        securityNewPassword.value="";
+        securityError.style.display="none";
+
+    }
 
 }
 
@@ -497,139 +683,34 @@ cloudAuthLoginBtn.onclick=async()=>{
 };
 
 /* ==========================================
-   ACCOUNT ACCORDION (Profile / Security / Logout)
+   PROFILE PAGE (Login / Security / Logout)
 ========================================== */
 
-const menuAccountToggle=document.getElementById("menuAccountToggle");
-
-const menuAccountSubmenu=document.getElementById("menuAccountSubmenu");
-
-const menuProfileBtn=document.getElementById("menuProfileBtn");
-
-const menuSecurityBtn=document.getElementById("menuSecurityBtn");
-
-const menuLogoutBtn=document.getElementById("menuLogoutBtn");
-
-menuAccountToggle.onclick=()=>{
-
-    const isOpen = menuAccountSubmenu.classList.toggle("open");
-
-    menuAccountToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-
-};
-
-/* -------- PROFILE MODAL -------- */
-
-const profileModal=document.getElementById("profileModal");
-
-const profileLoggedInView=document.getElementById("profileLoggedInView");
-
-const profileLoggedOutView=document.getElementById("profileLoggedOutView");
-
-const profileEmailDisplay=document.getElementById("profileEmailDisplay");
-
-const closeProfileModal=document.getElementById("closeProfileModal");
-
-const profileLoginBtn=document.getElementById("profileLoginBtn");
-
-menuProfileBtn.onclick=()=>{
-
-    closeMenu();
-
-    const user=getCurrentUser();
-
-    if(user){
-
-        profileLoggedInView.style.display="block";
-        profileLoggedOutView.style.display="none";
-        profileEmailDisplay.value=user.email;
-        profileLoginBtn.style.display="none";
-
-    }else{
-
-        profileLoggedInView.style.display="none";
-        profileLoggedOutView.style.display="block";
-        profileLoginBtn.style.display="inline-block";
-
-    }
-
-    profileModal.style.display="flex";
-
-    document.body.classList.add("modal-open");
-
-};
-
-closeProfileModal.onclick=()=>{
-
-    profileModal.style.display="none";
-
-    document.body.classList.remove("modal-open");
-
-};
-
 profileLoginBtn.onclick=()=>{
-
-    profileModal.style.display="none";
-
-    document.body.classList.remove("modal-open");
 
     showCloudAuthModal();
 
 };
 
-/* -------- SECURITY MODAL -------- */
-
-const securityModal=document.getElementById("securityModal");
-
-const securityLoggedInView=document.getElementById("securityLoggedInView");
-
-const securityLoggedOutView=document.getElementById("securityLoggedOutView");
-
-const securityCurrentPassword=document.getElementById("securityCurrentPassword");
-
-const securityNewPassword=document.getElementById("securityNewPassword");
-
-const securityError=document.getElementById("securityError");
-
-const securityUpdateBtn=document.getElementById("securityUpdateBtn");
-
-const closeSecurityModal=document.getElementById("closeSecurityModal");
-
-const closeSecurityModalAlt=document.getElementById("closeSecurityModalAlt");
-
-function closeSecurityModalFn(){
-
-    securityModal.style.display="none";
-
-    document.body.classList.remove("modal-open");
-
-    securityCurrentPassword.value="";
-
-    securityNewPassword.value="";
-
-    securityError.style.display="none";
-
-}
-
-menuSecurityBtn.onclick=()=>{
-
-    closeMenu();
+profileLogoutBtn.onclick=async()=>{
 
     const user=getCurrentUser();
 
-    securityLoggedInView.style.display = user ? "block" : "none";
+    if(!user) return;
 
-    securityLoggedOutView.style.display = user ? "none" : "block";
+    const confirmed=await showConfirm(`Logout dari ${user.email}? Data tetap tersimpan di cloud.`,"Logout");
 
-    securityModal.style.display="flex";
+    if(confirmed){
 
-    document.body.classList.add("modal-open");
+        await logoutCloud();
+
+        showToast("Berhasil logout.");
+
+        refreshProfilePage();
+
+    }
 
 };
-
-closeSecurityModal.onclick=closeSecurityModalFn;
-
-closeSecurityModalAlt.onclick=closeSecurityModalFn;
 
 securityUpdateBtn.onclick=async()=>{
 
@@ -663,7 +744,9 @@ securityUpdateBtn.onclick=async()=>{
 
         await withUiTimeout(changePassword(current,next), 8000);
 
-        closeSecurityModalFn();
+        securityCurrentPassword.value="";
+        securityNewPassword.value="";
+        securityError.style.display="none";
 
         showToast("Password berhasil diubah.");
 
@@ -685,36 +768,6 @@ securityUpdateBtn.onclick=async()=>{
     securityUpdateBtn.disabled=false;
 
     securityUpdateBtn.textContent="Update Password";
-
-};
-
-/* -------- LOGOUT -------- */
-
-menuLogoutBtn.onclick=async()=>{
-
-    const user=getCurrentUser();
-
-    closeMenu();
-
-    if(!user){
-
-        showCloudAuthModal();
-
-        return;
-
-    }
-
-    const confirmed=await showConfirm(`Logout dari ${user.email}? Data tetap tersimpan di cloud.`,"Logout");
-
-    if(confirmed){
-
-        await logoutCloud();
-
-        showToast("Berhasil logout.");
-
-        showCloudAuthModal();
-
-    }
 
 };
 

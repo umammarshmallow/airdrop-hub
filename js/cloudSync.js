@@ -34,6 +34,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseConfig.js";
+import { addNotification } from "./helpers.js";
 
 const PROJECTS_KEY = "airdropHub";
 const WALLETS_KEY = "airdropHub_wallets";
@@ -214,6 +215,7 @@ export async function pullFromCloud() {
         if (snap === null) {
 
             console.warn("[CloudSync] Timeout ambil data cloud, pakai data lokal dulu.");
+            addNotification("Sinkronisasi cloud lambat/timeout — memakai data lokal untuk sementara.", "warning");
             return;
 
         }
@@ -236,6 +238,7 @@ export async function pullFromCloud() {
     } catch (error) {
 
         console.warn("[CloudSync] Gagal ambil data cloud, pakai data lokal:", error);
+        addNotification("Gagal mengambil data dari cloud. Aplikasi tetap memakai data di device ini.", "error");
 
     }
 
@@ -267,6 +270,7 @@ export function pushToCloud(immediate = false) {
         } catch (error) {
 
             console.warn("[CloudSync] Gagal simpan ke cloud (data tetap aman di device ini):", error);
+            addNotification("Gagal menyimpan perubahan ke cloud. Data tetap aman di device ini.", "error");
 
         }
 

@@ -5,7 +5,9 @@
 export function updateDashboard(projects) {
 
     const todayTask = document.getElementById("todayTask");
+    const todayTaskCard = document.getElementById("todayTaskCard");
     const deadlineToday = document.getElementById("deadlineToday");
+    const deadlineTodayCard = document.getElementById("deadlineTodayCard");
     const activeProject = document.getElementById("activeProject");
     const pendingProject = document.getElementById("pendingProject");
     const waitlistProject = document.getElementById("waitlistProject");
@@ -97,7 +99,11 @@ export function updateDashboard(projects) {
 
     if (todayTask) todayTask.textContent = today;
 
+    if (todayTaskCard) todayTaskCard.dataset.state = today > 0 ? "alert" : "clear";
+
     if (deadlineToday) deadlineToday.textContent = deadline;
+
+    if (deadlineTodayCard) deadlineTodayCard.dataset.state = deadline > 0 ? "alert" : "clear";
 
     if (activeProject) activeProject.textContent = active;
 
