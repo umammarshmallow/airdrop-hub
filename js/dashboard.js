@@ -2,6 +2,8 @@
    DASHBOARD.JS
 ========================================== */
 
+import { isTaskDueToday, isDeadlineToday } from "./helpers.js";
+
 export function updateDashboard(projects) {
 
     const todayTask = document.getElementById("todayTask");
@@ -22,20 +24,7 @@ export function updateDashboard(projects) {
 
     projects.forEach(project => {
 
-       if (project.deadline) {
-
-    const now = new Date();
-    const dl = new Date(project.deadline);
-
-    if (
-        dl.getFullYear() === now.getFullYear() &&
-        dl.getMonth() === now.getMonth() &&
-        dl.getDate() === now.getDate()
-    ) {
-        deadline++;
-    }
-
-   }
+        if (isDeadlineToday(project)) deadline++;
 
         switch (project.status) {
 
@@ -57,43 +46,7 @@ export function updateDashboard(projects) {
 
         }
 
-        /* ==========================
-           TODAY TASK
-        ========================== */
-
-        if (project.status !== "Active") return;
-
-        switch (project.taskType) {
-
-            case "Daily":
-
-                if (!project.dailyDone) {
-                    today++;
-                }
-
-                break;
-
-            case "Weekly":
-
-                if (
-                    isTodayWeeklyTask(project) &&
-                    !project.dailyDone
-                ) {
-                    today++;
-                  }
-
-                break;
-
-            case "Testnet":
-            case "Mainnet":
-
-               if (!project.dailyDone) {
-                   today++;
-               }
-
-               break;
-
-        }
+        if (isTaskDueToday(project)) today++;
 
     });
 
@@ -112,26 +65,6 @@ export function updateDashboard(projects) {
     if (waitlistProject) waitlistProject.textContent = waitlist;
 
     if (completeProject) completeProject.textContent = complete;
-
-}
-
-/* ==========================================
-   WEEKLY TASK
-========================================== */
-
-function isTodayWeeklyTask(project) {
-
-    if (!project.deadline) {
-
-        return true;
-
-    }
-
-    const deadline = new Date(project.deadline);
-
-    const today = new Date();
-
-    return deadline.getDay() === today.getDay();
 
 }
 

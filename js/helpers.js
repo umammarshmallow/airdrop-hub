@@ -27,6 +27,61 @@ export function formatUrl(url = "") {
 }
 
 /* ==========================
+QUICK FILTER PREDICATES
+(dipakai bareng oleh dashboard.js untuk hitung,
+dan project.js untuk filter list)
+========================== */
+
+export function isTaskDueToday(project) {
+
+    if (project.status !== "Active") return false;
+
+    switch (project.taskType) {
+
+        case "Daily":
+            return !project.dailyDone;
+
+        case "Weekly":
+            return isTodayWeeklyTask(project) && !project.dailyDone;
+
+        case "Testnet":
+        case "Mainnet":
+            return !project.dailyDone;
+
+        default:
+            return false;
+
+    }
+
+}
+
+export function isDeadlineToday(project) {
+
+    if (!project.deadline) return false;
+
+    const now = new Date();
+    const dl = new Date(project.deadline);
+
+    return (
+        dl.getFullYear() === now.getFullYear() &&
+        dl.getMonth() === now.getMonth() &&
+        dl.getDate() === now.getDate()
+    );
+
+}
+
+function isTodayWeeklyTask(project) {
+
+    if (!project.deadline) return true;
+
+    const deadline = new Date(project.deadline);
+    const today = new Date();
+
+    return deadline.getDay() === today.getDay();
+
+}
+
+/* ==========================
 FORMAT DATE
 ========================== */
 

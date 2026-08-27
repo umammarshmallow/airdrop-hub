@@ -209,7 +209,9 @@ const profilePage=document.getElementById("profilePage");
 
 const walletPage=document.getElementById("walletPage");
 
-const allPages=[homePage, profilePage, walletPage];
+const securityPage=document.getElementById("securityPage");
+
+const allPages=[homePage, profilePage, walletPage, securityPage];
 
 const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, profileBtn];
 
@@ -313,6 +315,34 @@ setActiveNav(homeBtn);
 bottomNav.style.display="flex";
 
 }
+
+const profileSecurityBtn=document.getElementById("profileSecurityBtn");
+
+const closeSecurityPageBtn=document.getElementById("closeSecurityPageBtn");
+
+function openSecurityPage(){
+
+showPage(securityPage);
+
+setActiveNav(null);
+
+bottomNav.style.display="none";
+
+}
+
+function closeSecurityPage(){
+
+showPage(profilePage);
+
+setActiveNav(profileBtn);
+
+bottomNav.style.display="flex";
+
+}
+
+profileSecurityBtn.onclick=openSecurityPage;
+
+closeSecurityPageBtn.onclick=closeSecurityPage;
 
 function openMenu(){
 

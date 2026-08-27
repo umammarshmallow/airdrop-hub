@@ -23,6 +23,7 @@ const search = document.getElementById("search");
 const sortBy = document.getElementById("sortBy");
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
+const quickFilter = document.getElementById("quickFilter");
 
 /* ==========================================
    RENDER
@@ -33,7 +34,8 @@ export function renderProjects() {
     const filtered = filterProjects(
         search.value,
         filterStatus.value,
-        filterTask.value
+        filterTask.value,
+        quickFilter.value
     );
 
     const projects = sortProjects(

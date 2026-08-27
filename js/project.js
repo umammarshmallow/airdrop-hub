@@ -5,7 +5,9 @@
 import { loadProjects, saveProjects } from "./storage.js";
 import {
     validateProject,
-    showToast
+    showToast,
+    isTaskDueToday,
+    isDeadlineToday
 } from "./helpers.js";
 
 import { showConfirm } from "./dialog.js";
@@ -209,7 +211,9 @@ export function filterProjects(
 
     status = "All",
 
-    task = "All"
+    task = "All",
+
+    quickFilter = "None"
 
 ) {
 
@@ -245,13 +249,27 @@ export function filterProjects(
 
             project.taskType === task;
 
+        const quickFilterMatch =
+
+            quickFilter === "None"
+
+            ||
+
+            (quickFilter === "TodayTask" && isTaskDueToday(project))
+
+            ||
+
+            (quickFilter === "DeadlineToday" && isDeadlineToday(project));
+
         return (
 
             keywordMatch &&
 
             statusMatch &&
 
-            taskMatch
+            taskMatch &&
+
+            quickFilterMatch
 
         );
 

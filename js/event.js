@@ -16,6 +16,7 @@ const sortBy = document.getElementById("sortBy");
 sortBy.addEventListener("change", renderProjects);
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
+const quickFilter = document.getElementById("quickFilter");
 const saveProjectBtn = document.getElementById("saveProject");
 const updateProjectBtn = document.getElementById("updateProject");
 
@@ -48,6 +49,11 @@ export function initEvents() {
     );
 
     filterTask.addEventListener(
+        "change",
+        renderProjects
+    );
+
+    quickFilter.addEventListener(
         "change",
         renderProjects
     );
@@ -164,30 +170,7 @@ dropdowns.forEach(dropdown => {
 
         item.addEventListener("click", () => {
 
-            menu.querySelectorAll("div").forEach(i => {
-                i.classList.remove("selected");
-            });
-
-            item.classList.add("selected");
-
-            const value = item.dataset.value;
-            const target = item.dataset.target;
-
-            const select = document.getElementById(target);
-
-            select.value = value;
-
-            /* Trigger event lama */
-            select.dispatchEvent(new Event("change"));
-
-            /* Ganti tulisan tombol */
-            const label = button.querySelector(".label");
-
-            if(label){
-
-                label.textContent = item.innerText;
-
-            }
+            selectDropdownItem(dropdown, item);
 
             dropdown.classList.remove("active");
 
@@ -197,11 +180,141 @@ dropdowns.forEach(dropdown => {
 
 });
 
+function selectDropdownItem(dropdown, item) {
+
+    const menu = dropdown.querySelector(".dropdown-content");
+    const button = dropdown.querySelector(".dropbtn");
+    const label = button.querySelector(".label");
+
+    menu.querySelectorAll("div").forEach(i => {
+        i.classList.remove("selected");
+    });
+
+    item.classList.add("selected");
+
+    const value = item.dataset.value;
+    const target = item.dataset.target;
+
+    if (target === "filterStatus" || target === "filterTask") {
+        clearQuickFilter();
+    }
+
+    const select = document.getElementById(target);
+
+    select.value = value;
+
+    /* Trigger event lama */
+    select.dispatchEvent(new Event("change"));
+
+    if (label) {
+        label.textContent = item.innerText;
+    }
+
+    if (target === "filterStatus") {
+        syncFlowStepHighlight(value);
+    }
+
+}
+
 document.addEventListener("click", () => {
 
     dropdowns.forEach(dropdown => {
 
         dropdown.classList.remove("active");
+
+    });
+
+});
+
+/* =====================================================
+   OVERVIEW STATUS SHORTCUT (klik step Waitlist/Pending/Active/Completed)
+===================================================== */
+
+const flowSteps = document.querySelectorAll(".flow-step[data-status]");
+
+const statusDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterStatus"]'));
+
+function syncFlowStepHighlight(value) {
+
+    flowSteps.forEach(step => {
+
+        step.classList.toggle("active", step.dataset.status === value);
+
+    });
+
+}
+
+flowSteps.forEach(step => {
+
+    step.addEventListener("click", () => {
+
+        if (!statusDropdown) return;
+
+        clearQuickFilter();
+
+        const current = document.getElementById("filterStatus").value;
+        const next = current === step.dataset.status ? "All" : step.dataset.status;
+
+        const matchingItem = statusDropdown.querySelector(`[data-value="${next}"]`);
+
+        if (matchingItem) {
+            selectDropdownItem(statusDropdown, matchingItem);
+        }
+
+    });
+
+});
+
+/* =====================================================
+   OVERVIEW QUICK FILTER (klik kartu Today's Task / Deadline Today)
+===================================================== */
+
+const quickFilterSelect = document.getElementById("quickFilter");
+const quickFilterCards = document.querySelectorAll(".hero-stat[data-quick]");
+const taskDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterTask"]'));
+
+function clearStatusTaskFilters() {
+
+    if (statusDropdown) {
+
+        const allStatusItem = statusDropdown.querySelector('[data-value="All"]');
+
+        if (allStatusItem) selectDropdownItem(statusDropdown, allStatusItem);
+
+    }
+
+    if (taskDropdown) {
+
+        const allTaskItem = taskDropdown.querySelector('[data-value="All"]');
+
+        if (allTaskItem) selectDropdownItem(taskDropdown, allTaskItem);
+
+    }
+
+}
+
+function clearQuickFilter() {
+
+    quickFilterSelect.value = "None";
+
+    quickFilterCards.forEach(card => card.classList.remove("active"));
+
+}
+
+quickFilterCards.forEach(card => {
+
+    card.addEventListener("click", () => {
+
+        const current = quickFilterSelect.value;
+        const next = current === card.dataset.quick ? "None" : card.dataset.quick;
+
+        clearStatusTaskFilters();
+
+        quickFilterSelect.value = next;
+
+        quickFilterSelect.dispatchEvent(new Event("change"));
+
+        quickFilterCards.forEach(c => c.classList.toggle("active", c.dataset.quick === next));
 
     });
 
