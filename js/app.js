@@ -288,7 +288,7 @@ const closeMenuBtn=document.getElementById("closeMenuBtn");
 
 const sideMenuOverlay=document.getElementById("sideMenuOverlay");
 
-const menuWalletBtn=document.getElementById("profileWalletBtn");
+const menuWalletBtn=document.querySelectorAll("#profileWalletBtn, #profileWalletBtnLoggedOut");
 
 const closeWalletPageBtn=document.getElementById("closeWalletPageBtn");
 
@@ -841,13 +841,13 @@ closeMenu();
 
 });
 
-menuWalletBtn.onclick=()=>{
+menuWalletBtn.forEach(btn=>btn.onclick=()=>{
 
 openWalletPage();
 
 closeMenu();
 
-}
+});
 
 closeWalletPageBtn.onclick=()=>{
 
