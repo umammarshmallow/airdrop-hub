@@ -41,6 +41,26 @@
   --font-mono:'JetBrains Mono', monospace;
 }
 
+/* ==========================================================
+   LIGHT THEME OVERRIDES
+========================================================== */
+body.theme-light{
+  --bg:#f4f6fb;
+  --bg-grid: radial-gradient(circle at 1px 1px, rgba(10,13,20,.05) 1px, transparent 0);
+  --surface:#ffffff;
+  --surface-2:#f0f2f7;
+  --surface-3:#e6e9f0;
+  --border:#dde1ea;
+  --border-soft:#e8eaf0;
+
+  --text:#12151f;
+  --text-muted:#5c6478;
+  --text-faint:#8b93a6;
+
+  --shadow-lg:0 24px 48px -12px rgba(20,25,40,.14);
+  --shadow-md:0 10px 25px -6px rgba(20,25,40,.10);
+}
+
 *{ margin:0; padding:0; box-sizing:border-box; }
 
 html{ background:var(--bg); }
