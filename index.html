@@ -38,12 +38,12 @@
         </div>
       </div>
       <div class="header-actions">
-        <button id="menuBtn" class="menu-btn" aria-label="Settings">
-          <i class="fa-solid fa-gear"></i>
-        </button>
         <button id="notifBtn" class="menu-btn" aria-label="Notifications" style="position:relative;">
           <i class="fa-solid fa-bell"></i>
           <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+        </button>
+        <button id="menuBtn" class="menu-btn" aria-label="Settings">
+          <i class="fa-solid fa-gear"></i>
         </button>
       </div>
     </header>
@@ -171,29 +171,29 @@
     <section>
       <div class="section-heading"><h2><i class="ti ti-user"></i> <span data-i18n="profile.title">Profile</span></h2></div>
 
-      <div id="profileWalletBtn" class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 20px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
-        <div style="display:flex; align-items:center; gap:14px;">
-          <i class="fa-solid fa-wallet" style="color:var(--accent); font-size:17px; width:20px; text-align:center;"></i>
-          <span style="font-size:14.5px; font-weight:600; color:var(--text);" data-i18n="profile.wallet">Wallet</span>
-        </div>
-        <i class="fa-solid fa-chevron-right" style="color:var(--text-faint); font-size:13px;"></i>
-      </div>
-
       <!-- Sudah login -->
       <div id="profileLoggedInView" style="display:none;">
-        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:22px; margin-bottom:16px; display:flex; align-items:center; gap:14px;">
-          <div id="profileAvatar" style="width:46px; height:46px; border-radius:50%; background:var(--accent); color:#0a0d14; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:18px; font-weight:700; flex-shrink:0;"></div>
-          <div style="min-width:0;">
-            <p id="profileEmailDisplay" style="font-size:14.5px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></p>
-            <p style="font-size:12px; color:var(--text-muted); margin-top:2px;" data-i18n="profile.cloudSyncActive">Cloud sync aktif</p>
+        <div class="profile-hero">
+          <div id="profileAvatar" class="profile-hero-avatar"></div>
+          <div class="profile-hero-info">
+            <p id="profileEmailDisplay" class="profile-hero-email"></p>
+            <span class="profile-sync-badge"><span class="dot"></span> <span data-i18n="profile.cloudSyncActive">Cloud sync aktif</span></span>
           </div>
         </div>
 
-        <div class="section-heading"><h3 style="font-size:14px; color:var(--text-muted);"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="profile.security">Security</span></h3></div>
-        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px;">
-          <p style="color:var(--text-muted); font-size:12.5px; margin:0 0 14px;" data-i18n="profile.securityDesc">
-            Masukkan password lama & password baru untuk mengganti password akun.
-          </p>
+        <div class="list-group">
+          <div id="profileWalletBtn" class="list-row">
+            <div class="list-row-icon"><i class="fa-solid fa-wallet"></i></div>
+            <span class="list-row-label" data-i18n="profile.wallet">Wallet</span>
+            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
+          </div>
+        </div>
+
+        <div class="profile-security-card">
+          <div class="profile-security-head">
+            <div class="list-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <p data-i18n="profile.securityDesc">Masukkan password lama & password baru untuk mengganti password akun.</p>
+          </div>
 
           <label class="field-label" for="securityCurrentPassword" data-i18n="profile.currentPassword">Password Saat Ini</label>
           <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password" data-i18n-ph="profile.currentPasswordPh">
@@ -206,15 +206,28 @@
           <button id="securityUpdateBtn" class="btn-add" style="width:100%;" data-i18n="profile.updatePassword">Update Password</button>
         </div>
 
-        <button id="profileLogoutBtn" class="side-menu-logout" style="width:100%; margin:0;" data-i18n="profile.logout">Log out</button>
+        <div class="list-group">
+          <button id="profileLogoutBtn" class="list-row danger" style="width:100%; background:none; border:none; text-align:left; font-family:inherit;">
+            <div class="list-row-icon danger"><i class="fa-solid fa-right-from-bracket"></i></div>
+            <span class="list-row-label" data-i18n="profile.logout">Log out</span>
+          </button>
+        </div>
       </div>
 
       <!-- Belum login -->
       <div id="profileLoggedOutView" style="display:none;">
-        <div class="card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:26px; text-align:center;">
-          <i class="fa-solid fa-user-plus" style="font-size:28px; color:var(--accent); margin-bottom:10px; display:inline-block;"></i>
+        <div class="list-group">
+          <div id="profileWalletBtnLoggedOut" class="list-row">
+            <div class="list-row-icon"><i class="fa-solid fa-wallet"></i></div>
+            <span class="list-row-label" data-i18n="profile.wallet">Wallet</span>
+            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
+          </div>
+        </div>
+
+        <div class="profile-guest-card">
+          <div class="profile-guest-icon"><i class="fa-solid fa-user-plus"></i></div>
           <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Belum Login</h3>
-          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:16px;" data-i18n="profile.loginDesc">Login supaya data project & wallet kamu tersinkron otomatis di semua device.</p>
+          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login supaya data project & wallet kamu tersinkron otomatis di semua device.</p>
           <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Daftar</button>
         </div>
       </div>
