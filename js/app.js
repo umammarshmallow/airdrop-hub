@@ -19,6 +19,8 @@ import { initWallet } from "./wallet.js";
 
 import { initDialog, showAlert, showConfirm } from "./dialog.js";
 
+import { getLang, setLang, applyStaticTranslations } from "./i18n.js";
+
 import {
     initFirebaseApp,
     waitForPersistedSession,
@@ -286,7 +288,7 @@ const closeMenuBtn=document.getElementById("closeMenuBtn");
 
 const sideMenuOverlay=document.getElementById("sideMenuOverlay");
 
-const menuWalletBtn=document.getElementById("menuWalletBtn");
+const menuWalletBtn=document.getElementById("profileWalletBtn");
 
 const closeWalletPageBtn=document.getElementById("closeWalletPageBtn");
 
@@ -331,6 +333,64 @@ document.body.classList.remove("modal-open");
 menuBtn.onclick=openMenu;
 
 closeMenuBtn.onclick=closeMenu;
+
+/* ==========================================
+   SETTINGS: DARK / LIGHT MODE
+========================================== */
+
+const THEME_KEY="airdropHub_theme";
+
+const darkModeToggle=document.getElementById("darkModeToggle");
+
+function applyTheme(theme){
+
+document.body.classList.toggle("theme-light", theme==="light");
+
+darkModeToggle.checked = theme==="dark";
+
+}
+
+const savedTheme=localStorage.getItem(THEME_KEY) || "dark";
+
+applyTheme(savedTheme);
+
+darkModeToggle.onchange=()=>{
+
+const theme=darkModeToggle.checked ? "dark" : "light";
+
+localStorage.setItem(THEME_KEY, theme);
+
+applyTheme(theme);
+
+};
+
+/* ==========================================
+   SETTINGS: LANGUAGE (ID / EN)
+========================================== */
+
+const langSwitch=document.getElementById("langSwitch");
+
+const langButtons=langSwitch.querySelectorAll("[data-lang]");
+
+function applyLang(lang, {refresh=true}={}){
+
+setLang(lang);
+
+langButtons.forEach(btn=>btn.classList.toggle("active", btn.dataset.lang===lang));
+
+applyStaticTranslations();
+
+if(refresh) refreshProjectsView(false);
+
+}
+
+applyLang(getLang(), {refresh:false});
+
+langButtons.forEach(btn=>{
+
+btn.onclick=()=>applyLang(btn.dataset.lang);
+
+});
 
 /* ==========================================
    NOTIFICATION CENTER

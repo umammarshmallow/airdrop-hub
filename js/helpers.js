@@ -3,6 +3,7 @@
 ========================================== */
 
 import { showAlert } from "./dialog.js";
+import { t } from "./i18n.js";
 
 /* ==========================
 FORMAT URL
@@ -214,7 +215,7 @@ export async function validateProject(project) {
 
     if (!project.name.trim()) {
 
-        await showAlert("Project name is required.");
+        await showAlert(t("project.nameRequired"));
 
         return false;
 
@@ -222,7 +223,7 @@ export async function validateProject(project) {
 
     if (!project.network.trim()) {
 
-        await showAlert("Chain is required.");
+        await showAlert(t("project.chainRequired"));
 
         return false;
 
@@ -322,8 +323,14 @@ STATUS LABEL (untuk ditampilkan)
 
 export function statusLabel(status) {
 
-    if (status === "Complete") return "Completed";
+    switch (status) {
 
-    return status;
+        case "Active": return t("project.active");
+        case "Pending": return t("project.pending");
+        case "Waitlist": return t("project.waitlist");
+        case "Complete": return t("project.complete");
+        default: return status;
+
+    }
 
 }

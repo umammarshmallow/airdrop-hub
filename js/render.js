@@ -12,6 +12,7 @@ import {
 } from "./project.js";
 import { saveProjects } from "./storage.js";
 import { getWallets } from "./wallet.js";
+import { t } from "./i18n.js";
 
 /* ==========================================
    ELEMENT
@@ -46,12 +47,32 @@ export function renderProjects() {
 
         projectList.innerHTML = `
             <div class="empty">
-                No projects match your filters.
+                ${t("projects.emptyFiltered")}
             </div>
         `;
 
         return;
     }
+
+    const taskTypeLabel = (value) => {
+        switch (value) {
+            case "Daily": return t("project.daily");
+            case "Weekly": return t("project.weekly");
+            case "Testnet": return t("project.testnet");
+            case "Mainnet": return t("project.mainnet");
+            case "One Time": return t("filter.oneTime");
+            default: return value;
+        }
+    };
+
+    const priorityLabel = (value) => {
+        switch (value) {
+            case "Low": return t("project.low");
+            case "Medium": return t("project.medium");
+            case "High": return t("project.high");
+            default: return value;
+        }
+    };
 
     let html = "";
 
@@ -80,7 +101,7 @@ export function renderProjects() {
                         class="icon-btn icon-btn-blue"
                         href="${formatUrl(project.website)}"
                         target="_blank"
-                        title="Website">
+                        title="${t("project.website.title")}">
 
                         <i class="ti ti-world" aria-hidden="true"></i>
 
@@ -93,7 +114,7 @@ export function renderProjects() {
                                 data-action="daily"
                                 data-id="${project.id}"
                                 ${project.dailyDone ? "disabled" : ""}
-                                title="${project.dailyDone ? "Completed" : "Mark done"}">
+                                title="${project.dailyDone ? t("project.doneCompleted") : t("project.markDone")}">
 
                                 <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
 
@@ -111,7 +132,7 @@ export function renderProjects() {
                 data-action="toggle"
                 data-id="${project.id}">
 
-                <span>View details</span>
+                <span>${t("project.viewDetails")}</span>
                 <i class="ti ti-chevron-down detail-arrow" aria-hidden="true"></i>
 
             </button>
@@ -123,7 +144,7 @@ export function renderProjects() {
                     <span class="chip"><i class="ti ti-link" aria-hidden="true"></i> ${project.network}</span>
 
                     <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : "No wallet linked"}
+                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : t("wallet.noWalletLinked")}
                     </span>
 
                 </div>
@@ -133,23 +154,23 @@ export function renderProjects() {
                     <div class="info-tile">
                         <i class="ti ti-list-check info-icon" aria-hidden="true"></i>
                         <div>
-                            <div class="info-label">Task</div>
-                            <div class="info-value">${project.taskType}</div>
+                            <div class="info-label">${t("project.task")}</div>
+                            <div class="info-value">${taskTypeLabel(project.taskType)}</div>
                         </div>
                     </div>
 
                     <div class="info-tile">
                         <i class="ti ti-flag info-icon" aria-hidden="true"></i>
                         <div>
-                            <div class="info-label">Priority</div>
-                            <div class="info-value">${project.priority}</div>
+                            <div class="info-label">${t("project.priority")}</div>
+                            <div class="info-value">${priorityLabel(project.priority)}</div>
                         </div>
                     </div>
 
                     <div class="info-tile">
                         <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
                         <div>
-                            <div class="info-label">Deadline</div>
+                            <div class="info-label">${t("project.deadline")}</div>
                             <div class="info-value">${project.deadline || "-"}</div>
                         </div>
                     </div>
@@ -166,7 +187,7 @@ export function renderProjects() {
                         data-action="edit"
                         data-id="${project.id}">
 
-                        <i class="ti ti-edit" aria-hidden="true"></i> Edit
+                        <i class="ti ti-edit" aria-hidden="true"></i> ${t("project.editBtn")}
 
                     </button>
 
@@ -175,14 +196,14 @@ export function renderProjects() {
                         data-action="delete"
                         data-id="${project.id}">
 
-                        <i class="ti ti-trash" aria-hidden="true"></i> Delete
+                        <i class="ti ti-trash" aria-hidden="true"></i> ${t("project.deleteBtn")}
 
                     </button>
 
                 </div>
 
                 <div class="project-meta">
-                    Added ${formatDate(project.createdAt)} · Last updated ${formatDate(project.updatedAt)}
+                    ${t("project.added")} ${formatDate(project.createdAt)} · ${t("project.lastUpdated")} ${formatDate(project.updatedAt)}
                 </div>
 
             </div>
