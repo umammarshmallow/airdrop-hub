@@ -54,34 +54,34 @@
       </div>
 
       <div class="hero-stats">
-        <div class="hero-stat" id="todayTaskCard" data-state="clear">
+        <div class="hero-stat" id="todayTaskCard" data-state="clear" data-quick="TodayTask">
           <p class="hero-label" data-i18n="overview.todayTask">Today's Task</p>
           <span class="hero-val" id="todayTask">0</span>
         </div>
-        <div class="hero-stat" id="deadlineTodayCard" data-state="clear">
+        <div class="hero-stat" id="deadlineTodayCard" data-state="clear" data-quick="DeadlineToday">
           <p class="hero-label" data-i18n="overview.deadlineToday">Deadline Today</p>
           <span class="hero-val" id="deadlineToday">0</span>
         </div>
       </div>
 
       <div class="flow-strip">
-        <div class="flow-step">
-          <span class="flow-val" id="waitlistProject">0</span>
+        <div class="flow-step" data-status="Waitlist">
+          <span class="flow-val flow-val-waitlist" id="waitlistProject">0</span>
           <p class="flow-lbl" data-i18n="overview.waitlist">Waitlist</p>
         </div>
         <i class="fa-solid fa-arrow-right flow-arrow"></i>
-        <div class="flow-step">
-          <span class="flow-val" id="pendingProject">0</span>
+        <div class="flow-step" data-status="Pending">
+          <span class="flow-val flow-val-pending" id="pendingProject">0</span>
           <p class="flow-lbl" data-i18n="overview.pending">Pending</p>
         </div>
         <i class="fa-solid fa-arrow-right flow-arrow"></i>
-        <div class="flow-step">
+        <div class="flow-step" data-status="Active">
           <span class="flow-val flow-val-accent" id="activeProject">0</span>
           <p class="flow-lbl" data-i18n="overview.active">Active</p>
         </div>
         <i class="fa-solid fa-arrow-right flow-arrow"></i>
-        <div class="flow-step">
-          <span class="flow-val" id="completedProject">0</span>
+        <div class="flow-step" data-status="Complete">
+          <span class="flow-val flow-val-complete" id="completedProject">0</span>
           <p class="flow-lbl" data-i18n="overview.completed">Completed</p>
         </div>
       </div>
@@ -149,6 +149,11 @@
       <option value="Mainnet"></option>
       <option value="One Time"></option>
     </select>
+    <select id="quickFilter" hidden>
+      <option value="None"></option>
+      <option value="TodayTask"></option>
+      <option value="DeadlineToday"></option>
+    </select>
     <select id="sortBy" hidden>
       <option value="default"></option>
       <option value="deadline"></option>
@@ -182,28 +187,16 @@
         </div>
 
         <div class="list-group">
+          <div id="profileSecurityBtn" class="list-row">
+            <div class="list-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <span class="list-row-label" data-i18n="profile.security">Security</span>
+            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
+          </div>
           <div id="profileWalletBtn" class="list-row">
             <div class="list-row-icon"><i class="fa-solid fa-wallet"></i></div>
             <span class="list-row-label" data-i18n="profile.wallet">Wallet</span>
             <i class="fa-solid fa-chevron-right list-row-chevron"></i>
           </div>
-        </div>
-
-        <div class="profile-security-card">
-          <div class="profile-security-head">
-            <div class="list-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <p data-i18n="profile.securityDesc">Masukkan password lama & password baru untuk mengganti password akun.</p>
-          </div>
-
-          <label class="field-label" for="securityCurrentPassword" data-i18n="profile.currentPassword">Password Saat Ini</label>
-          <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password" data-i18n-ph="profile.currentPasswordPh">
-
-          <label class="field-label" for="securityNewPassword" data-i18n="profile.newPassword">Password Baru</label>
-          <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" data-i18n-ph="profile.newPasswordPh">
-
-          <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
-
-          <button id="securityUpdateBtn" class="btn-add" style="width:100%;" data-i18n="profile.updatePassword">Update Password</button>
         </div>
 
         <div class="list-group">
@@ -250,6 +243,32 @@
 
       <div id="walletList">
         <div class="empty" data-i18n="wallet.empty">No wallets yet.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= SECURITY PAGE ================= -->
+  <div id="securityPage" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="fa-solid fa-shield-halved"></i> <span data-i18n="profile.security">Security</span></h2>
+        <button id="closeSecurityPageBtn" class="close-menu-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="profile-security-card">
+        <p data-i18n="profile.securityDesc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 16px; line-height:1.5;">Masukkan password lama & password baru untuk mengganti password akun.</p>
+
+        <label class="field-label" for="securityCurrentPassword" data-i18n="profile.currentPassword">Password Saat Ini</label>
+        <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password" data-i18n-ph="profile.currentPasswordPh">
+
+        <label class="field-label" for="securityNewPassword" data-i18n="profile.newPassword">Password Baru</label>
+        <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" data-i18n-ph="profile.newPasswordPh">
+
+        <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+
+        <button id="securityUpdateBtn" class="btn-add" style="width:100%;" data-i18n="profile.updatePassword">Update Password</button>
       </div>
     </section>
   </div>
