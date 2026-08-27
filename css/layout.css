@@ -380,15 +380,22 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
   padding:20px;
   margin-bottom:14px;
 }
-.profile-security-head{
-  display:flex; align-items:flex-start; gap:10px;
-  margin-bottom:16px;
-  padding-bottom:14px;
-  border-bottom:1px solid var(--border-soft);
+.profile-security-card input[type="password"],
+.profile-security-card input[type="text"]{
+  width:100%;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 14px;
+  border-radius:var(--radius-sm);
+  font-size:13.5px;
+  margin-bottom:12px;
+  transition:.2s;
 }
-.profile-security-head .list-row-icon{ margin-top:1px; }
-.profile-security-head p{
-  color:var(--text-muted); font-size:12.5px; margin:0; line-height:1.5;
+.profile-security-card input:focus{
+  outline:none;
+  border-color:var(--accent);
+  background:var(--surface);
 }
 
 .profile-guest-card{
