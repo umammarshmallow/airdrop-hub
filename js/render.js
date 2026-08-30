@@ -105,7 +105,7 @@ export function renderProjects() {
                         target="_blank"
                         title="${t("project.website.title")}">
 
-                        <i class="ti ti-world" aria-hidden="true"></i>
+                        <i class="fa-solid fa-globe" aria-hidden="true"></i>
 
                     </a>
 
@@ -135,7 +135,7 @@ export function renderProjects() {
                 data-id="${project.id}">
 
                 <span>${t("project.viewDetails")}</span>
-                <i class="ti ti-chevron-down detail-arrow" aria-hidden="true"></i>
+                <i class="fa-solid fa-chevron-down detail-arrow" aria-hidden="true"></i>
 
             </button>
 
@@ -143,10 +143,10 @@ export function renderProjects() {
 
                 <div class="chip-group">
 
-                    <span class="chip"><i class="ti ti-link" aria-hidden="true"></i> ${project.network}</span>
+                    <span class="chip"><i class="fa-solid fa-link" aria-hidden="true"></i> ${project.network}</span>
 
                     <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        <i class="ti ti-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : t("wallet.noWalletLinked")}
+                        <i class="fa-solid fa-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : t("wallet.noWalletLinked")}
                     </span>
 
                 </div>
@@ -154,7 +154,7 @@ export function renderProjects() {
                 <div class="info-grid">
 
                     <div class="info-tile">
-                        <i class="ti ti-list-check info-icon" aria-hidden="true"></i>
+                        <i class="fa-solid fa-list-check info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">${t("project.task")}</div>
                             <div class="info-value">${taskTypeLabel(project.taskType)}</div>
@@ -162,7 +162,7 @@ export function renderProjects() {
                     </div>
 
                     <div class="info-tile">
-                        <i class="ti ti-flag info-icon" aria-hidden="true"></i>
+                        <i class="fa-solid fa-flag info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">${t("project.priority")}</div>
                             <div class="info-value">${priorityLabel(project.priority)}</div>
@@ -170,7 +170,7 @@ export function renderProjects() {
                     </div>
 
                     <div class="info-tile">
-                        <i class="ti ti-calendar info-icon" aria-hidden="true"></i>
+                        <i class="fa-solid fa-calendar info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">${t("project.deadline")}</div>
                             <div class="info-value">${project.deadline || "-"}</div>
@@ -189,7 +189,7 @@ export function renderProjects() {
                         data-action="edit"
                         data-id="${project.id}">
 
-                        <i class="ti ti-edit" aria-hidden="true"></i> ${t("project.editBtn")}
+                        <i class="fa-solid fa-pen" aria-hidden="true"></i> ${t("project.editBtn")}
 
                     </button>
 
@@ -198,7 +198,7 @@ export function renderProjects() {
                         data-action="delete"
                         data-id="${project.id}">
 
-                        <i class="ti ti-trash" aria-hidden="true"></i> ${t("project.deleteBtn")}
+                        <i class="fa-solid fa-trash" aria-hidden="true"></i> ${t("project.deleteBtn")}
 
                     </button>
 

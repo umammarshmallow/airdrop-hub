@@ -308,9 +308,9 @@ bottomNav.style.display="none";
 
 function closeWalletPage(){
 
-showPage(homePage);
+showPage(profilePage);
 
-setActiveNav(homeBtn);
+setActiveNav(profileBtn);
 
 bottomNav.style.display="flex";
 
