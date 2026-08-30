@@ -36,7 +36,7 @@
   --radius-lg:20px;
   --shadow-lg:0 24px 48px -12px rgba(0,0,0,.55);
   --shadow-md:0 10px 25px -6px rgba(0,0,0,.4);
-  --font-display:'Space Grotesk', 'Inter', sans-serif;
+  --font-display:'Syne', 'Inter', sans-serif;
   --font-body:'Inter', sans-serif;
   --font-mono:'JetBrains Mono', monospace;
 }
@@ -68,8 +68,7 @@ html{ background:var(--bg); }
 body{
   font-family:var(--font-body);
   background:
-    radial-gradient(ellipse 900px 500px at 12% -10%, rgba(91,140,255,.10), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 100% 0%, rgba(167,139,250,.07), transparent 55%),
+    linear-gradient(180deg, rgba(91,140,255,.07), transparent 380px),
     var(--bg-grid) 0 0/22px 22px,
     var(--bg);
   color:var(--text);

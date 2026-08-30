@@ -10,12 +10,13 @@
 }
 
 .search::before{
-  content:"\ea6d";
-  font-family:'tabler-icons';
+  content:"\f002";
+  font-family:'Font Awesome 6 Free';
+  font-weight:900;
   position:absolute;
   left:16px; top:50%; transform:translateY(-50%);
   color:var(--text-faint);
-  font-size:16px;
+  font-size:15px;
   pointer-events:none;
 }
 

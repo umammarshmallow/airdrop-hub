@@ -192,7 +192,8 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
 
 .close-menu-btn:hover{ color:var(--text); border-color:var(--accent-line); }
 #closeWalletPageBtn,
-#closeNotifModal{ position:absolute; top:0; right:0; }
+#closeNotifModal,
+#closeSecurityPageBtn{ position:absolute; top:0; right:0; }
 .side-menu-content{ padding:12px 0; }
 
 /* ==========================================================
