@@ -8,9 +8,8 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
 
 <!-- CSS modular -->
 <link rel="stylesheet" href="css/base.css">
@@ -31,7 +30,7 @@
 
     <header>
       <div class="brand">
-        <div class="brand-mark"><i class="ti ti-rocket"></i></div>
+        <div class="brand-mark"><i class="fa-solid fa-rocket"></i></div>
         <div class="brand-text">
           <span class="wordmark">Airdrop <span class="tag">HUB</span></span>
           <span class="status-line"><span class="status-dot"></span> <span data-i18n="status.tracking">Tracking active</span></span>
@@ -50,7 +49,7 @@
 
     <section class="dashboard-summary">
       <div class="section-heading" style="margin-bottom:16px;">
-        <h2><i class="ti ti-layout-dashboard"></i> <span data-i18n="overview.title">Overview</span></h2>
+        <h2><i class="fa-solid fa-gauge-high"></i> <span data-i18n="overview.title">Overview</span></h2>
       </div>
 
       <div class="hero-stats">
@@ -113,11 +112,11 @@
         </button>
         <div class="dropdown-content">
           <div data-target="filterTask" data-value="All" class="selected" data-i18n="filter.allTasks">All Tasks</div>
+          <div data-target="filterTask" data-value="One Time" data-i18n="filter.oneTime">One Time</div>
           <div data-target="filterTask" data-value="Daily" data-i18n="project.daily">Daily</div>
           <div data-target="filterTask" data-value="Weekly" data-i18n="project.weekly">Weekly</div>
           <div data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</div>
           <div data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</div>
-          <div data-target="filterTask" data-value="One Time" data-i18n="filter.oneTime">One Time</div>
         </div>
       </div>
 
@@ -143,11 +142,11 @@
     </select>
     <select id="filterTask" hidden>
       <option value="All"></option>
+      <option value="One Time"></option>
       <option value="Daily"></option>
       <option value="Weekly"></option>
       <option value="Testnet"></option>
       <option value="Mainnet"></option>
-      <option value="One Time"></option>
     </select>
     <select id="quickFilter" hidden>
       <option value="None"></option>
@@ -162,7 +161,7 @@
 
     <section>
       <div class="section-heading">
-        <h2><i class="ti ti-list-details"></i> <span data-i18n="projects.title">Projects</span></h2>
+        <h2><i class="fa-solid fa-list-check"></i> <span data-i18n="projects.title">Projects</span></h2>
       </div>
       <div id="projectList">
         <div class="empty" data-i18n="projects.empty">No projects yet. Tap "Add Project" below to start tracking.</div>
@@ -174,7 +173,7 @@
   <!-- ================= PROFILE PAGE ================= -->
   <div id="profilePage" style="display:none;">
     <section>
-      <div class="section-heading"><h2><i class="ti ti-user"></i> <span data-i18n="profile.title">Profile</span></h2></div>
+      <div class="section-heading"><h2><i class="fa-solid fa-user"></i> <span data-i18n="profile.title">Profile</span></h2></div>
 
       <!-- Sudah login -->
       <div id="profileLoggedInView" style="display:none;">
@@ -231,7 +230,7 @@
   <div id="walletPage" style="display:none;">
     <section>
       <div class="page-header">
-        <h2><i class="ti ti-wallet"></i> <span data-i18n="wallet.title">Wallets</span></h2>
+        <h2><i class="fa-solid fa-wallet"></i> <span data-i18n="wallet.title">Wallets</span></h2>
         <button id="closeWalletPageBtn" class="close-menu-btn" aria-label="Close">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -278,7 +277,7 @@
   <!-- ================= ADD PROJECT MODAL ================= -->
   <div class="modal" id="projectModal">
     <div class="modal-content">
-      <h2><i class="ti ti-square-rounded-plus" style="color:var(--accent);"></i> <span data-i18n="project.add">Add Project</span></h2>
+      <h2><i class="fa-solid fa-circle-plus" style="color:var(--accent);"></i> <span data-i18n="project.add">Add Project</span></h2>
 
       <label class="field-label" for="name" data-i18n="project.name">Project Name</label>
       <input type="text" id="name" placeholder="e.g. LayerZero" data-i18n-ph="project.namePh">
@@ -303,11 +302,11 @@
 
       <label class="field-label" for="taskType" data-i18n="project.taskType">Task Type</label>
       <select id="taskType">
+        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
         <option value="Daily" data-i18n="project.daily">Daily</option>
         <option value="Weekly" data-i18n="project.weekly">Weekly</option>
         <option value="Testnet" data-i18n="project.testnet">Testnet</option>
         <option value="Mainnet" data-i18n="project.mainnet">Mainnet</option>
-        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
       </select>
 
       <label class="field-label" for="deadline" data-i18n="project.deadline">Deadline</label>
@@ -341,7 +340,7 @@
   <!-- ================= EDIT PROJECT MODAL ================= -->
   <div class="modal" id="editModal">
     <div class="modal-content">
-      <h2><i class="ti ti-edit" style="color:var(--accent);"></i> <span data-i18n="project.edit">Edit Project</span></h2>
+      <h2><i class="fa-solid fa-pen" style="color:var(--accent);"></i> <span data-i18n="project.edit">Edit Project</span></h2>
       <input type="hidden" id="editId">
 
       <label class="field-label" for="editName" data-i18n="project.name">Project Name</label>
@@ -367,11 +366,11 @@
 
       <label class="field-label" for="editTaskType" data-i18n="project.taskType">Task Type</label>
       <select id="editTaskType">
+        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
         <option value="Daily" data-i18n="project.daily">Daily</option>
         <option value="Weekly" data-i18n="project.weekly">Weekly</option>
         <option value="Testnet" data-i18n="project.testnet">Testnet</option>
         <option value="Mainnet" data-i18n="project.mainnet">Mainnet</option>
-        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
       </select>
 
       <label class="field-label" for="editDeadline" data-i18n="project.deadline">Deadline</label>
@@ -427,7 +426,7 @@
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
     <div class="modal-content">
-      <h2><i class="ti ti-cloud"></i> <span data-i18n="cloud.title">Sync Akun</span></h2>
+      <h2><i class="fa-solid fa-cloud"></i> <span data-i18n="cloud.title">Sync Akun</span></h2>
       <p style="color:var(--text-muted); font-size:13px; margin:-10px 0 16px;" data-i18n="cloud.desc">
         Login supaya data project & wallet kamu tersinkron otomatis di semua device.
       </p>
@@ -454,7 +453,7 @@
   <!-- ================= CUSTOM ALERT ================= -->
   <div class="modal" id="customAlertModal">
     <div class="modal-content dialog-content">
-      <div class="dialog-icon dialog-icon-info"><i class="ti ti-info-circle"></i></div>
+      <div class="dialog-icon dialog-icon-info"><i class="fa-solid fa-circle-info"></i></div>
       <p class="dialog-message" id="customAlertMessage"></p>
       <div class="modal-button dialog-button">
         <button id="customAlertOk" class="dialog-btn-primary">OK</button>
@@ -465,7 +464,7 @@
   <!-- ================= CUSTOM CONFIRM ================= -->
   <div class="modal" id="customConfirmModal">
     <div class="modal-content dialog-content">
-      <div class="dialog-icon dialog-icon-warning"><i class="ti ti-alert-triangle"></i></div>
+      <div class="dialog-icon dialog-icon-warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
       <p class="dialog-message" id="customConfirmMessage"></p>
       <div class="modal-button dialog-button">
         <button id="customConfirmCancel" class="dialog-btn-secondary" data-i18n="dialog.cancel">Cancel</button>
@@ -475,14 +474,14 @@
   </div>
 
   <div id="toast" class="toast">
-    <span class="toast-icon"><i class="ti ti-check" id="toastIcon"></i></span>
+    <span class="toast-icon"><i class="fa-solid fa-check" id="toastIcon"></i></span>
     <span id="toastText">Success</span>
   </div>
 
   <!-- ================= ADD WALLET MODAL ================= -->
   <div class="modal" id="walletModal">
     <div class="modal-content">
-      <h2><i class="ti ti-wallet" style="color:var(--accent);"></i> <span data-i18n="wallet.add">Add Wallet</span></h2>
+      <h2><i class="fa-solid fa-wallet" style="color:var(--accent);"></i> <span data-i18n="wallet.add">Add Wallet</span></h2>
 
       <label class="field-label" for="walletChain" data-i18n="wallet.chain">Chain</label>
       <select id="walletChain">
@@ -546,10 +545,10 @@
 </div>
 
 <nav class="bottom-nav">
-  <button id="homeBtn"><i class="ti ti-home"></i><span data-i18n="nav.home">Home</span></button>
-  <button id="searchBtn"><i class="ti ti-search"></i><span data-i18n="nav.search">Search</span></button>
-  <button id="addBottomBtn" class="add-btn"><i class="ti ti-square-rounded-plus"></i><span data-i18n="nav.add">Add</span></button>
-  <button id="profileBtn"><i class="ti ti-user"></i><span data-i18n="nav.profile">Profile</span></button>
+  <button id="homeBtn"><i class="fa-solid fa-house"></i><span data-i18n="nav.home">Home</span></button>
+  <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span data-i18n="nav.search">Search</span></button>
+  <button id="addBottomBtn" class="add-btn"><i class="fa-solid fa-circle-plus"></i><span data-i18n="nav.add">Add</span></button>
+  <button id="profileBtn"><i class="fa-solid fa-user"></i><span data-i18n="nav.profile">Profile</span></button>
 </nav>
 
 <script type="module" src="js/app.js"></script>
