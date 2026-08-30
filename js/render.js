@@ -118,7 +118,7 @@ export function renderProjects() {
                                 ${project.dailyDone ? "disabled" : ""}
                                 title="${project.dailyDone ? t("project.doneCompleted") : t("project.markDone")}">
 
-                                <i class="ti ${project.dailyDone ? "ti-checks" : "ti-check"}" aria-hidden="true"></i>
+                                <i class="fa-solid ${project.dailyDone ? "fa-check-double" : "fa-check"}" aria-hidden="true"></i>
 
                             </button>
                        `
