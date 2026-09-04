@@ -192,7 +192,7 @@ export function renderWallets() {
 
                 <p class="chain-name"><span class="chain-dot" style="background:${dot}"></span>${icon} ${wallet.chain || "-"}</p>
 
-                <p class="wallet-address-row">
+                <div class="wallet-address-row">
                     <span class="wallet-address-text">${wallet.address}</span>
                     <button
                         class="copy-btn"
@@ -201,21 +201,17 @@ export function renderWallets() {
                         title="Copy address">
                         <i class="copy-icon">${ICON_COPY}</i>
                     </button>
-                </p>
+                    <button
+                        class="btn-red wallet-delete-btn"
+                        data-action="delete"
+                        data-id="${wallet.id}">
+                        <i class="trash-icon">${ICON_TRASH}</i> Delete
+                    </button>
+                </div>
 
                 <p>${wallet.note || "-"}</p>
 
             </div>
-
-            <button
-                class="btn-red"
-                data-action="delete"
-                data-id="${wallet.id}"
-                style="flex:none; padding:11px 16px;">
-
-                <i class="trash-icon">${ICON_TRASH}</i> Delete
-
-            </button>
 
         </div>
         `;
