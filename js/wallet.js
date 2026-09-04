@@ -5,6 +5,7 @@
 import { showToast } from "./helpers.js";
 import { showAlert, showConfirm } from "./dialog.js";
 import { pushToCloud } from "./cloudSync.js";
+import { ICON_COPY, ICON_TRASH } from "./icons.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
@@ -198,7 +199,7 @@ export function renderWallets() {
                         data-action="copy"
                         data-address="${wallet.address}"
                         title="Copy address">
-                        <i class="ti ti-copy" aria-hidden="true"></i>
+                        <i class="copy-icon">${ICON_COPY}</i>
                     </button>
                 </p>
 
@@ -212,7 +213,7 @@ export function renderWallets() {
                 data-id="${wallet.id}"
                 style="flex:none; padding:11px 16px;">
 
-                <i class="ti ti-trash" aria-hidden="true"></i> Delete
+                <i class="trash-icon">${ICON_TRASH}</i> Delete
 
             </button>
 

@@ -4,6 +4,7 @@
 
 import { showAlert } from "./dialog.js";
 import { t } from "./i18n.js";
+import { ICON_CHECK, ICON_XMARK } from "./icons.js";
 
 /* ==========================
 FORMAT URL
@@ -119,9 +120,7 @@ export function showToast(message, duration = 2500, type = "success") {
 
     if (icon) {
 
-        icon.className = type === "error"
-            ? "ti ti-x"
-            : "ti ti-check";
+        icon.innerHTML = type === "error" ? ICON_XMARK : ICON_CHECK;
 
     }
 

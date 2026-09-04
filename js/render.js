@@ -13,6 +13,7 @@ import {
 import { saveProjects } from "./storage.js";
 import { getWallets } from "./wallet.js";
 import { t } from "./i18n.js";
+import { ICON_CHECK, ICON_TRASH } from "./icons.js";
 
 /* ==========================================
    ELEMENT
@@ -118,7 +119,7 @@ export function renderProjects() {
                                 ${project.dailyDone ? "disabled" : ""}
                                 title="${project.dailyDone ? t("project.doneCompleted") : t("project.markDone")}">
 
-                                <i class="fa-solid ${project.dailyDone ? "fa-check-double" : "fa-check"}" aria-hidden="true"></i>
+                                <i class="check-icon">${ICON_CHECK}</i>
 
                             </button>
                        `
@@ -198,7 +199,7 @@ export function renderProjects() {
                         data-action="delete"
                         data-id="${project.id}">
 
-                        <i class="fa-solid fa-trash" aria-hidden="true"></i> ${t("project.deleteBtn")}
+                        <i class="trash-icon">${ICON_TRASH}</i> ${t("project.deleteBtn")}
 
                     </button>
 
