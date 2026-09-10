@@ -339,7 +339,7 @@
 
 .simple-card-info p{ color:var(--text-muted); word-break:break-all; font-size:13px; }
 .wallet-address-row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
-.wallet-address-text{ flex:1; min-width:80px; word-break:break-all; font-family:var(--font-mono); font-size:12.5px; color:var(--text); }
+.wallet-address-text{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:var(--font-mono); font-size:12.5px; color:var(--text); }
 
 .copy-btn{
   background:var(--surface-3);

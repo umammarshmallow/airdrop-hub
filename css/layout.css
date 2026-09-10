@@ -443,5 +443,4 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
 .bottom-nav button:hover{ color:var(--text); }
 
 .bottom-nav button.active{ background:var(--accent-soft); color:var(--accent); }
-.bottom-nav button.add-btn{ color:var(--accent); }
 .bottom-nav button.add-btn i{ font-size:23px; }
