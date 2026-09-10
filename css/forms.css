@@ -37,7 +37,6 @@
 .search input:focus{ border-color:var(--accent-line); background:var(--surface-2); }
 
 /* Icon-only dropdown (Sort, sejajar search bar) */
-.dropdown-icon-only{ width:auto; flex-shrink:0; }
 .dropdown-icon-only .dropbtn{
   width:46px; height:46px; padding:0;
   justify-content:center;
@@ -72,6 +71,8 @@
 .dropdown-hidden{ display:none; }
 
 .dropdown{ position:relative; width:100%; }
+
+.dropdown-icon-only{ width:auto; flex-shrink:0; }
 
 .dropbtn{
   width:100%; height:46px;
