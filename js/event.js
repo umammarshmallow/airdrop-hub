@@ -319,3 +319,42 @@ quickFilterCards.forEach(card => {
     });
 
 });
+
+/* =====================================================
+   TASK TYPE CHIP FILTER (pengganti dropdown Task Type)
+===================================================== */
+
+const taskChips = document.querySelectorAll(".chip-filter[data-target=\"filterTask\"]");
+const filterTaskSelect = document.getElementById("filterTask");
+
+function syncTaskChipHighlight(value) {
+
+    taskChips.forEach(chip => {
+        chip.classList.toggle("selected", chip.dataset.value === value);
+    });
+
+}
+
+taskChips.forEach(chip => {
+
+    chip.addEventListener("click", () => {
+
+        if (!taskDropdown) return;
+
+        const matchingItem = taskDropdown.querySelector(`[data-value="${chip.dataset.value}"]`);
+
+        if (matchingItem) {
+            selectDropdownItem(taskDropdown, matchingItem);
+        }
+
+    });
+
+});
+
+if (filterTaskSelect) {
+
+    filterTaskSelect.addEventListener("change", () => {
+        syncTaskChipHighlight(filterTaskSelect.value);
+    });
+
+}
