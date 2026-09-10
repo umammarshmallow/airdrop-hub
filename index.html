@@ -86,12 +86,34 @@
       </div>
     </section>
 
-    <section class="search">
-      <input type="text" id="search" placeholder="Search projects by name or chain..." data-i18n-ph="search.placeholder">
+    <section class="search search-with-sort">
+      <div class="search-input-wrap">
+        <input type="text" id="search" placeholder="Search projects by name or chain..." data-i18n-ph="search.placeholder">
+      </div>
+
+      <div class="dropdown dropdown-icon-only" id="sortDropdown">
+        <button class="dropbtn" aria-label="Sort" title="Sort">
+          <i class="fa-solid fa-arrow-down-wide-short"></i>
+        </button>
+        <div class="dropdown-content dropdown-content-right">
+          <div data-target="sortBy" data-value="default" class="selected" data-i18n="filter.default">Default</div>
+          <div data-target="sortBy" data-value="deadline" data-i18n="filter.nearestDeadline">Nearest Deadline</div>
+          <div data-target="sortBy" data-value="newest" data-i18n="filter.newestProject">Newest Project</div>
+        </div>
+      </div>
     </section>
 
-    <div class="toolbar">
-      <div class="dropdown">
+    <div class="chip-scroll" id="taskChips">
+      <button class="chip-filter selected" data-target="filterTask" data-value="All" data-i18n="filter.allTasks">All Tasks</button>
+      <button class="chip-filter" data-target="filterTask" data-value="One Time" data-i18n="filter.oneTime">One Time</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Daily" data-i18n="project.daily">Daily</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Weekly" data-i18n="project.weekly">Weekly</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</button>
+    </div>
+
+    <div class="toolbar toolbar-hidden">
+      <div class="dropdown dropdown-hidden">
         <button class="dropbtn">
           <span><i class="fa-solid fa-list"></i> <span class="label" data-i18n="filter.status">Status</span></span>
           <i class="fa-solid fa-chevron-down arrow"></i>
@@ -105,7 +127,7 @@
         </div>
       </div>
 
-      <div class="dropdown">
+      <div class="dropdown dropdown-hidden">
         <button class="dropbtn">
           <span><i class="fa-solid fa-sliders"></i> <span class="label" data-i18n="filter.taskType">Task Type</span></span>
           <i class="fa-solid fa-chevron-down arrow"></i>
@@ -117,18 +139,6 @@
           <div data-target="filterTask" data-value="Weekly" data-i18n="project.weekly">Weekly</div>
           <div data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</div>
           <div data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</div>
-        </div>
-      </div>
-
-      <div class="dropdown">
-        <button class="dropbtn">
-          <span><i class="fa-solid fa-arrow-down-wide-short"></i> <span class="label" data-i18n="filter.sort">Sort</span></span>
-          <i class="fa-solid fa-chevron-down arrow"></i>
-        </button>
-        <div class="dropdown-content">
-          <div data-target="sortBy" data-value="default" class="selected" data-i18n="filter.default">Default</div>
-          <div data-target="sortBy" data-value="deadline" data-i18n="filter.nearestDeadline">Nearest Deadline</div>
-          <div data-target="sortBy" data-value="newest" data-i18n="filter.newestProject">Newest Project</div>
         </div>
       </div>
     </div>
