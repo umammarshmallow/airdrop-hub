@@ -85,6 +85,16 @@ header{
   line-height:1;
 }
 
+.notif-badge.pop{
+  animation:badgePop .35s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes badgePop{
+  0%{ transform:scale(0); }
+  60%{ transform:scale(1.15); }
+  100%{ transform:scale(1); }
+}
+
 .notif-item{
   display:flex; gap:10px;
   padding:12px 14px;

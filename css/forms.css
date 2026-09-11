@@ -64,7 +64,16 @@
   transition:.2s;
 }
 .chip-filter:hover{ border-color:var(--accent-line); color:var(--text); }
-.chip-filter.selected{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
+.chip-filter.selected{
+  background:var(--accent-soft); border-color:var(--accent); color:var(--accent);
+  animation:chipPop .3s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes chipPop{
+  0%{ transform:scale(.9); }
+  55%{ transform:scale(1.08); }
+  100%{ transform:scale(1); }
+}
 
 .toolbar-hidden{ display:none; }
 .dropdown-hidden{ display:none; }
