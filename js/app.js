@@ -252,9 +252,23 @@ allPages.forEach(p=>{
 
 p.style.display="none";
 
+p.classList.remove("page-in");
+
 });
 
 page.style.display="block";
+
+// paksa reflow supaya class "page-in" ditambahkan di frame
+// berikutnya jadi transisinya sempat dianimasikan browser
+requestAnimationFrame(()=>{
+
+requestAnimationFrame(()=>{
+
+page.classList.add("page-in");
+
+});
+
+});
 
 }
 
@@ -494,6 +508,11 @@ function refreshNotifBadge(){
 
         notifBadge.textContent = count>9 ? "9+" : String(count);
         notifBadge.style.display="flex";
+
+        // restart animasi pop setiap kali badge ter-update
+        notifBadge.classList.remove("pop");
+        void notifBadge.offsetWidth;
+        notifBadge.classList.add("pop");
 
     }else{
 

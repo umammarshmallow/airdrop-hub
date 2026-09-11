@@ -79,18 +79,14 @@ export function renderProjects() {
 
     let html = "";
 
-    projects.forEach((project, index) => {
+    projects.forEach((project) => {
 
         const linkedWallet = getWallets().find(
             wallet => String(wallet.id) === String(project.wallet)
         );
 
-        // stagger fade-in: makin ke bawah makin telat muncul,
-        // di-cap biar list panjang tidak jadi lambat semua
-        const cardDelay = Math.min(index * 40, 320);
-
         html += `
-        <div class="project-card" data-status="${project.status}" style="animation-delay:${cardDelay}ms">
+        <div class="project-card" data-status="${project.status}">
 
             <div class="project-title">
 
@@ -222,6 +218,43 @@ export function renderProjects() {
 
     projectList.innerHTML = html;
 
+    observeCardsInView();
+
+}
+
+/* ==========================================
+   SCROLL-REVEAL (mirip useInView dari AnimatedList)
+   Kartu fade+scale-in saat 50% badannya masuk viewport,
+   dan balik pudar kalau di-scroll keluar lagi (triggerOnce:false)
+========================================== */
+
+let cardObserver = null;
+
+function observeCardsInView() {
+
+    // observer lama masih menunjuk ke node yang sudah diganti
+    // innerHTML, jadi disconnect dulu biar tidak numpuk
+    if (cardObserver) cardObserver.disconnect();
+
+    cardObserver = new IntersectionObserver(
+        (entries) => {
+
+            entries.forEach(entry => {
+
+                entry.target.classList.toggle("in-view", entry.isIntersecting);
+
+            });
+
+        },
+        { threshold: 0.5 }
+    );
+
+    document.querySelectorAll(".project-card").forEach(card => {
+
+        cardObserver.observe(card);
+
+    });
+
 }
 
 /* ==========================================
@@ -306,6 +339,18 @@ projectList.addEventListener("click", async (e) => {
             const deleted = await deleteProject(id);
 
             if (deleted) {
+
+                const card = button.closest(".project-card");
+
+                if (card) {
+
+                    // animasikan kartu keluar dulu, baru render ulang
+                    // list-nya dari data supaya tidak terasa "snap"
+                    card.classList.add("card-out");
+
+                    await new Promise(resolve => setTimeout(resolve, 260));
+
+                }
 
                 renderProjects();
 
