@@ -42,7 +42,6 @@
   justify-content:center;
 }
 .dropdown-icon-only .dropdown-content{ width:190px; }
-.dropdown-content-right{ left:auto; right:0; }
 
 /* Horizontal scroll chip filter (Task Type) */
 .chip-scroll{
@@ -113,6 +112,12 @@
 
 .dropdown.active .dropdown-content{ display:block; }
 
+/* Menu sort nempel ke kanan tombol, dan tidak boleh melebihi tepi layar */
+.dropdown-content-right{
+  left:auto; right:0;
+  max-width:calc(100vw - 24px);
+}
+
 .dropdown-content div{
   padding:12px 15px;
   font-size:13px;
@@ -136,7 +141,12 @@
   z-index:10000;
   align-items:center; justify-content:center;
   padding:20px;
+  opacity:0;
+  transition:opacity .2s ease;
 }
+
+.modal.show{ display:flex; }
+.modal.show.in{ opacity:1; }
 
 .modal-content{
   background:var(--surface-2);
@@ -145,6 +155,14 @@
   padding:26px;
   width:100%; max-width:440px;
   box-shadow:var(--shadow-lg);
+  transform:scale(.94) translateY(10px);
+  opacity:0;
+  transition:transform .22s cubic-bezier(.22,1,.36,1), opacity .2s ease;
+}
+
+.modal.show.in .modal-content{
+  transform:scale(1) translateY(0);
+  opacity:1;
 }
 
 .modal-content h2{
