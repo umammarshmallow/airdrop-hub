@@ -13,6 +13,8 @@ import { updateDashboard } from "./dashboard.js";
 
 import { showLoading, hideLoading, showToast, addNotification, getNotifications, unreadNotificationCount, markAllNotificationsRead, clearNotifications } from "./helpers.js";
 
+import { openModalEl, closeModalEl } from "./modalAnim.js";
+
 import { setProjects } from "./project.js";
 
 import { initWallet } from "./wallet.js";
@@ -215,6 +217,17 @@ const allPages=[homePage, profilePage, walletPage, securityPage];
 
 const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, profileBtn];
 
+const navIndicator=document.getElementById("navIndicator");
+
+function moveNavIndicator(activeBtn){
+
+if(!navIndicator || !activeBtn) return;
+
+navIndicator.style.width=activeBtn.offsetWidth+"px";
+navIndicator.style.transform=`translateX(${activeBtn.offsetLeft}px)`;
+
+}
+
 function setActiveNav(activeBtn){
 
 bottomNavButtons.forEach(btn=>{
@@ -226,6 +239,8 @@ btn.classList.remove("active");
 if(activeBtn){
 
 activeBtn.classList.add("active");
+
+moveNavIndicator(activeBtn);
 
 }
 
@@ -279,6 +294,15 @@ document.getElementById("search").focus();
 
 // Halaman Home aktif secara default saat pertama kali dibuka
 setActiveNav(homeBtn);
+
+// Jaga posisi indikator tetap pas saat ukuran layar berubah
+window.addEventListener("resize", ()=>{
+
+const current=bottomNavButtons.find(btn=>btn.classList.contains("active"));
+
+moveNavIndicator(current);
+
+});
 
 /* ==========================================
    HAMBURGER MENU
@@ -522,7 +546,7 @@ notifBtn.onclick=()=>{
 
     renderNotifList();
 
-    notifModal.style.display="flex";
+    openModalEl(notifModal);
 
     document.body.classList.add("modal-open");
 
@@ -534,7 +558,7 @@ notifBtn.onclick=()=>{
 
 function closeNotifModalFn(){
 
-    notifModal.style.display="none";
+    closeModalEl(notifModal);
 
     document.body.classList.remove("modal-open");
 
@@ -607,7 +631,7 @@ function showCloudAuthModal(){
 
     cloudAuthError.style.display="none";
 
-    cloudAuthModal.style.display="flex";
+    openModalEl(cloudAuthModal);
 
     document.body.classList.add("modal-open");
 
@@ -615,7 +639,7 @@ function showCloudAuthModal(){
 
 function closeCloudAuthModal(){
 
-    cloudAuthModal.style.display="none";
+    closeModalEl(cloudAuthModal);
 
     document.body.classList.remove("modal-open");
 

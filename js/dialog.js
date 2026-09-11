@@ -4,6 +4,11 @@
    dengan modal kustom yang lebih profesional
 ========================================== */
 
+import {
+    openModalEl,
+    closeModalEl
+} from "./modalAnim.js";
+
 let alertModal, alertMessage, alertOkBtn;
 let confirmModal, confirmMessage, confirmOkBtn, confirmCancelBtn;
 
@@ -31,13 +36,13 @@ export function showAlert(message) {
 
         alertMessage.textContent = message;
 
-        alertModal.style.display = "flex";
+        openModalEl(alertModal);
 
         document.body.classList.add("modal-open");
 
         function onOk() {
 
-            alertModal.style.display = "none";
+            closeModalEl(alertModal);
 
             document.body.classList.remove("modal-open");
 
@@ -67,13 +72,13 @@ export function showConfirm(message, confirmLabel = "Delete") {
 
         confirmOkBtn.textContent = confirmLabel;
 
-        confirmModal.style.display = "flex";
+        openModalEl(confirmModal);
 
         document.body.classList.add("modal-open");
 
         function cleanup(result) {
 
-            confirmModal.style.display = "none";
+            closeModalEl(confirmModal);
 
             document.body.classList.remove("modal-open");
 

@@ -4,6 +4,40 @@
 
 import { isTaskDueToday, isDeadlineToday } from "./helpers.js";
 
+/* Animasikan angka statistik dari nilai lama ke nilai baru.
+   Kalau nilainya tidak berubah (mis. cuma ganti filter search),
+   tidak dianimasikan ulang supaya tidak mengganggu. */
+function animateCount(el, value) {
+
+    if (!el) return;
+
+    const from = parseInt(el.textContent, 10) || 0;
+    const to = Number(value) || 0;
+
+    if (from === to) {
+        el.textContent = to;
+        return;
+    }
+
+    const duration = 400;
+    const start = performance.now();
+
+    function tick(now) {
+
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        el.textContent = Math.round(from + (to - from) * eased);
+
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = to;
+
+    }
+
+    requestAnimationFrame(tick);
+
+}
+
 export function updateDashboard(projects) {
 
     const todayTask = document.getElementById("todayTask");
@@ -50,21 +84,21 @@ export function updateDashboard(projects) {
 
     });
 
-    if (todayTask) todayTask.textContent = today;
+    animateCount(todayTask, today);
 
     if (todayTaskCard) todayTaskCard.dataset.state = today > 0 ? "alert" : "clear";
 
-    if (deadlineToday) deadlineToday.textContent = deadline;
+    animateCount(deadlineToday, deadline);
 
     if (deadlineTodayCard) deadlineTodayCard.dataset.state = deadline > 0 ? "alert" : "clear";
 
-    if (activeProject) activeProject.textContent = active;
+    animateCount(activeProject, active);
 
-    if (pendingProject) pendingProject.textContent = pending;
+    animateCount(pendingProject, pending);
 
-    if (waitlistProject) waitlistProject.textContent = waitlist;
+    animateCount(waitlistProject, waitlist);
 
-    if (completeProject) completeProject.textContent = complete;
+    animateCount(completeProject, complete);
 
 }
 

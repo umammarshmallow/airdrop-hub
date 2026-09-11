@@ -10,6 +10,11 @@ import {
     populateWalletSelect
 } from "./walletSelect.js";
 
+import {
+    openModalEl,
+    closeModalEl
+} from "./modalAnim.js";
+
 /* ==========================================
    ELEMENT
 ========================================== */
@@ -50,7 +55,7 @@ export function openAddModal() {
         ""
     );
 
-    projectModal.style.display = "flex";
+    openModalEl(projectModal);
 
     lockBodyScroll();
 
@@ -58,7 +63,7 @@ export function openAddModal() {
 
 export function openEditModal() {
 
-    editModal.style.display = "flex";
+    openModalEl(editModal);
 
     lockBodyScroll();
 
@@ -70,7 +75,7 @@ export function openEditModal() {
 
 export function closeAddModal() {
 
-    projectModal.style.display = "none";
+    closeModalEl(projectModal);
 
     unlockBodyScroll();
 
@@ -78,7 +83,7 @@ export function closeAddModal() {
 
 export function closeEditModal() {
 
-    editModal.style.display = "none";
+    closeModalEl(editModal);
 
     unlockBodyScroll();
 

@@ -6,6 +6,7 @@ import { showToast } from "./helpers.js";
 import { showAlert, showConfirm } from "./dialog.js";
 import { pushToCloud } from "./cloudSync.js";
 import { ICON_COPY, ICON_TRASH } from "./icons.js";
+import { openModalEl, closeModalEl } from "./modalAnim.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
 
@@ -323,7 +324,7 @@ function openWalletModal() {
 
     document.getElementById("walletNote").value = "";
 
-    walletModal.style.display = "flex";
+    openModalEl(walletModal);
 
     document.body.classList.add("modal-open");
 
@@ -331,7 +332,7 @@ function openWalletModal() {
 
 function closeWalletModal() {
 
-    walletModal.style.display = "none";
+    closeModalEl(walletModal);
 
     document.body.classList.remove("modal-open");
 

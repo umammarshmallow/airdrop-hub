@@ -79,14 +79,18 @@ export function renderProjects() {
 
     let html = "";
 
-    projects.forEach(project => {
+    projects.forEach((project, index) => {
 
         const linkedWallet = getWallets().find(
             wallet => String(wallet.id) === String(project.wallet)
         );
 
+        // stagger fade-in: makin ke bawah makin telat muncul,
+        // di-cap biar list panjang tidak jadi lambat semua
+        const cardDelay = Math.min(index * 40, 320);
+
         html += `
-        <div class="project-card" data-status="${project.status}">
+        <div class="project-card" data-status="${project.status}" style="animation-delay:${cardDelay}ms">
 
             <div class="project-title">
 
