@@ -26,7 +26,7 @@
 <div class="container">
 
   <!-- ================= HOME PAGE ================= -->
-  <div id="homePage">
+  <div id="homePage" class="app-page page-in">
 
     <header>
       <div class="brand">
@@ -68,17 +68,14 @@
           <span class="flow-val flow-val-waitlist" id="waitlistProject">0</span>
           <p class="flow-lbl" data-i18n="overview.waitlist">Waitlist</p>
         </div>
-        <i class="fa-solid fa-arrow-right flow-arrow"></i>
         <div class="flow-step" data-status="Pending">
           <span class="flow-val flow-val-pending" id="pendingProject">0</span>
           <p class="flow-lbl" data-i18n="overview.pending">Pending</p>
         </div>
-        <i class="fa-solid fa-arrow-right flow-arrow"></i>
         <div class="flow-step" data-status="Active">
           <span class="flow-val flow-val-accent" id="activeProject">0</span>
           <p class="flow-lbl" data-i18n="overview.active">Active</p>
         </div>
-        <i class="fa-solid fa-arrow-right flow-arrow"></i>
         <div class="flow-step" data-status="Complete">
           <span class="flow-val flow-val-complete" id="completedProject">0</span>
           <p class="flow-lbl" data-i18n="overview.completed">Completed</p>
@@ -181,7 +178,7 @@
   </div>
 
   <!-- ================= PROFILE PAGE ================= -->
-  <div id="profilePage" style="display:none;">
+  <div id="profilePage" class="app-page" style="display:none;">
     <section>
       <div class="section-heading"><h2><i class="fa-solid fa-user"></i> <span data-i18n="profile.title">Profile</span></h2></div>
 
@@ -237,7 +234,7 @@
   </div>
 
   <!-- ================= WALLET PAGE ================= -->
-  <div id="walletPage" style="display:none;">
+  <div id="walletPage" class="app-page" style="display:none;">
     <section>
       <div class="page-header">
         <h2><i class="fa-solid fa-wallet"></i> <span data-i18n="wallet.title">Wallets</span></h2>
@@ -257,7 +254,7 @@
   </div>
 
   <!-- ================= SECURITY PAGE ================= -->
-  <div id="securityPage" style="display:none;">
+  <div id="securityPage" class="app-page" style="display:none;">
     <section>
       <div class="page-header">
         <h2><i class="fa-solid fa-shield-halved"></i> <span data-i18n="profile.security">Security</span></h2>
@@ -546,6 +543,7 @@
         <i class="fa-solid fa-language"></i>
         <span style="flex:1;" data-i18n="settings.language">Language</span>
         <div class="lang-switch" id="langSwitch">
+          <span class="lang-indicator" id="langIndicator"></span>
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="id">ID</button>
         </div>
