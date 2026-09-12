@@ -341,7 +341,14 @@ taskChips.forEach(chip => {
 
         if (!taskDropdown) return;
 
-        const matchingItem = taskDropdown.querySelector(`[data-value="${chip.dataset.value}"]`);
+        // chip yang sedang aktif (selain "All Tasks") diklik lagi ->
+        // nonaktifkan, balik ke "All Tasks"
+        const isActive = chip.classList.contains("selected");
+        const targetValue = (isActive && chip.dataset.value !== "All")
+            ? "All"
+            : chip.dataset.value;
+
+        const matchingItem = taskDropdown.querySelector(`[data-value="${targetValue}"]`);
 
         if (matchingItem) {
             selectDropdownItem(taskDropdown, matchingItem);
