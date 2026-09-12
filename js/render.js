@@ -340,18 +340,6 @@ projectList.addEventListener("click", async (e) => {
 
             if (deleted) {
 
-                const card = button.closest(".project-card");
-
-                if (card) {
-
-                    // animasikan kartu keluar dulu, baru render ulang
-                    // list-nya dari data supaya tidak terasa "snap"
-                    card.classList.add("card-out");
-
-                    await new Promise(resolve => setTimeout(resolve, 260));
-
-                }
-
                 renderProjects();
 
             }
