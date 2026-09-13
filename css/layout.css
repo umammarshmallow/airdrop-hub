@@ -12,7 +12,7 @@ header{
 .brand{ display:flex; align-items:center; gap:10px; }
 
 .brand-mark{
-  width:54px; height:54px;
+  width:46px; height:46px;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0;
 }
@@ -24,8 +24,8 @@ header{
 .brand-text .wordmark{
   font-family:var(--font-display);
   font-weight:700;
-  font-size:18px;
-  letter-spacing:-.02em;
+  font-size:21px;
+  letter-spacing:-.03em;
   display:flex; align-items:center;
 }
 
