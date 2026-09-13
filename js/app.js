@@ -17,6 +17,8 @@ import { openModalEl, closeModalEl } from "./modalAnim.js";
 
 import { setProjects } from "./project.js";
 
+import { initFuzzyText } from "./fuzzyText.js";
+
 import { initWallet } from "./wallet.js";
 
 import { initDialog, showAlert, showConfirm } from "./dialog.js";
@@ -149,6 +151,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Render halaman Wallet
         initWallet();
+
+        // Efek fuzzy pada wordmark "Hub"
+        const hubCanvas = document.getElementById("hubFuzzyText");
+        if (hubCanvas) initFuzzyText(hubCanvas, "Hub");
 
        // Mengecek pergantian hari setiap 1 menit
        setInterval(() => {
