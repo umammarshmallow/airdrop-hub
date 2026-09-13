@@ -12,35 +12,37 @@ header{
 .brand{ display:flex; align-items:center; gap:12px; }
 
 .brand-mark{
-  width:42px; height:42px;
-  border-radius:12px;
-  background:linear-gradient(155deg, var(--accent), #7aa2ff 55%, var(--purple));
+  width:44px; height:44px;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-display); font-weight:700; font-size:18px; color:#0a0d14;
-  box-shadow:0 8px 20px -6px rgba(91,140,255,.55);
   flex-shrink:0;
 }
+
+.brand-mark svg{ width:100%; height:100%; }
 
 .brand-text{ display:flex; flex-direction:column; line-height:1.15; }
 
 .brand-text .wordmark{
   font-family:var(--font-display);
-  font-weight:700;
-  font-size:20px;
+  font-weight:800;
+  font-size:21px;
   letter-spacing:-.01em;
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center;
 }
 
-.brand-text .wordmark .tag{
-  font-family:var(--font-mono);
-  font-size:10px;
-  font-weight:600;
-  letter-spacing:.14em;
-  color:var(--accent);
-  background:var(--accent-soft);
-  border:1px solid var(--accent-line);
-  padding:3px 7px;
-  border-radius:6px;
+.brand-text .wordmark .letter-a{
+  color:#1c2541;
+}
+
+.brand-text .wordmark .word-rest{
+  background:linear-gradient(90deg, var(--accent), var(--purple));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.brand-text .wordmark .word-hub{
+  color:var(--text);
+  font-weight:800;
 }
 
 .brand-text .status-line{
