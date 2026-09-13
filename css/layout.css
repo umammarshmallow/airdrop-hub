@@ -30,23 +30,30 @@ header{
   padding-bottom:2px;
 }
 
-.brand-text .wordmark .letter-a{
-  background:linear-gradient(90deg, var(--accent), var(--purple));
+.brand-text .wordmark .word-airdrop{
+  background-image:linear-gradient(to right, var(--accent), #7dd3fc, var(--purple), var(--accent));
+  background-size:300% 100%;
+  background-repeat:repeat;
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
+  animation:wordmarkGradientMove 16s ease-in-out infinite alternate;
 }
 
-.brand-text .wordmark .word-rest{
-  background:linear-gradient(90deg, var(--accent), var(--purple));
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
+@keyframes wordmarkGradientMove{
+  0%{ background-position:0% 50%; }
+  100%{ background-position:100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .brand-text .wordmark .word-airdrop{ animation:none; background-position:0% 50%; }
 }
 
 .brand-text .wordmark .word-hub{
   color:var(--text);
   font-weight:800;
+  display:inline-block;
+  vertical-align:middle;
 }
 
 .brand-text .status-line{
