@@ -23,14 +23,17 @@ header{
 
 .brand-text .wordmark{
   font-family:var(--font-display);
-  font-weight:700;
+  font-weight:800;
   font-size:21px;
   letter-spacing:-.03em;
   display:flex; align-items:center;
 }
 
 .brand-text .wordmark .letter-a{
-  color:#1c2541;
+  background:linear-gradient(90deg, var(--accent), var(--purple));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
 
 .brand-text .wordmark .word-rest{
@@ -42,7 +45,7 @@ header{
 
 .brand-text .wordmark .word-hub{
   color:var(--text);
-  font-weight:700;
+  font-weight:800;
 }
 
 .brand-text .status-line{
