@@ -6,10 +6,19 @@
 <title>Airdrop Hub — Farming Command Center</title>
 <meta name="description" content="Track every airdrop farm, deadline and wallet in one clean dashboard.">
 
+<!-- PWA: manifest, icon, theme color -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0d14">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AirdropHub">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
 
 <!-- CSS modular -->
 <link rel="stylesheet" href="css/base.css">
@@ -172,8 +181,41 @@
       <div class="section-heading">
         <h2><i class="fa-solid fa-list-check"></i> <span data-i18n="projects.title">Projects</span></h2>
       </div>
-      <div id="projectList">
-        <div class="empty" data-i18n="projects.empty">No projects yet. Tap "Add Project" below to start tracking.</div>
+      <div id="projectList" aria-busy="true">
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-row">
+            <div class="skeleton-block skeleton-title"></div>
+            <div class="skeleton-block skeleton-badge"></div>
+          </div>
+          <div class="skeleton-chips">
+            <div class="skeleton-block skeleton-chip"></div>
+            <div class="skeleton-block skeleton-chip-lg"></div>
+          </div>
+          <div class="skeleton-block skeleton-meta"></div>
+        </div>
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-row">
+            <div class="skeleton-block skeleton-title"></div>
+            <div class="skeleton-block skeleton-badge"></div>
+          </div>
+          <div class="skeleton-chips">
+            <div class="skeleton-block skeleton-chip"></div>
+            <div class="skeleton-block skeleton-chip-lg"></div>
+          </div>
+          <div class="skeleton-block skeleton-meta"></div>
+        </div>
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-row">
+            <div class="skeleton-block skeleton-title"></div>
+            <div class="skeleton-block skeleton-badge"></div>
+          </div>
+          <div class="skeleton-chips">
+            <div class="skeleton-block skeleton-chip"></div>
+            <div class="skeleton-block skeleton-chip-lg"></div>
+          </div>
+          <div class="skeleton-block skeleton-meta"></div>
+        </div>
+        <span class="sr-only">Loading projects…</span>
       </div>
     </section>
 
@@ -190,7 +232,7 @@
           <div id="profileAvatar" class="profile-hero-avatar"></div>
           <div class="profile-hero-info">
             <p id="profileEmailDisplay" class="profile-hero-email"></p>
-            <span class="profile-sync-badge"><span class="dot"></span> <span data-i18n="profile.cloudSyncActive">Cloud sync aktif</span></span>
+            <span class="profile-sync-badge"><span class="dot"></span> <span data-i18n="profile.cloudSyncActive">Cloud sync active</span></span>
           </div>
         </div>
 
@@ -227,9 +269,9 @@
 
         <div class="profile-guest-card">
           <div class="profile-guest-icon"><i class="fa-solid fa-user-plus"></i></div>
-          <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Belum Login</h3>
-          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login supaya data project & wallet kamu tersinkron otomatis di semua device.</p>
-          <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Daftar</button>
+          <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Not Logged In</h3>
+          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login so your project &amp; wallet data syncs automatically across devices.</p>
+          <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Register</button>
         </div>
       </div>
     </section>
@@ -266,13 +308,13 @@
       </div>
 
       <div class="profile-security-card">
-        <p data-i18n="profile.securityDesc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 16px; line-height:1.5;">Masukkan password lama & password baru untuk mengganti password akun.</p>
+        <p data-i18n="profile.securityDesc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 16px; line-height:1.5;">Enter your old password &amp; a new password to change your account password.</p>
 
-        <label class="field-label" for="securityCurrentPassword" data-i18n="profile.currentPassword">Password Saat Ini</label>
-        <input type="password" id="securityCurrentPassword" placeholder="Password saat ini" autocomplete="current-password" data-i18n-ph="profile.currentPasswordPh">
+        <label class="field-label" for="securityCurrentPassword" data-i18n="profile.currentPassword">Current Password</label>
+        <input type="password" id="securityCurrentPassword" placeholder="Current password" autocomplete="current-password" data-i18n-ph="profile.currentPasswordPh">
 
-        <label class="field-label" for="securityNewPassword" data-i18n="profile.newPassword">Password Baru</label>
-        <input type="password" id="securityNewPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" data-i18n-ph="profile.newPasswordPh">
+        <label class="field-label" for="securityNewPassword" data-i18n="profile.newPassword">New Password</label>
+        <input type="password" id="securityNewPassword" placeholder="Minimum 6 characters" autocomplete="new-password" data-i18n-ph="profile.newPasswordPh">
 
         <p id="securityError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
 
@@ -294,11 +336,11 @@
       <label class="field-label" for="network" data-i18n="wallet.chain">Chain</label>
       <select id="network">
         <option value="" disabled selected data-i18n="wallet.chooseChain">Choose chain</option>
-        <option value="Ethereum">🔷 Ethereum</option>
-        <option value="Solana">🟣 Solana</option>
-        <option value="BNB">🟡 BNB</option>
-        <option value="Gram (TON)">💎 Gram (TON)</option>
-        <option value="Lainnya" data-i18n="opt.chain.other">🔗 Other</option>
+        <option value="Ethereum">Ethereum</option>
+        <option value="Solana">Solana</option>
+        <option value="BNB">BNB</option>
+        <option value="Gram (TON)">Gram (TON)</option>
+        <option value="Lainnya" data-i18n="opt.chain.other">Other</option>
       </select>
 
       <label class="field-label" for="projectWallet" data-i18n="project.linkedWallet">Linked Wallet</label>
@@ -323,17 +365,17 @@
 
       <label class="field-label" for="priority" data-i18n="project.priority">Priority</label>
       <select id="priority">
-        <option value="Low" data-i18n="opt.priority.low">🟢 Low</option>
-        <option value="Medium" data-i18n="opt.priority.medium">🟡 Medium</option>
-        <option value="High" data-i18n="opt.priority.high">🔴 High</option>
+        <option value="Low" data-i18n="opt.priority.low">Low</option>
+        <option value="Medium" data-i18n="opt.priority.medium">Medium</option>
+        <option value="High" data-i18n="opt.priority.high">High</option>
       </select>
 
       <label class="field-label" for="status" data-i18n="project.status">Status</label>
       <select id="status">
-        <option value="Waitlist" data-i18n="opt.status.waitlist">🟣 Waitlist</option>
-        <option value="Active" data-i18n="opt.status.active">🟢 Active</option>
-        <option value="Pending" data-i18n="opt.status.pending">🟡 Pending</option>
-        <option value="Complete" data-i18n="opt.status.complete">🔵 Completed</option>
+        <option value="Waitlist" data-i18n="opt.status.waitlist">Waitlist</option>
+        <option value="Active" data-i18n="opt.status.active">Active</option>
+        <option value="Pending" data-i18n="opt.status.pending">Pending</option>
+        <option value="Complete" data-i18n="opt.status.complete">Completed</option>
       </select>
 
       <label class="field-label" for="note" data-i18n="project.notes">Notes</label>
@@ -358,11 +400,11 @@
       <label class="field-label" for="editNetwork" data-i18n="wallet.chain">Chain</label>
       <select id="editNetwork">
         <option value="" disabled data-i18n="wallet.chooseChain">Choose chain</option>
-        <option value="Ethereum">🔷 Ethereum</option>
-        <option value="Solana">🟣 Solana</option>
-        <option value="BNB">🟡 BNB</option>
-        <option value="Gram (TON)">💎 Gram (TON)</option>
-        <option value="Lainnya" data-i18n="opt.chain.other">🔗 Other</option>
+        <option value="Ethereum">Ethereum</option>
+        <option value="Solana">Solana</option>
+        <option value="BNB">BNB</option>
+        <option value="Gram (TON)">Gram (TON)</option>
+        <option value="Lainnya" data-i18n="opt.chain.other">Other</option>
       </select>
 
       <label class="field-label" for="editProjectWallet" data-i18n="project.linkedWallet">Linked Wallet</label>
@@ -387,17 +429,17 @@
 
       <label class="field-label" for="editPriority" data-i18n="project.priority">Priority</label>
       <select id="editPriority">
-        <option value="Low" data-i18n="opt.priority.low">🟢 Low</option>
-        <option value="Medium" data-i18n="opt.priority.medium">🟡 Medium</option>
-        <option value="High" data-i18n="opt.priority.high">🔴 High</option>
+        <option value="Low" data-i18n="opt.priority.low">Low</option>
+        <option value="Medium" data-i18n="opt.priority.medium">Medium</option>
+        <option value="High" data-i18n="opt.priority.high">High</option>
       </select>
 
       <label class="field-label" for="editStatus" data-i18n="project.status">Status</label>
       <select id="editStatus">
-        <option value="Waitlist" data-i18n="opt.status.waitlist">🟣 Waitlist</option>
-        <option value="Active" data-i18n="opt.status.active">🟢 Active</option>
-        <option value="Pending" data-i18n="opt.status.pending">🟡 Pending</option>
-        <option value="Complete" data-i18n="opt.status.complete">🔵 Completed</option>
+        <option value="Waitlist" data-i18n="opt.status.waitlist">Waitlist</option>
+        <option value="Active" data-i18n="opt.status.active">Active</option>
+        <option value="Pending" data-i18n="opt.status.pending">Pending</option>
+        <option value="Complete" data-i18n="opt.status.complete">Completed</option>
       </select>
 
       <label class="field-label" for="editNote" data-i18n="project.notes">Notes</label>
@@ -423,11 +465,11 @@
       <div id="notifList" style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow-y:auto;"></div>
 
       <p id="notifEmpty" style="color:var(--text-faint); font-size:13px; text-align:center; padding:20px 0; display:none;" data-i18n="notif.empty">
-        Belum ada notifikasi.
+        No notifications yet.
       </p>
 
       <button id="notifClearBtn" style="margin-top:14px; width:100%; background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border); border-radius:var(--radius-md); padding:11px; font-size:13.5px; cursor:pointer;" data-i18n="notif.clearAll">
-        Hapus Semua
+        Clear All
       </button>
     </div>
   </div>
@@ -435,26 +477,26 @@
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
     <div class="modal-content">
-      <h2><i class="fa-solid fa-cloud"></i> <span data-i18n="cloud.title">Sync Akun</span></h2>
+      <h2><i class="fa-solid fa-cloud"></i> <span data-i18n="cloud.title">Sync Account</span></h2>
       <p style="color:var(--text-muted); font-size:13px; margin:-10px 0 16px;" data-i18n="cloud.desc">
-        Login supaya data project & wallet kamu tersinkron otomatis di semua device.
+        Login so your project &amp; wallet data syncs automatically across devices.
       </p>
 
       <label class="field-label" for="cloudAuthEmail" data-i18n="cloud.email">Email</label>
-      <input type="email" id="cloudAuthEmail" placeholder="email@kamu.com" autocomplete="username" data-i18n-ph="cloud.emailPh">
+      <input type="email" id="cloudAuthEmail" placeholder="email@you.com" autocomplete="username" data-i18n-ph="cloud.emailPh">
 
       <label class="field-label" for="cloudAuthPassword" data-i18n="cloud.password">Password</label>
-      <input type="password" id="cloudAuthPassword" placeholder="Minimal 6 karakter" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
+      <input type="password" id="cloudAuthPassword" placeholder="Minimum 6 characters" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
 
       <p id="cloudAuthError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
 
       <div class="modal-button">
-        <button id="cloudAuthSkip" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;" data-i18n="cloud.skip">Nanti saja</button>
+        <button id="cloudAuthSkip" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;" data-i18n="cloud.skip">Later</button>
         <button id="cloudAuthLoginBtn" style="background:var(--accent); color:#0a0d14;" data-i18n="cloud.login">Login</button>
       </div>
 
       <p style="text-align:center; font-size:12.5px; color:var(--text-muted); margin-top:14px;">
-        <span data-i18n="cloud.noAccount">Belum punya akun?</span> <a href="#" id="cloudAuthRegisterLink" style="color:var(--accent);" data-i18n="cloud.registerNow">Daftar sekarang</a>
+        <span data-i18n="cloud.noAccount">Don't have an account?</span> <a href="#" id="cloudAuthRegisterLink" style="color:var(--accent);" data-i18n="cloud.registerNow">Register now</a>
       </p>
     </div>
   </div>
@@ -495,11 +537,11 @@
       <label class="field-label" for="walletChain" data-i18n="wallet.chain">Chain</label>
       <select id="walletChain">
         <option value="" disabled selected data-i18n="wallet.chooseChain">Choose chain</option>
-        <option value="Ethereum">🔷 Ethereum</option>
-        <option value="Solana">🟣 Solana</option>
-        <option value="BNB">🟡 BNB</option>
-        <option value="Gram (TON)">💎 Gram (TON)</option>
-        <option value="Lainnya" data-i18n="opt.chain.other">🔗 Other</option>
+        <option value="Ethereum">Ethereum</option>
+        <option value="Solana">Solana</option>
+        <option value="BNB">BNB</option>
+        <option value="Gram (TON)">Gram (TON)</option>
+        <option value="Lainnya" data-i18n="opt.chain.other">Other</option>
       </select>
 
       <label class="field-label" for="walletAddress" data-i18n="wallet.address">Wallet Address</label>
@@ -516,7 +558,9 @@
   </div>
 
   <div id="loading" class="loading">
-    <div class="spinner"></div>
+    <div class="loading-dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
     <p data-i18n="loading.text">LOADING...</p>
   </div>
 
