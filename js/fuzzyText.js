@@ -20,6 +20,8 @@ export function initFuzzyText(canvas, text, options = {}) {
     let isCancelled = false;
     let cleanupHandlers = () => {};
 
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     function build() {
         const ctx = canvas.getContext("2d");
         if (!ctx) return () => {};
@@ -95,6 +97,19 @@ export function initFuzzyText(canvas, text, options = {}) {
             canvas.addEventListener("mouseleave", onLeave);
         }
 
+        function drawFrame(intensity) {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.translate(marginX, marginY);
+
+            const rowCount = offscreen.height / dpr;
+            for (let j = 0; j < rowCount; j++) {
+                const dx = Math.floor(intensity * (Math.random() - 0.5) * fuzzRange);
+                ctx.drawImage(offscreen, 0, j * dpr, offscreen.width, dpr, dx, j, offscreen.width / dpr, 1);
+            }
+        }
+
         function run(timestamp) {
             if (isCancelled) return;
 
@@ -107,24 +122,26 @@ export function initFuzzyText(canvas, text, options = {}) {
             const target = isHovering ? hoverIntensity : baseIntensity;
             currentIntensity += (target - currentIntensity) * smoothing;
 
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.translate(marginX, marginY);
-
-            const rowCount = offscreen.height / dpr;
-            for (let j = 0; j < rowCount; j++) {
-                const dx = Math.floor(currentIntensity * (Math.random() - 0.5) * fuzzRange);
-                ctx.drawImage(offscreen, 0, j * dpr, offscreen.width, dpr, dx, j, offscreen.width / dpr, 1);
-            }
+            drawFrame(currentIntensity);
 
             animationFrameId = window.requestAnimationFrame(run);
         }
 
-        animationFrameId = window.requestAnimationFrame(run);
+        // User minta "kurangi gerakan" -> tampilkan teks sekali secara
+        // statis (rapi, tanpa efek fuzz sama sekali), jangan looping.
+        if (reduceMotionQuery.matches) {
+
+            drawFrame(0);
+
+        } else {
+
+            animationFrameId = window.requestAnimationFrame(run);
+
+        }
 
         return () => {
             window.cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
             if (enableHover) {
                 canvas.removeEventListener("mousemove", onMove);
                 canvas.removeEventListener("mouseleave", onLeave);
@@ -150,10 +167,67 @@ export function initFuzzyText(canvas, text, options = {}) {
     };
     window.addEventListener("resize", onResize);
 
+    // Render ulang kalau setting "kurangi gerakan" di OS berubah saat app terbuka
+    const onReduceMotionChange = () => {
+        cleanupHandlers();
+        isCancelled = false;
+        cleanupHandlers = build();
+    };
+    reduceMotionQuery.addEventListener("change", onReduceMotionChange);
+
+    /* ==========================================================
+       HEMAT BATERAI: hentikan loop animasi saat tab tidak aktif
+       (ganti tab/minimize) atau saat canvas ini di luar layar
+       (di-scroll lewat), lalu lanjutkan lagi otomatis begitu
+       kembali terlihat.
+    ========================================================== */
+
+    let tabVisible = !document.hidden;
+    let inViewport = true;
+
+    function syncRunningState() {
+
+        if (isCancelled || reduceMotionQuery.matches) return;
+
+        const shouldRun = tabVisible && inViewport;
+        const isRunning = animationFrameId !== null;
+
+        if (shouldRun && !isRunning) {
+
+            cleanupHandlers();
+            isCancelled = false;
+            cleanupHandlers = build();
+
+        } else if (!shouldRun && isRunning) {
+
+            window.cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+
+        }
+
+    }
+
+    const onVisibilityChange = () => {
+        tabVisible = !document.hidden;
+        syncRunningState();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    const intersectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            inViewport = entry.isIntersecting;
+            syncRunningState();
+        });
+    }, { threshold: 0 });
+    intersectionObserver.observe(canvas);
+
     return function destroy() {
         isCancelled = true;
         cleanupHandlers();
         themeObserver.disconnect();
         window.removeEventListener("resize", onResize);
+        reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        intersectionObserver.disconnect();
     };
 }

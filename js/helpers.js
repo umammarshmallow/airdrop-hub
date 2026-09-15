@@ -10,20 +10,84 @@ import { ICON_CHECK, ICON_XMARK } from "./icons.js";
 FORMAT URL
 ========================== */
 
+/* ==========================
+FORMAT URL (website project)
+Alamat website yang disimpan user boleh ditulis tanpa
+skema (mis. "example.com"), jadi perlu dilengkapi jadi URL
+yang valid sebelum dipakai sebagai href.
+
+Kenapa harus lewat allowlist skema yang eksplisit (bukan
+sekadar "kalau belum ada http, tambahin https"):
+skema seperti "javascript:" atau "data:" bisa dipakai untuk
+menjalankan kode kalau nilainya lolos begitu saja dipasang
+ke atribut href. Jadi kita SELALU pastikan hasil akhirnya
+berskema http/https, apa pun input mentahnya.
+========================== */
+
+const ALLOWED_URL_SCHEMES = ["http:", "https:"];
+
 export function formatUrl(url = "") {
 
     url = url.trim();
 
     if (url === "") return "#";
 
-    if (
-        url.startsWith("http://") ||
-        url.startsWith("https://")
-    ) {
-        return url;
+    // Coba anggap input sudah URL lengkap (ada skema eksplisit,
+    // termasuk yang berbahaya seperti javascript:/data:).
+    try {
+
+        const parsed = new URL(url);
+
+        if (ALLOWED_URL_SCHEMES.includes(parsed.protocol)) {
+
+            return parsed.href;
+
+        }
+
+        // Skema tidak diizinkan (mis. javascript:, data:) -> jangan
+        // dipakai mentah-mentah, coba lagi anggap ini domain biasa.
+
+    } catch (error) {
+
+        // Bukan URL lengkap yang valid (kemungkinan besar cuma
+        // domain, mis. "example.com") -> lanjut ke fallback di bawah.
+
     }
 
-    return "https://" + url;
+    // Fallback: perlakukan sebagai domain tanpa skema, paksa https.
+    try {
+
+        const parsed = new URL("https://" + url.replace(/^\/+/, ""));
+
+        return parsed.href;
+
+    } catch (error) {
+
+        // Input tidak bisa dibentuk jadi URL valid sama sekali.
+        return "#";
+
+    }
+
+}
+
+/* ==========================
+ESCAPE HTML
+Menetralkan tanda kurung < > & kutip pada teks yang
+berasal dari input user (nama project, catatan, alamat
+wallet, dll) sebelum ditempel lewat innerHTML, supaya
+tidak bisa disusupi tag/atribut/script asing (XSS).
+========================== */
+
+export function escapeHTML(value) {
+
+    if (value === null || value === undefined) return "";
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 
 }
 
@@ -146,7 +210,7 @@ NOTIFICATION CENTER
 const NOTIF_KEY = "airdropHub_notifications";
 const MAX_NOTIFS = 20;
 
-export function addNotification(message, type = "info") {
+export function addNotification(message, type = "info", meta = null) {
 
     const list = getNotifications();
 
@@ -154,6 +218,7 @@ export function addNotification(message, type = "info") {
         id: Date.now() + "-" + Math.random().toString(36).slice(2, 7),
         message,
         type, // "info" | "warning" | "error"
+        meta, // data tambahan, mis. { action: "editProject", projectId }
         createdAt: new Date().toISOString(),
         read: false
     });
@@ -200,6 +265,18 @@ export function markAllNotificationsRead() {
 export function clearNotifications() {
 
     localStorage.setItem(NOTIF_KEY, "[]");
+
+    window.dispatchEvent(new CustomEvent("airdrophub:notification"));
+
+}
+
+export function dismissNotificationsByAction(action) {
+
+    const list = getNotifications().filter(
+        (n) => !(n.meta && n.meta.action === action)
+    );
+
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(list));
 
     window.dispatchEvent(new CustomEvent("airdrophub:notification"));
 

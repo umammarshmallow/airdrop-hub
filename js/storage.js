@@ -5,6 +5,10 @@
 
 export const STORAGE_KEY = "airdropHub";
 
+// Set true di console browser (atau ubah di sini saat development)
+// untuk melihat log diagnostik non-critical seperti ringkasan cleanup.
+const DEBUG = false;
+
 import { pushToCloud } from "./cloudSync.js";
 
 export function loadProjects() {
@@ -74,10 +78,6 @@ export function resetDailyTasks(projects) {
     localStorage.setItem(DAILY_RESET_KEY, today);
 
     saveProjects(projects);
-   
-    console.log("Daily task berhasil di-reset");
-
-    console.log(projects);
 
     return projects;
 
@@ -92,6 +92,10 @@ const STALE_STATUSES = ["Waitlist", "Pending"];
 
 // approx 2 bulan (60 hari)
 const STALE_THRESHOLD_MS = 60 * 24 * 60 * 60 * 1000;
+
+// jendela peringatan: 1 hari sebelum batas waktu tercapai
+const STALE_WARNING_WINDOW_MS = 24 * 60 * 60 * 1000;
+const STALE_WARNING_THRESHOLD_MS = STALE_THRESHOLD_MS - STALE_WARNING_WINDOW_MS;
 
 export function cleanupStaleProjects(projects) {
 
@@ -128,9 +132,11 @@ export function cleanupStaleProjects(projects) {
 
         saveProjects(remaining);
 
-        console.log(
-            `${removedCount} project (Waitlist/Pending) dihapus otomatis karena tidak diupdate 2 bulan.`
-        );
+        if (DEBUG) {
+            console.log(
+                `${removedCount} project (Waitlist/Pending) dihapus otomatis karena tidak diupdate 2 bulan.`
+            );
+        }
 
     }
 
@@ -141,5 +147,55 @@ export function cleanupStaleProjects(projects) {
         removedCount: removedCount
 
     };
+
+}
+
+/* ==========================================
+   PERINGATAN H-1 SEBELUM AUTO-DELETE
+   Menandai project Waitlist/Pending yang akan
+   dihapus otomatis dalam ~1 hari ke depan, supaya
+   user sempat menyelamatkan/update projectnya.
+   Flag "staleWarned" disimpan di project itu sendiri
+   supaya peringatan cuma muncul sekali, tidak berulang
+   tiap kali app dibuka/dicek.
+========================================== */
+
+export function checkStaleWarnings(projects) {
+
+    const now = Date.now();
+
+    const warned = [];
+
+    projects.forEach(project => {
+
+        const lastActivity =
+            project.updatedAt ||
+            project.createdAt ||
+            now;
+
+        const idleFor = now - lastActivity;
+
+        const isAboutToBeDeleted =
+            STALE_STATUSES.includes(project.status) &&
+            idleFor >= STALE_WARNING_THRESHOLD_MS &&
+            idleFor <= STALE_THRESHOLD_MS;
+
+        if (isAboutToBeDeleted && !project.staleWarned) {
+
+            project.staleWarned = true;
+
+            warned.push(project);
+
+        }
+
+    });
+
+    if (warned.length > 0) {
+
+        saveProjects(projects);
+
+    }
+
+    return warned;
 
 }

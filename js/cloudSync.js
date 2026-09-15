@@ -7,31 +7,16 @@
    Cara kerja:
    - Kalau firebaseConfig.js belum diisi -> otomatis
      nonaktif, aplikasi tetap jalan normal via localStorage.
-   - Kalau sudah dikonfigurasi -> user harus login/daftar
-     dengan email, lalu data localStorage ditarik/ditimpa
-     dari cloud, dan didorong ke cloud tiap kali disimpan.
+     SDK Firebase (dari gstatic.com) TIDAK di-download
+     sama sekali dalam kasus ini.
+   - Kalau sudah dikonfigurasi -> SDK Firebase baru diambil
+     saat initFirebaseApp() dipanggil (lazy load, bukan di
+     top-level file), lalu user harus login/daftar dengan
+     email, data localStorage ditarik/ditimpa dari cloud,
+     dan didorong ke cloud tiap kali disimpan.
    - Kalau device sedang offline / gagal konek, aplikasi
      tetap jalan normal pakai data lokal (tidak pernah blocking).
 ========================================== */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-import {
-    getAuth,
-    onAuthStateChanged,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    updatePassword,
-    EmailAuthProvider,
-    reauthenticateWithCredential
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 import { firebaseConfig } from "./firebaseConfig.js";
 import { addNotification } from "./helpers.js";
@@ -39,6 +24,13 @@ import { addNotification } from "./helpers.js";
 const PROJECTS_KEY = "airdropHub";
 const WALLETS_KEY = "airdropHub_wallets";
 const RESET_KEY = "airdropHub_lastReset";
+
+// Set true saat development untuk melihat log status koneksi cloud sync.
+const DEBUG = false;
+
+// Fungsi-fungsi dari Firebase SDK, baru diisi setelah
+// loadFirebaseSDK() berhasil (lazy, dynamic import).
+let firebase = null;
 
 let auth = null;
 let db = null;
@@ -63,23 +55,62 @@ export function getCurrentUser() {
 }
 
 function userDocRef() {
-    return doc(db, "airdropHubUsers", currentUid);
+    return firebase.doc(db, "airdropHubUsers", currentUid);
+}
+
+/* ==========================================
+   LAZY LOAD SDK FIREBASE
+   Baru fetch modul dari gstatic.com saat benar-benar
+   dibutuhkan, bukan setiap kali app dibuka.
+========================================== */
+
+async function loadFirebaseSDK() {
+
+    if (firebase) return firebase; // sudah pernah di-load sebelumnya
+
+    const [appMod, authMod, firestoreMod] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js")
+    ]);
+
+    firebase = {
+        initializeApp: appMod.initializeApp,
+        getAuth: authMod.getAuth,
+        onAuthStateChanged: authMod.onAuthStateChanged,
+        signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
+        createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
+        signOut: authMod.signOut,
+        updatePassword: authMod.updatePassword,
+        EmailAuthProvider: authMod.EmailAuthProvider,
+        reauthenticateWithCredential: authMod.reauthenticateWithCredential,
+        getFirestore: firestoreMod.getFirestore,
+        doc: firestoreMod.doc,
+        getDoc: firestoreMod.getDoc,
+        setDoc: firestoreMod.setDoc,
+        serverTimestamp: firestoreMod.serverTimestamp
+    };
+
+    return firebase;
+
 }
 
 /* ==========================================
    INIT APP (tidak login, cuma siapkan koneksi)
 ========================================== */
 
-export function initFirebaseApp() {
+export async function initFirebaseApp() {
 
     if (!isConfigured()) {
-        console.log("[CloudSync] firebaseConfig.js belum diisi, jalan mode offline.");
+        if (DEBUG) console.log("[CloudSync] firebaseConfig.js belum diisi, jalan mode offline.");
         return false;
     }
 
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
+    const fb = await loadFirebaseSDK();
+
+    const app = fb.initializeApp(firebaseConfig);
+    auth = fb.getAuth(app);
+    db = fb.getFirestore(app);
 
     return true;
 
@@ -108,7 +139,7 @@ export function waitForPersistedSession() {
 
         let settled = false;
 
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        const unsubscribe = firebase.onAuthStateChanged(auth, async (user) => {
 
             if (settled) return; // sudah keburu timeout, abaikan callback telat
 
@@ -148,7 +179,7 @@ export function waitForPersistedSession() {
 
 export async function loginWithEmail(email, password) {
 
-    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const cred = await firebase.signInWithEmailAndPassword(auth, email, password);
 
     currentUid = cred.user.uid;
     ready = true;
@@ -161,7 +192,7 @@ export async function loginWithEmail(email, password) {
 
 export async function registerWithEmail(email, password) {
 
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const cred = await firebase.createUserWithEmailAndPassword(auth, email, password);
 
     currentUid = cred.user.uid;
     ready = true;
@@ -175,7 +206,7 @@ export async function registerWithEmail(email, password) {
 
 export async function logoutCloud() {
 
-    if (auth) await signOut(auth);
+    if (auth) await firebase.signOut(auth);
 
     ready = false;
     currentUid = null;
@@ -192,11 +223,11 @@ export async function changePassword(currentPassword, newPassword) {
 
     if (!user) throw new Error("NOT_LOGGED_IN");
 
-    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    const credential = firebase.EmailAuthProvider.credential(user.email, currentPassword);
 
-    await reauthenticateWithCredential(user, credential);
+    await firebase.reauthenticateWithCredential(user, credential);
 
-    await updatePassword(user, newPassword);
+    await firebase.updatePassword(user, newPassword);
 
 }
 
@@ -210,7 +241,7 @@ export async function pullFromCloud() {
 
     try {
 
-        const snap = await withTimeout(getDoc(userDocRef()), 6000, null);
+        const snap = await withTimeout(firebase.getDoc(userDocRef()), 6000, null);
 
         if (snap === null) {
 
@@ -260,11 +291,11 @@ export function pushToCloud(immediate = false) {
 
         try {
 
-            await setDoc(userDocRef(), {
+            await firebase.setDoc(userDocRef(), {
                 projects: localStorage.getItem(PROJECTS_KEY) || "[]",
                 wallets: localStorage.getItem(WALLETS_KEY) || "[]",
                 lastReset: localStorage.getItem(RESET_KEY) || "",
-                updatedAt: serverTimestamp()
+                updatedAt: firebase.serverTimestamp()
             });
 
         } catch (error) {

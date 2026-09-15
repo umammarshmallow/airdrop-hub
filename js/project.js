@@ -185,6 +185,10 @@ export async function updateProject(data) {
 
     project.updatedAt = Date.now();
 
+    // project baru saja disentuh user, jadi peringatan
+    // auto-delete sebelumnya (kalau ada) tidak relevan lagi
+    project.staleWarned = false;
+
     if (!(await validateProject(project))) {
 
         return false;

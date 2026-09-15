@@ -5,16 +5,7 @@
 ========================================== */
 
 import { getWallets } from "./wallet.js";
-
-export const CHAIN_ICONS = {
-
-    "Ethereum": "🔷",
-    "Solana": "🟣",
-    "BNB": "🟡",
-    "Gram (TON)": "💎",
-    "Lainnya": "🔗"
-
-};
+import { escapeHTML } from "./helpers.js";
 
 /* ==========================================
    ISI SELECT WALLET SESUAI CHAIN TERPILIH
@@ -42,7 +33,7 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
     if (wallets.length === 0) {
 
-        selectEl.innerHTML = `<option value="" disabled selected>No ${chain} wallet yet</option>`;
+        selectEl.innerHTML = `<option value="" disabled selected>No ${escapeHTML(chain)} wallet yet</option>`;
 
         selectEl.disabled = true;
 
@@ -52,8 +43,6 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
     selectEl.disabled = false;
 
-    const icon = CHAIN_ICONS[chain] || "🔗";
-
     let html = `<option value="" disabled ${selectedId ? "" : "selected"}>Select wallet</option>`;
 
     wallets.forEach(wallet => {
@@ -62,7 +51,7 @@ export function populateWalletSelect(selectEl, chain, selectedId = "") {
 
         html += `
             <option value="${wallet.id}" ${isSelected ? "selected" : ""}>
-                ${icon} ${wallet.address}
+                ${escapeHTML(wallet.address)}
             </option>
         `;
 

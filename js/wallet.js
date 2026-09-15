@@ -2,23 +2,14 @@
    WALLET.JS
 ========================================== */
 
-import { showToast } from "./helpers.js";
+import { showToast, escapeHTML } from "./helpers.js";
 import { showAlert, showConfirm } from "./dialog.js";
 import { pushToCloud } from "./cloudSync.js";
 import { ICON_COPY, ICON_TRASH } from "./icons.js";
 import { openModalEl, closeModalEl } from "./modalAnim.js";
+import { t } from "./i18n.js";
 
 const STORAGE_KEY = "airdropHub_wallets";
-
-const CHAIN_ICONS = {
-
-    "Ethereum": "🔷",
-    "Solana": "🟣",
-    "BNB": "🟡",
-    "Gram (TON)": "💎",
-    "Lainnya": "🔗"
-
-};
 
 const CHAIN_COLORS = {
 
@@ -95,7 +86,7 @@ export async function addWallet(data) {
 
     if (!chain) {
 
-        await showAlert("Chain is required.");
+        await showAlert(t("wallet.chainRequired"));
 
         return false;
 
@@ -103,7 +94,7 @@ export async function addWallet(data) {
 
     if (!address) {
 
-        await showAlert("Wallet address is required.");
+        await showAlert(t("wallet.addressRequired"));
 
         return false;
 
@@ -123,7 +114,7 @@ export async function addWallet(data) {
 
     save();
 
-    showToast("Wallet added successfully.");
+    showToast(t("wallet.addedSuccess"));
 
     return true;
 
@@ -136,7 +127,7 @@ export async function addWallet(data) {
 export async function deleteWallet(id) {
 
     const confirmed = await showConfirm(
-        "Delete this wallet? This action cannot be undone."
+        t("wallet.deleteConfirm")
     );
 
     if (!confirmed) {
@@ -153,7 +144,7 @@ export async function deleteWallet(id) {
 
     save();
 
-    showToast("Wallet deleted successfully.");
+    showToast(t("wallet.deletedSuccess"));
 
     return true;
 
@@ -171,7 +162,7 @@ export function renderWallets() {
 
         walletList.innerHTML = `
             <div class="empty">
-                No wallets yet.
+                ${t("wallet.empty")}
             </div>
         `;
 
@@ -183,7 +174,6 @@ export function renderWallets() {
 
     wallets.forEach(wallet => {
 
-        const icon = CHAIN_ICONS[wallet.chain] || "🔗";
         const dot = CHAIN_COLORS[wallet.chain] || "#8b93a6";
 
         html += `
@@ -191,26 +181,26 @@ export function renderWallets() {
 
             <div class="simple-card-info">
 
-                <p class="chain-name"><span class="chain-dot" style="background:${dot}"></span>${icon} ${wallet.chain || "-"}</p>
+                <p class="chain-name"><span class="chain-dot" style="background:${dot}"></span>${escapeHTML(wallet.chain) || "-"}</p>
 
                 <div class="wallet-address-row">
-                    <span class="wallet-address-text">${wallet.address}</span>
+                    <span class="wallet-address-text">${escapeHTML(wallet.address)}</span>
                     <button
                         class="copy-btn"
                         data-action="copy"
-                        data-address="${wallet.address}"
-                        title="Copy address">
+                        data-address="${escapeHTML(wallet.address)}"
+                        title="${t("wallet.copyAddress")}">
                         <i class="copy-icon">${ICON_COPY}</i>
                     </button>
                     <button
                         class="btn-red wallet-delete-btn"
                         data-action="delete"
                         data-id="${wallet.id}">
-                        <i class="trash-icon">${ICON_TRASH}</i> Delete
+                        <i class="trash-icon">${ICON_TRASH}</i> ${t("project.deleteBtn")}
                     </button>
                 </div>
 
-                <p>${wallet.note || "-"}</p>
+                <p>${wallet.note ? escapeHTML(wallet.note) : "-"}</p>
 
             </div>
 
@@ -266,7 +256,7 @@ function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
 
         navigator.clipboard.writeText(text)
-            .then(() => showToast("Wallet address copied."))
+            .then(() => showToast(t("wallet.addressCopied")))
             .catch(() => fallbackCopy(text));
 
     } else {
@@ -295,7 +285,7 @@ function fallbackCopy(text) {
 
         document.execCommand("copy");
 
-        showToast("Wallet address copied.");
+        showToast(t("wallet.addressCopied"));
 
     } catch (error) {
 

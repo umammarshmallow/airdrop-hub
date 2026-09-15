@@ -5,21 +5,21 @@
 
 import { initEvents } from "./event.js";
 
-import { loadProjects, resetDailyTasks, cleanupStaleProjects } from "./storage.js";
+import { loadProjects, resetDailyTasks, cleanupStaleProjects, checkStaleWarnings } from "./storage.js";
 
 import { renderProjects } from "./render.js";
 
 import { updateDashboard } from "./dashboard.js";
 
-import { showLoading, hideLoading, showToast, addNotification, getNotifications, unreadNotificationCount, markAllNotificationsRead, clearNotifications } from "./helpers.js";
+import { showLoading, hideLoading, showToast, addNotification, getNotifications, unreadNotificationCount, markAllNotificationsRead, clearNotifications, dismissNotificationsByAction } from "./helpers.js";
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 
-import { setProjects } from "./project.js";
+import { setProjects, editProject } from "./project.js";
 
 import { initFuzzyText } from "./fuzzyText.js";
 
-import { initWallet } from "./wallet.js";
+import { initWallet, renderWallets } from "./wallet.js";
 
 import { initDialog, showAlert, showConfirm } from "./dialog.js";
 
@@ -44,17 +44,12 @@ document.addEventListener("visibilitychange", () => {
 
     if (!document.hidden) {
 
-        let projects = loadProjects();
+        // Dulu logic di sini ditulis ulang terpisah dari
+        // refreshProjectsView() sehingga auto-delete project
+        // stale bisa terjadi tanpa notifikasi ke user.
+        // Sekarang disatukan supaya toast/notifikasi selalu muncul.
+        refreshProjectsView();
 
-        projects = resetDailyTasks(projects);
-
-        const cleanup = cleanupStaleProjects(projects);
-
-        projects = cleanup.projects;
-
-        setProjects(projects);
-
-        renderProjects();
     }
 
 });
@@ -65,6 +60,9 @@ function refreshProjectsView(showStaleToast = true) {
 
     // Reset task harian bila hari sudah berganti
     projects = resetDailyTasks(projects);
+
+    // Tandai + kirim notifikasi utk project yg akan dihapus otomatis besok (H-1)
+    const aboutToDelete = checkStaleWarnings(projects);
 
     // Hapus otomatis project Waitlist/Pending yang tidak diupdate 2 bulan
     const cleanup = cleanupStaleProjects(projects);
@@ -79,6 +77,20 @@ function refreshProjectsView(showStaleToast = true) {
 
     // Render ulang
     renderProjects();
+
+    if (showStaleToast && aboutToDelete.length > 0) {
+
+        aboutToDelete.forEach(project => {
+
+            addNotification(
+                `"${project.name}" will be auto-removed tomorrow (no update in ~2 months). Edit it to keep it.`,
+                "warning",
+                { action: "editProject", projectId: project.id }
+            );
+
+        });
+
+    }
 
     if (showStaleToast && cleanup.removedCount > 0) {
 
@@ -95,11 +107,15 @@ function refreshProjectsView(showStaleToast = true) {
 // Cloud sync jalan di background, TIDAK menahan tampilnya app.
 // Kalau ternyata user sudah login & ada data cloud, tampilan
 // otomatis di-refresh diam-diam begitu data cloud selesai ditarik.
-async function runCloudSyncInBackground(configured) {
-
-    if (!configured) return;
+async function runCloudSyncInBackground() {
 
     try {
+
+        // SDK Firebase baru di-download di sini (lazy), dan hanya
+        // kalau firebaseConfig.js memang sudah diisi.
+        const configured = await initFirebaseApp();
+
+        if (!configured) return;
 
         const existingUser = await waitForPersistedSession();
 
@@ -108,6 +124,10 @@ async function runCloudSyncInBackground(configured) {
             showToast("Cloud sync aktif — login sebagai " + existingUser.email, 2500);
             updateAccountMenuLabel(existingUser.email);
 
+            // Sudah login, peringatan "belum login" sebelumnya (kalau ada) sudah tidak relevan
+            dismissNotificationsByAction("login");
+            refreshNotifBadge();
+
             // Data lokal mungkin baru saja ditimpa oleh data cloud, refresh tampilan.
             refreshProjectsView(false);
 
@@ -115,6 +135,24 @@ async function runCloudSyncInBackground(configured) {
 
             showCloudAuthModal();
             updateAccountMenuLabel(null);
+
+            // Peringatan risiko kehilangan data cukup dikirim sekali,
+            // tidak diulang tiap kali app dibuka
+            const alreadyWarned = getNotifications().some(
+                (n) => n.meta && n.meta.action === "login"
+            );
+
+            if (!alreadyWarned) {
+
+                addNotification(
+                    "Your data is only saved on this device. If you clear browser data or switch devices without logging in, everything will be lost. Login to enable cloud backup.",
+                    "warning",
+                    { action: "login" }
+                );
+
+                refreshNotifBadge();
+
+            }
 
         }
 
@@ -136,10 +174,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Siapkan koneksi Firebase (kalau sudah dikonfigurasi), tapi JANGAN
         // ditunggu (await) di sini — biar app langsung tampil pakai data
-        // lokal dulu, cloud sync menyusul di belakang layar.
-        const configured = initFirebaseApp();
-
-        runCloudSyncInBackground(configured);
+        // lokal dulu, cloud sync (termasuk download SDK-nya) menyusul
+        // di belakang layar.
+        runCloudSyncInBackground();
 
         /* memastikan data localStorage terbaca */
 
@@ -178,28 +215,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* ==========================================
-   AUTO SAVE
-========================================== */
-
-window.addEventListener("beforeunload", () => {
-
-    console.log("Airdrop Hub Saved");
-
-});
-
-/* ==========================================
    ONLINE / OFFLINE
 ========================================== */
 
 window.addEventListener("offline", () => {
 
     console.warn("Offline Mode");
-
-});
-
-window.addEventListener("online", () => {
-
-    console.log("Online");
 
 });
 
@@ -456,6 +477,8 @@ applyStaticTranslations();
 
 if(refresh) refreshProjectsView(false);
 
+renderWallets();
+
 }
 
 applyLang(getLang(), {refresh:false});
@@ -551,11 +574,26 @@ function renderNotifList(){
 
         item.dataset.type=n.type||"info";
 
+        const action = n.meta && n.meta.action;
+
+        let actionBtn = "";
+
+        if(action==="editProject" && n.meta.projectId){
+
+            actionBtn = `<button type="button" class="notif-action-btn" data-notif-action="editProject" data-project-id="${n.meta.projectId}"><i class="fa-solid fa-pen" aria-hidden="true"></i> Edit</button>`;
+
+        } else if(action==="login"){
+
+            actionBtn = `<button type="button" class="notif-action-btn" data-notif-action="login"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> Login</button>`;
+
+        }
+
         item.innerHTML=`
             <i class="notif-icon ${NOTIF_ICON[n.type]||NOTIF_ICON.info}"></i>
             <div class="notif-body">
                 <div class="notif-message"></div>
                 <div class="notif-time">${timeAgo(n.createdAt)}</div>
+                ${actionBtn}
             </div>
         `;
 
@@ -566,6 +604,28 @@ function renderNotifList(){
     });
 
 }
+
+notifList.addEventListener("click",(e)=>{
+
+    const btn=e.target.closest(".notif-action-btn");
+
+    if(!btn) return;
+
+    const action=btn.dataset.notifAction;
+
+    if(action==="editProject"){
+
+        closeNotifModalFn();
+        editProject(btn.dataset.projectId);
+
+    } else if(action==="login"){
+
+        closeNotifModalFn();
+        showCloudAuthModal();
+
+    }
+
+});
 
 notifBtn.onclick=()=>{
 
@@ -933,34 +993,3 @@ closeWalletPageBtn.onclick=()=>{
 closeWalletPage();
 
 }
-
-/* ==========================================
-   VERSION
-========================================== */
-
-console.log(
-`
-==========================================
-AIRDROP HUB V4.1
-Module Version
-==========================================
-
-✓ storage.js
-
-✓ helpers.js
-
-✓ dashboard.js
-
-✓ modal.js
-
-✓ project.js
-
-✓ render.js
-
-✓ events.js
-
-✓ app.js
-
-==========================================
-`
-);

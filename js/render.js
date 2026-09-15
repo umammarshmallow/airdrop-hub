@@ -2,7 +2,7 @@
    RENDER.JS
 ========================================== */
 
-import { formatUrl, sortProjects, statusClass, statusLabel, formatDate } from "./helpers.js";
+import { formatUrl, sortProjects, statusClass, statusLabel, formatDate, escapeHTML } from "./helpers.js";
 import { updateDashboard } from "./dashboard.js";
 import {
     filterProjects,
@@ -54,6 +54,8 @@ export function renderProjects() {
             </div>
         `;
 
+        projectList.removeAttribute("aria-busy");
+
         return;
     }
 
@@ -86,11 +88,11 @@ export function renderProjects() {
         );
 
         html += `
-        <div class="project-card" data-status="${project.status}">
+        <div class="project-card" data-status="${escapeHTML(project.status)}">
 
             <div class="project-title">
 
-                <h3>${project.name}</h3>
+                <h3>${escapeHTML(project.name)}</h3>
 
                 <div class="title-actions">
 
@@ -102,8 +104,9 @@ export function renderProjects() {
 
                     <a
                         class="icon-btn icon-btn-blue"
-                        href="${formatUrl(project.website)}"
+                        href="${escapeHTML(formatUrl(project.website))}"
                         target="_blank"
+                        rel="noopener noreferrer"
                         title="${t("project.website.title")}">
 
                         <i class="fa-solid fa-globe" aria-hidden="true"></i>
@@ -144,10 +147,10 @@ export function renderProjects() {
 
                 <div class="chip-group">
 
-                    <span class="chip"><i class="fa-solid fa-link" aria-hidden="true"></i> ${project.network}</span>
+                    <span class="chip"><i class="fa-solid fa-link" aria-hidden="true"></i> ${escapeHTML(project.network)}</span>
 
                     <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        <i class="fa-solid fa-wallet" aria-hidden="true"></i> ${linkedWallet ? linkedWallet.address : t("wallet.noWalletLinked")}
+                        <i class="fa-solid fa-wallet" aria-hidden="true"></i> ${linkedWallet ? escapeHTML(linkedWallet.address) : t("wallet.noWalletLinked")}
                     </span>
 
                 </div>
@@ -180,7 +183,7 @@ export function renderProjects() {
 
                 </div>
 
-                <div class="note">${project.note ? project.note.trim() : "-"}</div>
+                <div class="note">${project.note ? escapeHTML(project.note.trim()) : "-"}</div>
 
                 <div class="project-action">
 
@@ -217,6 +220,8 @@ export function renderProjects() {
     });
 
     projectList.innerHTML = html;
+
+    projectList.removeAttribute("aria-busy");
 
     observeCardsInView();
 
@@ -295,7 +300,7 @@ projectList.addEventListener("click", async (e) => {
 
                     otherToggle.classList.remove("open");
 
-                    otherToggle.querySelector("span").textContent = "View details";
+                    otherToggle.querySelector("span").textContent = t("project.viewDetails");
 
                 }
 
@@ -306,7 +311,7 @@ projectList.addEventListener("click", async (e) => {
             button.classList.toggle("open", willOpen);
 
             button.querySelector("span").textContent =
-                willOpen ? "Hide details" : "View details";
+                willOpen ? t("project.hideDetails") : t("project.viewDetails");
 
             break;
 
