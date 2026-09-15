@@ -128,16 +128,16 @@
   border-left:3px solid var(--border);
   border-radius:var(--radius-md);
   padding:18px;
-  transition:background-color .2s, border-color .2s, opacity .2s ease, transform .2s ease;
+  transition:background-color .2s, border-color .2s, opacity .45s ease, transform .45s cubic-bezier(.16,1,.3,1);
   opacity:0;
-  transform:scale(.7);
+  transform:translateY(14px);
 }
 
 /* Muncul saat kartu masuk ke area pandang (di-toggle oleh
    IntersectionObserver di render.js), meniru pola useInView */
 .project-card.in-view{
   opacity:1;
-  transform:scale(1);
+  transform:translateY(0);
 }
 
 .project-card[data-status="Active"]{ border-left-color:var(--success); }
@@ -146,6 +146,62 @@
 .project-card[data-status="Complete"]{ border-left-color:#4bb4ff; }
 
 .project-card:hover{ border-color:var(--accent-line); background:var(--surface-2); }
+
+/* ==========================================================
+   SKELETON LOADER
+   Placeholder yang tampil sebelum JS selesai memuat data,
+   supaya koneksi lambat tidak terlihat kosong / salah kesan
+   "belum ada project". Ditulis langsung di index.html
+   (bukan lewat JS) supaya muncul sesegera mungkin.
+========================================================== */
+
+.skeleton-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--border-soft);
+  border-radius:var(--radius-md);
+  padding:18px;
+}
+
+.skeleton-row{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:10px; margin-bottom:14px;
+}
+
+.skeleton-block{
+  border-radius:var(--radius-sm);
+  background:linear-gradient(
+    100deg,
+    var(--surface-3) 35%,
+    var(--surface-2) 50%,
+    var(--surface-3) 65%
+  );
+  background-size:250% 100%;
+  animation:skeletonShimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton-title{ width:46%; height:20px; }
+.skeleton-badge{ width:64px; height:22px; border-radius:20px; }
+.skeleton-chip{ width:96px; height:26px; border-radius:20px; }
+.skeleton-chip-lg{ width:150px; height:26px; border-radius:20px; }
+
+.skeleton-chips{ display:flex; gap:8px; margin-bottom:14px; }
+
+.skeleton-meta{ width:60%; height:13px; margin-top:2px; }
+
+/* shimmer sedikit ditunda per kartu supaya terasa mengalir, bukan berkedip bareng */
+.skeleton-card:nth-child(2) .skeleton-block{ animation-delay:.15s; }
+.skeleton-card:nth-child(3) .skeleton-block{ animation-delay:.3s; }
+
+@keyframes skeletonShimmer{
+  0%{ background-position:100% 0; }
+  100%{ background-position:-100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .skeleton-block{ animation:none; background:var(--surface-3); }
+  .project-card{ transition:none; opacity:1; transform:none; }
+}
 
 .project-title{
   display:flex; justify-content:space-between; align-items:center;
