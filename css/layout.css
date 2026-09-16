@@ -28,6 +28,8 @@ header{
   letter-spacing:-.03em;
   display:flex; align-items:center;
   padding-bottom:2px;
+  max-width:100%;
+  overflow:hidden;
 }
 
 .brand-text .wordmark .word-airdrop{
@@ -54,6 +56,7 @@ header{
   font-weight:800;
   display:inline-block;
   vertical-align:middle;
+  flex-shrink:0;
 }
 
 .brand-text .status-line{
