@@ -145,7 +145,12 @@
 .project-card[data-status="Waitlist"]{ border-left-color:var(--purple); }
 .project-card[data-status="Complete"]{ border-left-color:#4bb4ff; }
 
-.project-card:hover{ border-color:var(--accent-line); background:var(--surface-2); }
+.project-card:hover{
+  border-top-color:var(--accent-line);
+  border-right-color:var(--accent-line);
+  border-bottom-color:var(--accent-line);
+  background:var(--surface-2);
+}
 
 /* ==========================================================
    SKELETON LOADER
