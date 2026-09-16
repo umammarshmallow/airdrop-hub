@@ -24,11 +24,10 @@ header{
 .brand-text .wordmark{
   font-family:var(--font-display);
   font-weight:800;
-  font-size:clamp(14px, 5.2vw, 21px);
+  font-size:21px;
   letter-spacing:-.03em;
   display:flex; align-items:center;
   padding-bottom:2px;
-  max-width:100%;
 }
 
 .brand-text .wordmark .word-airdrop{
@@ -55,7 +54,6 @@ header{
   font-weight:800;
   display:inline-block;
   vertical-align:middle;
-  flex-shrink:0;
 }
 
 .brand-text .status-line{
