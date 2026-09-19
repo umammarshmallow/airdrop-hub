@@ -222,62 +222,7 @@
   </div>
 
   <!-- ================= PROFILE PAGE ================= -->
-  <div id="profilePage" class="app-page" style="display:none;">
-    <section>
-      <div class="section-heading"><h2><i class="fa-solid fa-user"></i> <span data-i18n="profile.title">Profile</span></h2></div>
 
-      <!-- Sudah login -->
-      <div id="profileLoggedInView" style="display:none;">
-        <div class="profile-hero">
-          <div id="profileAvatar" class="profile-hero-avatar"></div>
-          <div class="profile-hero-info">
-            <p id="profileEmailDisplay" class="profile-hero-email"></p>
-            <span class="profile-sync-badge"><span class="dot"></span> <span data-i18n="profile.cloudSyncActive">Cloud sync active</span></span>
-          </div>
-        </div>
-
-        <div class="list-group">
-          <div id="profileSecurityBtn" class="list-row">
-            <div class="list-row-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <span class="list-row-label" data-i18n="profile.security">Security</span>
-            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
-          </div>
-          <div id="profileWalletBtn" class="list-row">
-            <div class="list-row-icon"><i class="fa-solid fa-wallet"></i></div>
-            <span class="list-row-label" data-i18n="profile.wallet">Wallet</span>
-            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
-          </div>
-        </div>
-
-        <div class="list-group">
-          <button id="profileLogoutBtn" class="list-row danger" style="width:100%; background:none; border:none; text-align:left; font-family:inherit;">
-            <div class="list-row-icon danger"><i class="fa-solid fa-right-from-bracket"></i></div>
-            <span class="list-row-label" data-i18n="profile.logout">Log out</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Belum login -->
-      <div id="profileLoggedOutView" style="display:none;">
-        <div class="list-group">
-          <div id="profileWalletBtnLoggedOut" class="list-row">
-            <div class="list-row-icon"><i class="fa-solid fa-wallet"></i></div>
-            <span class="list-row-label" data-i18n="profile.wallet">Wallet</span>
-            <i class="fa-solid fa-chevron-right list-row-chevron"></i>
-          </div>
-        </div>
-
-        <div class="profile-guest-card">
-          <div class="profile-guest-icon"><i class="fa-solid fa-user-plus"></i></div>
-          <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Not Logged In</h3>
-          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login so your project &amp; wallet data syncs automatically across devices.</p>
-          <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Register</button>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================= WALLET PAGE ================= -->
   <div id="walletPage" class="app-page" style="display:none;">
     <section>
       <div class="page-header">
@@ -577,6 +522,44 @@
       <button id="closeMenuBtn" class="close-menu-btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="side-menu-content">
+      <div id="profileLoggedInView" style="display:none;">
+        <div class="side-menu-profile-hero">
+          <div id="profileAvatar" class="profile-hero-avatar"></div>
+          <div class="profile-hero-info">
+            <p id="profileEmailDisplay" class="profile-hero-email"></p>
+            <span class="profile-sync-badge"><span class="dot"></span> <span data-i18n="profile.cloudSyncActive">Cloud sync active</span></span>
+          </div>
+        </div>
+
+        <div id="profileSecurityBtn" class="side-menu-item">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span style="flex:1;" data-i18n="profile.security">Security</span>
+          <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
+        </div>
+        <div id="profileWalletBtn" class="side-menu-item">
+          <i class="fa-solid fa-wallet"></i>
+          <span style="flex:1;" data-i18n="profile.wallet">Wallet</span>
+          <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
+        </div>
+      </div>
+
+      <div id="profileLoggedOutView" style="display:none;">
+        <div id="profileWalletBtnLoggedOut" class="side-menu-item">
+          <i class="fa-solid fa-wallet"></i>
+          <span style="flex:1;" data-i18n="profile.wallet">Wallet</span>
+          <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
+        </div>
+
+        <div class="profile-guest-card" style="margin:14px 0;">
+          <div class="profile-guest-icon"><i class="fa-solid fa-user-plus"></i></div>
+          <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Not Logged In</h3>
+          <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login so your project &amp; wallet data syncs automatically across devices.</p>
+          <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Register</button>
+        </div>
+      </div>
+
+      <div class="side-menu-divider"></div>
+
       <div class="side-menu-item" style="cursor:default;">
         <i class="fa-solid fa-moon"></i>
         <span style="flex:1;" data-i18n="settings.darkMode">Dark Mode</span>
@@ -593,6 +576,14 @@
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="id">ID</button>
         </div>
+      </div>
+
+      <div id="profileLogoutWrap" style="display:none;">
+        <div class="side-menu-divider"></div>
+        <button id="profileLogoutBtn" class="side-menu-item danger" style="width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer;">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span data-i18n="profile.logout">Log out</span>
+        </button>
       </div>
     </div>
   </div>
