@@ -131,19 +131,16 @@ function withTimeout(promise, ms, fallbackValue) {
 
 }
 
-export function waitForPersistedSession() {
+export function waitForPersistedSession(onLateResolve) {
 
     if (!auth) return Promise.resolve(null);
 
     return new Promise((resolve) => {
 
-        let settled = false;
+        let timedOut = false;
 
         const unsubscribe = firebase.onAuthStateChanged(auth, async (user) => {
 
-            if (settled) return; // sudah keburu timeout, abaikan callback telat
-
-            settled = true;
             unsubscribe();
 
             if (user) {
@@ -155,19 +152,31 @@ export function waitForPersistedSession() {
 
             }
 
+            if (timedOut) {
+
+                // Sesi asli baru terkonfirmasi SETELAH batas waktu tunggu
+                // sudah lewat. Jangan dibuang begitu saja (itu penyebab
+                // user dipaksa login ulang padahal sebenarnya masih login) —
+                // proses diam-diam lewat callback ini.
+                if (user && typeof onLateResolve === "function") onLateResolve(user);
+
+                return;
+
+            }
+
             resolve(user);
 
         });
 
-        // Jangan pernah tahan app lebih dari 4 detik hanya buat cek sesi login.
+        // Jangan tahan tampilan app terlalu lama hanya buat cek sesi login,
+        // tapi beri waktu cukup longgar (koneksi lambat/device lemot tidak
+        // langsung dianggap "belum login").
         setTimeout(() => {
 
-            if (!settled) {
-                settled = true;
-                resolve(null);
-            }
+            timedOut = true;
+            resolve(null);
 
-        }, 4000);
+        }, 8000);
 
     });
 

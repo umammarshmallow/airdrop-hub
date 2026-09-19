@@ -117,7 +117,23 @@ async function runCloudSyncInBackground() {
 
         if (!configured) return;
 
-        const existingUser = await waitForPersistedSession();
+        const existingUser = await waitForPersistedSession((lateUser) => {
+
+            // Ternyata user memang masih login, cuma konfirmasinya
+            // dari Firebase telat sedikit. Update tampilan diam-diam,
+            // dan kalau modal login sempat kebuka karena dianggap
+            // "belum login" tadi, tutup lagi sekarang.
+            showToast("Cloud sync aktif — login sebagai " + lateUser.email, 2500);
+            updateAccountMenuLabel(lateUser.email);
+
+            dismissNotificationsByAction("login");
+            refreshNotifBadge();
+
+            refreshProjectsView(false);
+
+            closeCloudAuthModal();
+
+        });
 
         if (existingUser) {
 
@@ -234,13 +250,11 @@ const searchBtn=document.getElementById("searchBtn");
 
 const homePage=document.getElementById("homePage");
 
-const profilePage=document.getElementById("profilePage");
-
 const walletPage=document.getElementById("walletPage");
 
 const securityPage=document.getElementById("securityPage");
 
-const allPages=[homePage, profilePage, walletPage, securityPage];
+const allPages=[homePage, walletPage, securityPage];
 
 const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, profileBtn];
 
@@ -309,11 +323,9 @@ setActiveNav(homeBtn);
 
 profileBtn.onclick=()=>{
 
-showPage(profilePage);
-
-setActiveNav(profileBtn);
-
 refreshProfilePage();
+
+openMenu(true);
 
 }
 
@@ -363,6 +375,8 @@ const bottomNav=document.querySelector(".bottom-nav");
 
 function openWalletPage(){
 
+closeMenu();
+
 showPage(walletPage);
 
 setActiveNav(null);
@@ -373,9 +387,9 @@ bottomNav.style.display="none";
 
 function closeWalletPage(){
 
-showPage(profilePage);
+showPage(homePage);
 
-setActiveNav(profileBtn);
+setActiveNav(homeBtn);
 
 bottomNav.style.display="flex";
 
@@ -387,6 +401,8 @@ const closeSecurityPageBtn=document.getElementById("closeSecurityPageBtn");
 
 function openSecurityPage(){
 
+closeMenu();
+
 showPage(securityPage);
 
 setActiveNav(null);
@@ -397,9 +413,9 @@ bottomNav.style.display="none";
 
 function closeSecurityPage(){
 
-showPage(profilePage);
+showPage(homePage);
 
-setActiveNav(profileBtn);
+setActiveNav(homeBtn);
 
 bottomNav.style.display="flex";
 
@@ -409,9 +425,19 @@ profileSecurityBtn.onclick=openSecurityPage;
 
 closeSecurityPageBtn.onclick=closeSecurityPage;
 
-function openMenu(){
+let navBeforeMenu=null;
 
-sideMenuOverlay.classList.add("active");
+function openMenu(highlightProfile){
+
+if(highlightProfile){
+
+navBeforeMenu=bottomNavButtons.find(btn=>btn.classList.contains("active")) || homeBtn;
+
+setActiveNav(profileBtn);
+
+}
+
+openModalEl(sideMenuOverlay);
 
 document.body.classList.add("modal-open");
 
@@ -419,13 +445,21 @@ document.body.classList.add("modal-open");
 
 function closeMenu(){
 
-sideMenuOverlay.classList.remove("active");
+closeModalEl(sideMenuOverlay);
 
 document.body.classList.remove("modal-open");
 
+if(navBeforeMenu){
+
+setActiveNav(navBeforeMenu);
+
+navBeforeMenu=null;
+
 }
 
-menuBtn.onclick=openMenu;
+}
+
+menuBtn.onclick=()=>openMenu(false);
 
 closeMenuBtn.onclick=closeMenu;
 
@@ -702,6 +736,8 @@ const profileLoginBtn=document.getElementById("profileLoginBtn");
 
 const profileLogoutBtn=document.getElementById("profileLogoutBtn");
 
+const profileLogoutWrap=document.getElementById("profileLogoutWrap");
+
 const securityCurrentPassword=document.getElementById("securityCurrentPassword");
 
 const securityNewPassword=document.getElementById("securityNewPassword");
@@ -752,6 +788,7 @@ function refreshProfilePage(){
 
         profileLoggedInView.style.display="block";
         profileLoggedOutView.style.display="none";
+        profileLogoutWrap.style.display="block";
 
         profileEmailDisplay.textContent=user.email;
         profileAvatar.textContent=user.email.charAt(0).toUpperCase();
@@ -760,6 +797,7 @@ function refreshProfilePage(){
 
         profileLoggedInView.style.display="none";
         profileLoggedOutView.style.display="block";
+        profileLogoutWrap.style.display="none";
 
         securityCurrentPassword.value="";
         securityNewPassword.value="";
@@ -887,6 +925,8 @@ cloudAuthLoginBtn.onclick=async()=>{
 
 profileLoginBtn.onclick=()=>{
 
+    closeMenu();
+
     showCloudAuthModal();
 
 };
@@ -983,8 +1023,6 @@ closeMenu();
 menuWalletBtn.forEach(btn=>btn.onclick=()=>{
 
 openWalletPage();
-
-closeMenu();
 
 });
 

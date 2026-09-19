@@ -43,6 +43,26 @@ function unlockBodyScroll() {
 }
 
 /* ==========================================
+   RESET SCROLL POSISI MODAL
+   (biar tiap dibuka mulai dari atas, tidak
+   "nyangkut" di posisi scroll terakhir)
+========================================== */
+
+function resetModalScroll(modalEl) {
+
+    modalEl.scrollTop = 0;
+
+    const content = modalEl.querySelector(".modal-content");
+
+    if (content) {
+
+        content.scrollTop = 0;
+
+    }
+
+}
+
+/* ==========================================
    OPEN MODAL
 ========================================== */
 
@@ -55,6 +75,8 @@ export function openAddModal() {
         ""
     );
 
+    resetModalScroll(projectModal);
+
     openModalEl(projectModal);
 
     lockBodyScroll();
@@ -62,6 +84,8 @@ export function openAddModal() {
 }
 
 export function openEditModal() {
+
+    resetModalScroll(editModal);
 
     openModalEl(editModal);
 
