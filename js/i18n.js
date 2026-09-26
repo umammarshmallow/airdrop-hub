@@ -12,7 +12,7 @@ const dict = {
         "nav.home": "Home",
         "nav.search": "Search",
         "nav.add": "Add",
-        "nav.profile": "Profile",
+        "nav.profile": "My Project",
 
         "settings.title": "Settings",
         "settings.darkMode": "Dark Mode",
@@ -170,7 +170,7 @@ const dict = {
         "nav.home": "Beranda",
         "nav.search": "Cari",
         "nav.add": "Tambah",
-        "nav.profile": "Profil",
+        "nav.profile": "Proyek Saya",
 
         "settings.title": "Pengaturan",
         "settings.darkMode": "Mode Gelap",

@@ -323,9 +323,9 @@ setActiveNav(homeBtn);
 
 profileBtn.onclick=()=>{
 
-refreshProfilePage();
+showPage(homePage);
 
-openMenu(true);
+setActiveNav(profileBtn);
 
 }
 
