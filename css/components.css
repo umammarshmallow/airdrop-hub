@@ -382,34 +382,6 @@
 .btn-add:hover{ background:var(--accent-hover); color:white; }
 .wallet-add-btn{ width:100%; margin-bottom:22px; }
 
-/* ==========================================================
-   HOME (ETALASE PUBLIK) — tombol admin & tombol "+ tambahkan"
-========================================================== */
-.btn-add-inline{
-  display:flex; align-items:center; gap:6px;
-  background:var(--accent);
-  color:#0a0d14;
-  font-weight:600;
-  font-size:12.5px;
-  padding:8px 13px;
-  border-radius:var(--radius-sm);
-  border:none;
-  white-space:nowrap;
-  transition:.2s;
-}
-.btn-add-inline:hover{ background:var(--accent-hover); color:white; }
-
-.icon-btn-save{
-  color:var(--accent);
-}
-.icon-btn-save.added{
-  color:var(--success);
-  cursor:default;
-}
-.admin-only-actions{
-  display:flex; gap:8px; margin-top:10px;
-}
-
 #walletList{ display:flex; flex-direction:column; gap:13px; }
 
 .simple-card{
