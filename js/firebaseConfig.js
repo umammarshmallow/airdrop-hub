@@ -21,19 +21,3 @@ export const firebaseConfig = {
    dinonaktifkan dan aplikasi tetap berjalan normal memakai
    localStorage seperti biasa (mode offline).
 */
-
-/*
-   UID AKUN ADMIN (buat fitur Home — etalase airdrop publik
-   yang cuma bisa diedit oleh 1 akun tertentu).
-
-   Cara ambil UID kamu:
-   Firebase Console > pilih project > menu "Authentication"
-   (di sidebar kiri) > tab "Users" > kolom "User UID" pada
-   baris akun kamu > klik buat copy.
-
-   Selama masih "GANTI_UID_ADMIN_DISINI", tombol admin
-   (Add/Edit/Delete airdrop di Home) tidak akan muncul untuk
-   siapapun — aplikasi tetap jalan normal, cuma fitur admin-nya
-   nonaktif.
-*/
-export const ADMIN_UID = "0yAFFxBJOBP9kyODm1SOIIDj1oj2";
