@@ -36,6 +36,8 @@ import {
     changePassword
 } from "./cloudSync.js";
 
+import { initPublicAirdrops, updateAdminUI } from "./publicAirdrops.js";
+
 /* ==========================================
    INITIALIZE APPLICATION
 ========================================== */
@@ -133,6 +135,8 @@ async function runCloudSyncInBackground() {
 
             closeCloudAuthModal();
 
+            updateAdminUI();
+
         });
 
         if (existingUser) {
@@ -146,6 +150,8 @@ async function runCloudSyncInBackground() {
 
             // Data lokal mungkin baru saja ditimpa oleh data cloud, refresh tampilan.
             refreshProjectsView(false);
+
+            updateAdminUI();
 
         } else {
 
@@ -188,11 +194,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
 
-        // Siapkan koneksi Firebase (kalau sudah dikonfigurasi), tapi JANGAN
-        // ditunggu (await) di sini — biar app langsung tampil pakai data
-        // lokal dulu, cloud sync (termasuk download SDK-nya) menyusul
-        // di belakang layar.
+        // Cloud sync jalan di background (lihat atas), TIDAK ditunggu.
         runCloudSyncInBackground();
+
+        // Etalase publik Home: jalan independen dari status login,
+        // supaya pengunjung yang belum login pun tetap bisa lihat isinya.
+        initPublicAirdrops();
 
         /* memastikan data localStorage terbaca */
 
@@ -242,7 +249,7 @@ window.addEventListener("offline", () => {
 
 const homeBtn=document.getElementById("homeBtn");
 
-const profileBtn=document.getElementById("profileBtn");
+const myProjectBtn=document.getElementById("myProjectBtn");
 
 const addBottomBtn=document.getElementById("addBottomBtn");
 
@@ -250,13 +257,15 @@ const searchBtn=document.getElementById("searchBtn");
 
 const homePage=document.getElementById("homePage");
 
+const myProjectPage=document.getElementById("myProjectPage");
+
 const walletPage=document.getElementById("walletPage");
 
 const securityPage=document.getElementById("securityPage");
 
-const allPages=[homePage, walletPage, securityPage];
+const allPages=[homePage, myProjectPage, walletPage, securityPage];
 
-const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, profileBtn];
+const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, myProjectBtn];
 
 const navIndicator=document.getElementById("navIndicator");
 
@@ -321,11 +330,11 @@ setActiveNav(homeBtn);
 
 }
 
-profileBtn.onclick=()=>{
+myProjectBtn.onclick=()=>{
 
-refreshProfilePage();
+showPage(myProjectPage);
 
-openMenu(true);
+setActiveNav(myProjectBtn);
 
 }
 
@@ -341,7 +350,7 @@ showPage(homePage);
 
 setActiveNav(homeBtn);
 
-document.getElementById("search").focus();
+document.getElementById("publicSearch").focus();
 
 }
 
@@ -387,9 +396,9 @@ bottomNav.style.display="none";
 
 function closeWalletPage(){
 
-showPage(homePage);
+showPage(myProjectPage);
 
-setActiveNav(homeBtn);
+setActiveNav(myProjectBtn);
 
 bottomNav.style.display="flex";
 
@@ -413,9 +422,9 @@ bottomNav.style.display="none";
 
 function closeSecurityPage(){
 
-showPage(homePage);
+showPage(myProjectPage);
 
-setActiveNav(homeBtn);
+setActiveNav(myProjectBtn);
 
 bottomNav.style.display="flex";
 
@@ -425,17 +434,7 @@ profileSecurityBtn.onclick=openSecurityPage;
 
 closeSecurityPageBtn.onclick=closeSecurityPage;
 
-let navBeforeMenu=null;
-
-function openMenu(highlightProfile){
-
-if(highlightProfile){
-
-navBeforeMenu=bottomNavButtons.find(btn=>btn.classList.contains("active")) || homeBtn;
-
-setActiveNav(profileBtn);
-
-}
+function openMenu(){
 
 openModalEl(sideMenuOverlay);
 
@@ -449,17 +448,9 @@ closeModalEl(sideMenuOverlay);
 
 document.body.classList.remove("modal-open");
 
-if(navBeforeMenu){
-
-setActiveNav(navBeforeMenu);
-
-navBeforeMenu=null;
-
 }
 
-}
-
-menuBtn.onclick=()=>openMenu(false);
+menuBtn.onclick=()=>openMenu();
 
 closeMenuBtn.onclick=closeMenu;
 
@@ -947,6 +938,8 @@ profileLogoutBtn.onclick=async()=>{
 
         refreshProfilePage();
 
+        updateAdminUI();
+
     }
 
 };
@@ -1017,6 +1010,12 @@ if(e.target===sideMenuOverlay){
 closeMenu();
 
 }
+
+});
+
+window.addEventListener("airdrophub:requestLogin", ()=>{
+
+    showCloudAuthModal();
 
 });
 

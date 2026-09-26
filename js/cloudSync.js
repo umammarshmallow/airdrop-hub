@@ -18,7 +18,7 @@
      tetap jalan normal pakai data lokal (tidak pernah blocking).
 ========================================== */
 
-import { firebaseConfig } from "./firebaseConfig.js";
+import { firebaseConfig, ADMIN_UID } from "./firebaseConfig.js";
 import { addNotification } from "./helpers.js";
 
 const PROJECTS_KEY = "airdropHub";
@@ -34,9 +34,11 @@ let firebase = null;
 
 let auth = null;
 let db = null;
+let app = null;
 let currentUid = null;
 let ready = false;
 let pushTimer = null;
+let initPromise = null; // cegah initFirebaseApp() jalan dobel kalau dipanggil bersamaan
 
 function isConfigured() {
     return (
@@ -52,6 +54,33 @@ export function isCloudSyncEnabled() {
 
 export function getCurrentUser() {
     return auth ? auth.currentUser : null;
+}
+
+/* ==========================================
+   ADMIN CHECK
+   UID admin diisi manual di firebaseConfig.js.
+   Dipakai buat tampilkan tombol edit/hapus di Home
+   (etalase publik) HANYA untuk akun kamu — proteksi
+   aslinya tetap di Firestore security rules (server-side),
+   ini cuma buat sembunyikan tombolnya di tampilan.
+========================================== */
+
+export function isAdmin() {
+    const user = getCurrentUser();
+    return !!(user && ADMIN_UID && !ADMIN_UID.startsWith("GANTI_") && user.uid === ADMIN_UID);
+}
+
+/* ==========================================
+   AKSES FIRESTORE UMUM (dipakai js/publicAirdrops.js
+   buat baca/tulis koleksi "publicAirdrops")
+========================================== */
+
+export function getDb() {
+    return db;
+}
+
+export function getFirebaseTools() {
+    return firebase;
 }
 
 function userDocRef() {
@@ -88,7 +117,14 @@ async function loadFirebaseSDK() {
         doc: firestoreMod.doc,
         getDoc: firestoreMod.getDoc,
         setDoc: firestoreMod.setDoc,
-        serverTimestamp: firestoreMod.serverTimestamp
+        serverTimestamp: firestoreMod.serverTimestamp,
+        collection: firestoreMod.collection,
+        getDocs: firestoreMod.getDocs,
+        addDoc: firestoreMod.addDoc,
+        updateDoc: firestoreMod.updateDoc,
+        deleteDoc: firestoreMod.deleteDoc,
+        query: firestoreMod.query,
+        orderBy: firestoreMod.orderBy
     };
 
     return firebase;
@@ -97,22 +133,35 @@ async function loadFirebaseSDK() {
 
 /* ==========================================
    INIT APP (tidak login, cuma siapkan koneksi)
+   Aman dipanggil berkali-kali (idempotent) — dipakai baik
+   dari alur cloud sync/login maupun dari js/publicAirdrops.js
+   yang butuh koneksi Firestore walau user belum login.
 ========================================== */
 
-export async function initFirebaseApp() {
+export function initFirebaseApp() {
 
-    if (!isConfigured()) {
-        if (DEBUG) console.log("[CloudSync] firebaseConfig.js belum diisi, jalan mode offline.");
-        return false;
-    }
+    if (initPromise) return initPromise; // sudah pernah dipanggil / lagi berjalan, jangan dobel
 
-    const fb = await loadFirebaseSDK();
+    initPromise = (async () => {
 
-    const app = fb.initializeApp(firebaseConfig);
-    auth = fb.getAuth(app);
-    db = fb.getFirestore(app);
+        if (app) return true; // sudah pernah diinisialisasi sebelumnya
 
-    return true;
+        if (!isConfigured()) {
+            if (DEBUG) console.log("[CloudSync] firebaseConfig.js belum diisi, jalan mode offline.");
+            return false;
+        }
+
+        const fb = await loadFirebaseSDK();
+
+        app = fb.initializeApp(firebaseConfig);
+        auth = fb.getAuth(app);
+        db = fb.getFirestore(app);
+
+        return true;
+
+    })();
+
+    return initPromise;
 
 }
 
