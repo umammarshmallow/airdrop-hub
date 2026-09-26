@@ -34,29 +34,74 @@
 
 <div class="container">
 
-  <!-- ================= HOME PAGE ================= -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark">
+        <img src="img/logo-icon.png" alt="AirdropHub" />
+      </div>
+      <div class="brand-text">
+        <span class="wordmark"><span class="word-airdrop">Airdrop</span><canvas id="hubFuzzyText" class="word-hub" role="img" aria-label="Hub"></canvas></span>
+        <span class="status-line"><span class="status-dot"></span> <span data-i18n="status.tracking">Tracking active</span></span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="notifBtn" class="menu-btn" aria-label="Notifications" style="position:relative;">
+        <i class="fa-solid fa-bell"></i>
+        <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+      </button>
+      <button id="menuBtn" class="menu-btn" aria-label="Settings">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= HOME PAGE (etalase publik, admin-only edit) ================= -->
   <div id="homePage" class="app-page page-in">
 
-    <header>
-      <div class="brand">
-        <div class="brand-mark">
-          <img src="img/logo-icon.png" alt="AirdropHub" />
-        </div>
-        <div class="brand-text">
-          <span class="wordmark"><span class="word-airdrop">Airdrop</span><canvas id="hubFuzzyText" class="word-hub" role="img" aria-label="Hub"></canvas></span>
-          <span class="status-line"><span class="status-dot"></span> <span data-i18n="status.tracking">Tracking active</span></span>
-        </div>
+    <section class="search">
+      <div class="search-input-wrap">
+        <input type="text" id="publicSearch" placeholder="Search airdrops by name or chain..." data-i18n-ph="home.searchPlaceholder">
       </div>
-      <div class="header-actions">
-        <button id="notifBtn" class="menu-btn" aria-label="Notifications" style="position:relative;">
-          <i class="fa-solid fa-bell"></i>
-          <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
-        </button>
-        <button id="menuBtn" class="menu-btn" aria-label="Settings">
-          <i class="fa-solid fa-gear"></i>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2><i class="fa-solid fa-parachute-box"></i> <span data-i18n="home.title">Airdrops</span></h2>
+        <button id="addAirdropBtn" class="btn-add-inline" style="display:none;">
+          <i class="fa-solid fa-plus"></i> <span data-i18n="home.addAirdrop">Add Airdrop</span>
         </button>
       </div>
-    </header>
+      <div id="publicAirdropList" aria-busy="true">
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-row">
+            <div class="skeleton-block skeleton-title"></div>
+            <div class="skeleton-block skeleton-badge"></div>
+          </div>
+          <div class="skeleton-chips">
+            <div class="skeleton-block skeleton-chip"></div>
+            <div class="skeleton-block skeleton-chip-lg"></div>
+          </div>
+          <div class="skeleton-block skeleton-meta"></div>
+        </div>
+        <div class="skeleton-card" aria-hidden="true">
+          <div class="skeleton-row">
+            <div class="skeleton-block skeleton-title"></div>
+            <div class="skeleton-block skeleton-badge"></div>
+          </div>
+          <div class="skeleton-chips">
+            <div class="skeleton-block skeleton-chip"></div>
+            <div class="skeleton-block skeleton-chip-lg"></div>
+          </div>
+          <div class="skeleton-block skeleton-meta"></div>
+        </div>
+        <span class="sr-only">Loading airdrops…</span>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ================= MY PROJECT PAGE (tracking pribadi) ================= -->
+  <div id="myProjectPage" class="app-page" style="display:none;">
 
     <section class="dashboard-summary">
       <div class="section-heading" style="margin-bottom:16px;">
@@ -397,6 +442,57 @@
     </div>
   </div>
 
+  <!-- ================= ADMIN: ADD/EDIT AIRDROP (Home) MODAL ================= -->
+  <div class="modal" id="airdropModal">
+    <div class="modal-content">
+      <h2><i class="fa-solid fa-parachute-box" style="color:var(--accent);"></i> <span id="airdropModalTitle" data-i18n="home.addAirdrop">Add Airdrop</span></h2>
+      <input type="hidden" id="airdropId">
+
+      <label class="field-label" for="airdropName" data-i18n="project.name">Project Name</label>
+      <input type="text" id="airdropName" placeholder="e.g. LayerZero" data-i18n-ph="project.namePh">
+
+      <label class="field-label" for="airdropNetwork" data-i18n="wallet.chain">Chain</label>
+      <select id="airdropNetwork">
+        <option value="" disabled selected data-i18n="wallet.chooseChain">Choose chain</option>
+        <option value="Ethereum">Ethereum</option>
+        <option value="Solana">Solana</option>
+        <option value="BNB">BNB</option>
+        <option value="Gram (TON)">Gram (TON)</option>
+        <option value="Lainnya" data-i18n="opt.chain.other">Other</option>
+      </select>
+
+      <label class="field-label" for="airdropWebsite" data-i18n="project.website">Website</label>
+      <input type="text" id="airdropWebsite" placeholder="https://...">
+
+      <label class="field-label" for="airdropTaskType" data-i18n="project.taskType">Task Type</label>
+      <select id="airdropTaskType">
+        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
+        <option value="Daily" data-i18n="project.daily">Daily</option>
+        <option value="Weekly" data-i18n="project.weekly">Weekly</option>
+        <option value="Testnet" data-i18n="project.testnet">Testnet</option>
+        <option value="Mainnet" data-i18n="project.mainnet">Mainnet</option>
+      </select>
+
+      <label class="field-label" for="airdropDeadline" data-i18n="project.deadline">Deadline</label>
+      <input type="date" id="airdropDeadline">
+
+      <label class="field-label" for="airdropPriority" data-i18n="project.priority">Priority</label>
+      <select id="airdropPriority">
+        <option value="Low" data-i18n="opt.priority.low">Low</option>
+        <option value="Medium" data-i18n="opt.priority.medium">Medium</option>
+        <option value="High" data-i18n="opt.priority.high">High</option>
+      </select>
+
+      <label class="field-label" for="airdropNote" data-i18n="project.notes">Notes</label>
+      <textarea id="airdropNote" rows="4" placeholder="Optional notes..." data-i18n-ph="project.notesPh"></textarea>
+
+      <div class="modal-button">
+        <button id="saveAirdrop" data-i18n="project.save">Save</button>
+        <button id="closeAirdropModal" data-i18n="project.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= NOTIFICATIONS MODAL ================= -->
   <div class="modal" id="notifModal">
     <div class="modal-content">
@@ -594,7 +690,7 @@
   <button id="homeBtn"><i class="fa-solid fa-house"></i><span data-i18n="nav.home">Home</span></button>
   <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i><span data-i18n="nav.search">Search</span></button>
   <button id="addBottomBtn" class="add-btn"><i class="fa-solid fa-circle-plus"></i><span data-i18n="nav.add">Add</span></button>
-  <button id="profileBtn"><i class="fa-solid fa-user"></i><span data-i18n="nav.profile">Profile</span></button>
+  <button id="myProjectBtn"><i class="fa-solid fa-folder-open"></i><span data-i18n="nav.myProject">My Project</span></button>
 </nav>
 
 <script type="module" src="js/app.js"></script>
