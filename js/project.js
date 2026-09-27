@@ -190,6 +190,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             project.website = data.website.trim();
 
+            project.websiteInvite = (data.websiteInvite || "").trim();
+
             project.taskType = data.taskType;
 
             project.deadline = data.deadline;

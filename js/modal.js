@@ -150,6 +150,13 @@ export function fillEditForm(project) {
 
     document.getElementById("editWebsite").value = project.website;
 
+    const editInviteField = document.getElementById("editWebsiteInviteField");
+    if (editInviteField) {
+        editInviteField.style.display = isAdmin() ? "block" : "none";
+    }
+
+    document.getElementById("editWebsiteInvite").value = project.websiteInvite || "";
+
     document.getElementById("editTaskType").value = project.taskType;
 
     document.getElementById("editDeadline").value = project.deadline || "";
