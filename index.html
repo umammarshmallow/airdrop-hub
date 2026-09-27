@@ -246,6 +246,20 @@
 
         <button id="securityUpdateBtn" class="btn-add" style="width:100%;" data-i18n="profile.updatePassword">Update Password</button>
       </div>
+
+      <div class="profile-security-card" style="margin-top:16px; border-color:rgba(240,97,107,.35);">
+        <h3 style="font-family:var(--font-display); font-size:15px; color:#f0616b; margin:0 0 8px;" data-i18n="profile.dangerZoneTitle">Danger Zone</h3>
+        <p data-i18n="profile.dangerZoneDesc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 16px; line-height:1.5;">Deleting your account permanently removes it and every project you saved, from the cloud and this device. This cannot be undone.</p>
+
+        <input type="password" id="deleteAccountPassword" placeholder="Enter your password to confirm" autocomplete="current-password" data-i18n-ph="profile.deleteAccountPasswordPh" style="margin-bottom:12px;">
+
+        <p id="deleteAccountError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+
+        <button id="deleteAccountBtn" class="side-menu-item danger" style="width:100%; justify-content:center; border:1px solid rgba(240,97,107,.35); border-radius:12px; background:none; cursor:pointer; font-family:inherit;">
+          <i class="fa-solid fa-trash-can"></i>
+          <span data-i18n="profile.deleteAccount">Delete Account</span>
+        </button>
+      </div>
     </section>
   </div>
 
@@ -533,6 +547,10 @@
 
       <div id="profileLogoutWrap" style="display:none;">
         <div class="side-menu-divider"></div>
+        <button id="switchAccountBtn" class="side-menu-item" style="width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer;">
+          <i class="fa-solid fa-right-left"></i>
+          <span data-i18n="profile.switchAccount">Switch Account</span>
+        </button>
         <button id="profileLogoutBtn" class="side-menu-item danger" style="width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer;">
           <i class="fa-solid fa-right-from-bracket"></i>
           <span data-i18n="profile.logout">Log out</span>
