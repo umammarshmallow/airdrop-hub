@@ -9,8 +9,6 @@ import { loadProjects, resetDailyTasks, cleanupStaleProjects, checkStaleWarnings
 
 import { renderProjects } from "./render.js";
 
-import { updateDashboard } from "./dashboard.js";
-
 import { showLoading, hideLoading, showToast, addNotification, getNotifications, unreadNotificationCount, markAllNotificationsRead, clearNotifications, dismissNotificationsByAction } from "./helpers.js";
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
@@ -72,11 +70,16 @@ function refreshProjectsView(showStaleToast = true) {
 
     projects = cleanup.projects;
 
-    // Sinkronkan data project di seluruh aplikasi
+    // Sinkronkan data project di seluruh aplikasi (khusus My Project --
+    // Home tidak ikut direset/dibersihkan otomatis, itu data admin).
     setProjects(projects);
 
-    // Update dashboard
-    updateDashboard(projects);
+    // NOTE: updateDashboard() SENGAJA tidak dipanggil di sini dengan
+    // data My Project secara langsung -- itu bisa menimpa Overview Home
+    // (race condition animasi angka saat renderProjects() di bawah juga
+    // memanggil updateDashboard(), tapi dengan data mode yang aktif).
+    // renderProjects() di bawah ini sudah menangani update dashboard
+    // dengan benar sesuai mode (Home/My Project) yang sedang dilihat.
 
     // Render ulang
     renderProjects();
