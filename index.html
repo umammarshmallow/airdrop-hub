@@ -508,8 +508,8 @@
       <div class="side-menu-divider"></div>
 
       <div class="side-menu-item" style="cursor:default;">
-        <i class="fa-solid fa-moon"></i>
-        <span style="flex:1;" data-i18n="settings.darkMode">Dark Mode</span>
+        <i class="fa-solid fa-moon" id="themeIcon"></i>
+        <span style="flex:1;" id="themeModeLabel" data-i18n="settings.darkMode">Dark Mode</span>
         <label class="switch">
           <input type="checkbox" id="darkModeToggle">
           <span class="switch-slider"></span>
@@ -523,6 +523,12 @@
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="id">ID</button>
         </div>
+      </div>
+
+      <div id="installAppBtn" class="side-menu-item" style="display:none;">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <span style="flex:1;" data-i18n="settings.installApp">Add to Phone</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
       </div>
 
       <div id="profileLogoutWrap" style="display:none;">
