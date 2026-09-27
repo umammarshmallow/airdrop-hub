@@ -42,7 +42,7 @@ import {
    FACTORY STORE
 ========================================== */
 
-function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage) {
+function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage = "Project added successfully.") {
 
     let projects = loadFn();
 
@@ -96,6 +96,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage) {
 
                 website: data.website.trim(),
 
+                websiteInvite: (data.websiteInvite || "").trim(),
+
                 taskType: data.taskType,
 
                 deadline: data.deadline,
@@ -118,7 +120,7 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage) {
 
             closeAddModal();
 
-            showToast("Project added successfully.");
+            showToast(addedMessage);
 
             return true;
 
@@ -289,14 +291,16 @@ export const myProjectStore = makeProjectStore(
     loadProjects,
     saveProjects,
     null,
-    ""
+    "",
+    "Project added to My Project."
 );
 
 export const homeProjectStore = makeProjectStore(
     loadHomeProjects,
     saveHomeProjects,
     isAdmin,
-    "Only admin can add/edit/delete Home projects."
+    "Only admin can add/edit/delete Home projects.",
+    "Project added to Home."
 );
 
 /* ==========================================
@@ -330,8 +334,12 @@ export function getProjects() {
     return activeStore().getProjects();
 }
 
+// Tujuan simpan project baru ditentukan oleh ROLE, bukan halaman
+// yang sedang dibuka: admin -> Home (publik), user lain -> My
+// Project (privat). Ini supaya tombol Add konsisten dari mode manapun.
 export function addProject(data) {
-    return activeStore().addProject(data);
+    const store = isAdmin() ? homeProjectStore : myProjectStore;
+    return store.addProject(data);
 }
 
 export function deleteProject(id) {

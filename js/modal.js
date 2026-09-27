@@ -15,6 +15,9 @@ import {
     closeModalEl
 } from "./modalAnim.js";
 
+import { isAdmin } from "./cloudSync.js";
+import { t } from "./i18n.js";
+
 /* ==========================================
    ELEMENT
 ========================================== */
@@ -74,6 +77,20 @@ export function openAddModal() {
         document.getElementById("projectWallet"),
         ""
     );
+
+    const admin = isAdmin();
+
+    const destinationText = document.getElementById("addDestinationNoteText");
+    if (destinationText) {
+        destinationText.textContent = admin
+            ? t("project.destinationHome")
+            : t("project.destinationMyProject");
+    }
+
+    const inviteField = document.getElementById("websiteInviteField");
+    if (inviteField) {
+        inviteField.style.display = admin ? "block" : "none";
+    }
 
     resetModalScroll(projectModal);
 

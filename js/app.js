@@ -3,7 +3,7 @@
    APP.JS
 ========================================== */
 
-import { initEvents } from "./event.js";
+import { initEvents, resetAllFilters } from "./event.js";
 
 import { loadProjects, resetDailyTasks, cleanupStaleProjects, checkStaleWarnings } from "./storage.js";
 
@@ -32,7 +32,6 @@ import {
     isCloudSyncEnabled,
     getCurrentUser,
     changePassword,
-    isAdmin,
     pullHomeFromCloud
 } from "./cloudSync.js";
 import { loadHomeProjects } from "./storage.js";
@@ -325,19 +324,24 @@ page.classList.add("page-in");
 
 // Home = data publik (semua orang boleh lihat, admin-only edit).
 // My Project = data privat (masing-masing user, bebas diedit sendiri).
+// Tombol Add sekarang selalu aktif di mode manapun: tujuan simpan
+// otomatis mengikuti role (admin -> Home, user lain -> My Project),
+// bukan lagi halaman yang sedang dibuka. Lihat addProject() di project.js.
 function updateAddButtonVisibility(){
 
-const canEdit = getMode()!=="home" || isAdmin();
-
-addBottomBtn.disabled=!canEdit;
-addBottomBtn.style.opacity=canEdit?"":"0.35";
-addBottomBtn.style.pointerEvents=canEdit?"":"none";
+addBottomBtn.disabled=false;
+addBottomBtn.style.opacity="";
+addBottomBtn.style.pointerEvents="";
 
 }
 
 function switchMode(mode, activeBtn){
 
+const modeChanged = getMode()!==mode;
+
 setMode(mode);
+
+if(modeChanged) resetAllFilters();
 
 showPage(homePage);
 
@@ -362,14 +366,6 @@ switchMode("myproject", profileBtn);
 }
 
 addBottomBtn.onclick=()=>{
-
-if(getMode()==="home" && !isAdmin()){
-
-showToast("Only admin can add Home projects.", 3000, "error");
-
-return;
-
-}
 
 document.getElementById("addProjectBtn").click();
 

@@ -110,7 +110,9 @@ export function renderProjects() {
 
                     <a
                         class="icon-btn icon-btn-blue"
-                        href="${escapeHTML(formatUrl(project.website))}"
+                        href="${escapeHTML(formatUrl(
+                            (!canEdit && project.websiteInvite) ? project.websiteInvite : project.website
+                        ))}"
                         target="_blank"
                         rel="noopener noreferrer"
                         title="${t("project.website.title")}">
@@ -118,6 +120,22 @@ export function renderProjects() {
                         <i class="fa-solid fa-globe" aria-hidden="true"></i>
 
                     </a>
+
+                    ${canEdit && project.websiteInvite
+                        ? `
+                            <a
+                                class="icon-btn icon-btn-blue"
+                                href="${escapeHTML(formatUrl(project.websiteInvite))}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="${t("project.websiteInvite.title")}">
+
+                                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+
+                            </a>
+                       `
+                       : ""
+                    }
 
                     ${project.status === "Active" && canEdit
                         ? `

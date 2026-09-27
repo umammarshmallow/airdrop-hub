@@ -322,6 +322,8 @@ export function clearAddForm() {
 
     document.getElementById("website").value = "";
 
+    document.getElementById("websiteInvite").value = "";
+
     document.getElementById("deadline").value = "";
 
     document.getElementById("note").value = "";

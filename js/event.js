@@ -74,6 +74,8 @@ export function initEvents() {
 
             website: document.getElementById("website").value,
 
+            websiteInvite: document.getElementById("websiteInvite").value,
+
             taskType: document.getElementById("taskType").value,
 
             deadline: document.getElementById("deadline").value,
@@ -363,5 +365,30 @@ if (filterTaskSelect) {
     filterTaskSelect.addEventListener("change", () => {
         syncTaskChipHighlight(filterTaskSelect.value);
     });
+
+}
+
+/* =====================================================
+   RESET SEMUA FILTER (dipanggil saat pindah menu/mode,
+   misal Home -> My Project, supaya filter tidak "nempel")
+===================================================== */
+
+export function resetAllFilters() {
+
+    clearQuickFilter();
+    clearStatusTaskFilters();
+
+    search.value = "";
+
+    if (sortBy) {
+        sortBy.value = "default";
+
+        const sortDropdown = [...dropdowns].find(d => d.querySelector('[data-target="sortBy"]'));
+
+        if (sortDropdown) {
+            const defaultItem = sortDropdown.querySelector('[data-value="default"]');
+            if (defaultItem) selectDropdownItem(sortDropdown, defaultItem);
+        }
+    }
 
 }
