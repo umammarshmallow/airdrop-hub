@@ -1,7 +1,7 @@
 {
   "name": "Airdrop Hub — Farming Command Center",
   "short_name": "AirdropHub",
-  "description": "Track every airdrop farm, deadline and wallet in one clean dashboard.",
+  "description": "Track every airdrop farm and deadline in one clean dashboard.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
