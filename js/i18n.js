@@ -16,7 +16,9 @@ const dict = {
 
         "settings.title": "Settings",
         "settings.darkMode": "Dark Mode",
+        "settings.lightMode": "Light Mode",
         "settings.language": "Language",
+        "settings.installApp": "Add to Phone",
 
         "overview.title": "Overview",
         "overview.todayTask": "Today's Task",
@@ -150,7 +152,10 @@ const dict = {
 
         "toast.appLoadError": "Something went wrong while loading the app.",
         "toast.notifEnabled": "Notifications enabled.",
-        "toast.notifDisabled": "Notifications disabled."
+        "toast.notifDisabled": "Notifications disabled.",
+        "toast.installIOS": "In Safari, tap Share, then \"Add to Home Screen\".",
+        "toast.installUnavailable": "Your browser doesn't support installing this app.",
+        "toast.installSuccess": "App installed to your home screen."
     },
 
     id: {
@@ -162,7 +167,9 @@ const dict = {
 
         "settings.title": "Pengaturan",
         "settings.darkMode": "Mode Gelap",
+        "settings.lightMode": "Mode Terang",
         "settings.language": "Bahasa",
+        "settings.installApp": "Tambahkan ke HP",
 
         "overview.title": "Ringkasan",
         "overview.todayTask": "Tugas Hari Ini",
@@ -296,7 +303,10 @@ const dict = {
 
         "toast.appLoadError": "Terjadi kesalahan saat memuat aplikasi.",
         "toast.notifEnabled": "Notifikasi diaktifkan.",
-        "toast.notifDisabled": "Notifikasi dimatikan."
+        "toast.notifDisabled": "Notifikasi dimatikan.",
+        "toast.installIOS": "Di Safari, ketuk tombol Share, lalu pilih \"Add to Home Screen\".",
+        "toast.installUnavailable": "Browser kamu tidak mendukung instalasi aplikasi ini.",
+        "toast.installSuccess": "Aplikasi berhasil ditambahkan ke layar HP."
     }
 
 };

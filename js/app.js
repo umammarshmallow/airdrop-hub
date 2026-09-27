@@ -19,7 +19,7 @@ import { initFuzzyText } from "./fuzzyText.js";
 
 import { initDialog, showAlert, showConfirm } from "./dialog.js";
 
-import { getLang, setLang, applyStaticTranslations } from "./i18n.js";
+import { getLang, setLang, applyStaticTranslations, t } from "./i18n.js";
 
 import {
     initFirebaseApp,
@@ -488,11 +488,31 @@ const THEME_KEY="airdropHub_theme";
 
 const darkModeToggle=document.getElementById("darkModeToggle");
 
+const themeIcon=document.getElementById("themeIcon");
+
+const themeModeLabel=document.getElementById("themeModeLabel");
+
 function applyTheme(theme){
 
 document.body.classList.toggle("theme-light", theme==="light");
 
 darkModeToggle.checked = theme==="dark";
+
+const themeKey = theme==="dark" ? "settings.darkMode" : "settings.lightMode";
+
+if(themeIcon){
+
+themeIcon.className = theme==="dark" ? "fa-solid fa-moon" : "fa-solid fa-sun";
+
+}
+
+if(themeModeLabel){
+
+themeModeLabel.setAttribute("data-i18n", themeKey);
+
+themeModeLabel.textContent = t(themeKey);
+
+}
 
 }
 
@@ -537,6 +557,84 @@ langButtons.forEach(btn=>{
 btn.onclick=()=>applyLang(btn.dataset.lang);
 
 });
+
+/* ==========================================
+   SETTINGS: ADD TO PHONE (PWA INSTALL)
+========================================== */
+
+const installAppBtn=document.getElementById("installAppBtn");
+
+let deferredInstallPrompt=null;
+
+const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true;
+
+const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
+if(!isStandalone && installAppBtn){
+
+    if(isIOS){
+
+        installAppBtn.style.display="flex";
+
+    }
+
+    window.addEventListener("beforeinstallprompt", (e)=>{
+
+        e.preventDefault();
+
+        deferredInstallPrompt=e;
+
+        installAppBtn.style.display="flex";
+
+    });
+
+}
+
+window.addEventListener("appinstalled", ()=>{
+
+    installAppBtn.style.display="none";
+
+    deferredInstallPrompt=null;
+
+    showToast(t("toast.installSuccess"));
+
+});
+
+if(installAppBtn){
+
+    installAppBtn.onclick=async ()=>{
+
+        if(deferredInstallPrompt){
+
+            deferredInstallPrompt.prompt();
+
+            await deferredInstallPrompt.userChoice;
+
+            deferredInstallPrompt=null;
+
+        }else if(isIOS){
+
+            showToast(t("toast.installIOS"), 4000, "success");
+
+        }else{
+
+            showToast(t("toast.installUnavailable"), 3000, "error");
+
+        }
+
+    };
+
+}
+
+if("serviceWorker" in navigator){
+
+    window.addEventListener("load", ()=>{
+
+        navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+    });
+
+}
 
 /* ==========================================
    NOTIFICATION CENTER
