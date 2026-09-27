@@ -17,8 +17,6 @@ import { setProjects, setHomeProjects, editProject, setMode, getMode } from "./p
 
 import { initFuzzyText } from "./fuzzyText.js";
 
-import { initWallet, renderWallets } from "./wallet.js";
-
 import { initDialog, showAlert, showConfirm } from "./dialog.js";
 
 import { getLang, setLang, applyStaticTranslations } from "./i18n.js";
@@ -211,9 +209,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         initEvents();
 
-        // Render halaman Wallet
-        initWallet();
-
         // Efek fuzzy pada wordmark "Hub"
         const hubCanvas = document.getElementById("hubFuzzyText");
         if (hubCanvas) initFuzzyText(hubCanvas, "Hub");
@@ -259,11 +254,9 @@ const searchBtn=document.getElementById("searchBtn");
 
 const homePage=document.getElementById("homePage");
 
-const walletPage=document.getElementById("walletPage");
-
 const securityPage=document.getElementById("securityPage");
 
-const allPages=[homePage, walletPage, securityPage];
+const allPages=[homePage, securityPage];
 
 const bottomNavButtons=[homeBtn, searchBtn, addBottomBtn, profileBtn];
 
@@ -417,33 +410,7 @@ const closeMenuBtn=document.getElementById("closeMenuBtn");
 
 const sideMenuOverlay=document.getElementById("sideMenuOverlay");
 
-const menuWalletBtn=document.querySelectorAll("#profileWalletBtn, #profileWalletBtnLoggedOut");
-
-const closeWalletPageBtn=document.getElementById("closeWalletPageBtn");
-
 const bottomNav=document.querySelector(".bottom-nav");
-
-function openWalletPage(){
-
-closeMenu();
-
-showPage(walletPage);
-
-setActiveNav(null);
-
-bottomNav.style.display="none";
-
-}
-
-function closeWalletPage(){
-
-showPage(homePage);
-
-setActiveNav(homeBtn);
-
-bottomNav.style.display="flex";
-
-}
 
 const profileSecurityBtn=document.getElementById("profileSecurityBtn");
 
@@ -560,8 +527,6 @@ langButtons.forEach(btn=>btn.classList.toggle("active", btn.dataset.lang===lang)
 applyStaticTranslations();
 
 if(refresh) refreshProjectsView(false);
-
-renderWallets();
 
 }
 
@@ -1075,15 +1040,3 @@ closeMenu();
 }
 
 });
-
-menuWalletBtn.forEach(btn=>btn.onclick=()=>{
-
-openWalletPage();
-
-});
-
-closeWalletPageBtn.onclick=()=>{
-
-closeWalletPage();
-
-}

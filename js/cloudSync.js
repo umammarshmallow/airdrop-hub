@@ -1,6 +1,6 @@
 /* ==========================================
    CLOUD SYNC.JS
-   Sinkronisasi data (projects, wallets) ke
+   Sinkronisasi data (projects) ke
    Firebase Firestore, login pakai Email/Password
    (supaya UID sama di semua device -> data nyambung).
 
@@ -23,7 +23,6 @@ import { addNotification } from "./helpers.js";
 
 const PROJECTS_KEY = "airdropHub";
 const HOME_PROJECTS_KEY = "airdropHub_home";
-const WALLETS_KEY = "airdropHub_wallets";
 const RESET_KEY = "airdropHub_lastReset";
 
 // Doc publik (dibaca semua orang) tempat data Home disimpan.
@@ -285,7 +284,6 @@ export async function pullFromCloud() {
             const cloud = snap.data();
 
             if (typeof cloud.projects === "string") localStorage.setItem(PROJECTS_KEY, cloud.projects);
-            if (typeof cloud.wallets === "string") localStorage.setItem(WALLETS_KEY, cloud.wallets);
             if (typeof cloud.lastReset === "string") localStorage.setItem(RESET_KEY, cloud.lastReset);
 
             // Role admin diatur manual di Firestore Console, di dokumen
@@ -326,10 +324,9 @@ export function pushToCloud(immediate = false) {
 
             // merge:true -> supaya field "role" (diisi manual admin lewat
             // Firestore Console) TIDAK ikut kehapus tiap kali user
-            // menyimpan project/wallet.
+            // menyimpan project.
             await firebase.setDoc(userDocRef(), {
                 projects: localStorage.getItem(PROJECTS_KEY) || "[]",
-                wallets: localStorage.getItem(WALLETS_KEY) || "[]",
                 lastReset: localStorage.getItem(RESET_KEY) || "",
                 updatedAt: firebase.serverTimestamp()
             }, { merge: true });

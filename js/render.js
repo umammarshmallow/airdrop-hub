@@ -14,7 +14,6 @@ import {
     copyHomeProjectToMyProject
 } from "./project.js";
 import { isAdmin } from "./cloudSync.js";
-import { getWallets } from "./wallet.js";
 import { t } from "./i18n.js";
 import { ICON_CHECK, ICON_TRASH } from "./icons.js";
 
@@ -89,10 +88,6 @@ export function renderProjects() {
     let html = "";
 
     projects.forEach((project) => {
-
-        const linkedWallet = getWallets().find(
-            wallet => String(wallet.id) === String(project.wallet)
-        );
 
         html += `
         <div class="project-card" data-status="${escapeHTML(project.status)}">
@@ -172,10 +167,6 @@ export function renderProjects() {
                 <div class="chip-group">
 
                     <span class="chip"><i class="fa-solid fa-link" aria-hidden="true"></i> ${escapeHTML(project.network)}</span>
-
-                    <span class="chip ${linkedWallet ? "" : "chip-muted"}">
-                        <i class="fa-solid fa-wallet" aria-hidden="true"></i> ${linkedWallet ? escapeHTML(linkedWallet.address) : t("wallet.noWalletLinked")}
-                    </span>
 
                 </div>
 

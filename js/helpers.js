@@ -73,8 +73,8 @@ export function formatUrl(url = "") {
 /* ==========================
 ESCAPE HTML
 Menetralkan tanda kurung < > & kutip pada teks yang
-berasal dari input user (nama project, catatan, alamat
-wallet, dll) sebelum ditempel lewat innerHTML, supaya
+berasal dari input user (nama project, catatan, dll)
+sebelum ditempel lewat innerHTML, supaya
 tidak bisa disusupi tag/atribut/script asing (XSS).
 ========================== */
 

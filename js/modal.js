@@ -7,10 +7,6 @@ import {
 } from "./helpers.js";
 
 import {
-    populateWalletSelect
-} from "./walletSelect.js";
-
-import {
     openModalEl,
     closeModalEl
 } from "./modalAnim.js";
@@ -72,11 +68,6 @@ function resetModalScroll(modalEl) {
 export function openAddModal() {
 
     clearAddForm();
-
-    populateWalletSelect(
-        document.getElementById("projectWallet"),
-        ""
-    );
 
     const admin = isAdmin();
 
@@ -141,12 +132,6 @@ export function fillEditForm(project) {
     document.getElementById("editName").value = project.name;
 
     document.getElementById("editNetwork").value = project.network;
-
-    populateWalletSelect(
-        document.getElementById("editProjectWallet"),
-        project.network,
-        project.wallet
-    );
 
     document.getElementById("editWebsite").value = project.website;
 

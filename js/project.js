@@ -92,8 +92,6 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
                 network: data.network.trim(),
 
-                wallet: data.wallet || "",
-
                 website: data.website.trim(),
 
                 websiteInvite: (data.websiteInvite || "").trim(),
@@ -185,8 +183,6 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             project.name = data.name.trim();
 
             project.network = data.network.trim();
-
-            project.wallet = data.wallet || "";
 
             project.website = data.website.trim();
 
@@ -345,7 +341,6 @@ export function copyHomeProjectToMyProject(id) {
     return myProjectStore.addProject({
         name: source.name,
         network: source.network,
-        wallet: "",
         website: source.website,
         websiteInvite: source.websiteInvite || "",
         taskType: source.taskType,
