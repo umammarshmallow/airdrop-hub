@@ -275,6 +275,11 @@
     <div class="modal-content">
       <h2><i class="fa-solid fa-circle-plus" style="color:var(--accent);"></i> <span data-i18n="project.add">Add Project</span></h2>
 
+      <div id="addDestinationNote" class="add-destination-note">
+        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        <span id="addDestinationNoteText"></span>
+      </div>
+
       <label class="field-label" for="name" data-i18n="project.name">Project Name</label>
       <input type="text" id="name" placeholder="e.g. LayerZero" data-i18n-ph="project.namePh">
 
@@ -295,6 +300,11 @@
 
       <label class="field-label" for="website" data-i18n="project.website">Website</label>
       <input type="text" id="website" placeholder="https://...">
+
+      <div id="websiteInviteField" style="display:none;">
+        <label class="field-label" for="websiteInvite" data-i18n="project.websiteInvite">Invite Website</label>
+        <input type="text" id="websiteInvite" placeholder="https://..." data-i18n-ph="project.websiteInvitePh">
+      </div>
 
       <label class="field-label" for="taskType" data-i18n="project.taskType">Task Type</label>
       <select id="taskType">
