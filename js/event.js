@@ -345,7 +345,7 @@ function syncTaskChipHighlight(value) {
         selectedChip.scrollIntoView({
             behavior: "smooth",
             block: "nearest",
-            inline: "nearest"
+            inline: "center"
         });
     }
 
