@@ -330,6 +330,31 @@ function activeStore() {
    (mengikuti mode yang sedang aktif)
 ========================================== */
 
+// Menyalin project Home (publik) menjadi entri baru di My Project
+// (privat) milik viewer. Dipakai oleh ikon "+" pada kartu Home.
+export function copyHomeProjectToMyProject(id) {
+
+    const source = homeProjectStore.getProjects().find(
+        project => project.id === Number(id)
+    );
+
+    if (!source) return false;
+
+    return myProjectStore.addProject({
+        name: source.name,
+        network: source.network,
+        wallet: "",
+        website: source.website,
+        websiteInvite: source.websiteInvite || "",
+        taskType: source.taskType,
+        deadline: source.deadline,
+        priority: source.priority,
+        status: source.status,
+        note: source.note
+    });
+
+}
+
 export function getProjects() {
     return activeStore().getProjects();
 }

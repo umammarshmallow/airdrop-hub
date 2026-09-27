@@ -10,7 +10,8 @@ import {
     editProject,
     getProjects,
     isHomeMode,
-    markDailyDone
+    markDailyDone,
+    copyHomeProjectToMyProject
 } from "./project.js";
 import { isAdmin } from "./cloudSync.js";
 import { getWallets } from "./wallet.js";
@@ -121,23 +122,22 @@ export function renderProjects() {
 
                     </a>
 
-                    ${canEdit && project.websiteInvite
+                    ${isHomeMode()
                         ? `
-                            <a
+                            <button
                                 class="icon-btn icon-btn-blue"
-                                href="${escapeHTML(formatUrl(project.websiteInvite))}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="${t("project.websiteInvite.title")}">
+                                data-action="copyToMyProject"
+                                data-id="${project.id}"
+                                title="${t("project.addToMyProject")}">
 
-                                <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                                <i class="fa-solid fa-plus" aria-hidden="true"></i>
 
-                            </a>
+                            </button>
                        `
                        : ""
                     }
 
-                    ${project.status === "Active" && canEdit
+                    ${project.status === "Active" && !isHomeMode()
                         ? `
                             <button
                                 class="icon-btn icon-btn-green"
@@ -351,6 +351,12 @@ projectList.addEventListener("click", async (e) => {
                 renderProjects();
 
             }
+
+            break;
+
+        case "copyToMyProject":
+
+            await copyHomeProjectToMyProject(id);
 
             break;
        
