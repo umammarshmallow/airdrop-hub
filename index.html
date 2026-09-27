@@ -63,17 +63,6 @@
         <h2><i class="fa-solid fa-gauge-high"></i> <span data-i18n="overview.title">Overview</span></h2>
       </div>
 
-      <div class="hero-stats">
-        <div class="hero-stat" id="todayTaskCard" data-state="clear" data-quick="TodayTask">
-          <p class="hero-label" data-i18n="overview.todayTask">Today's Task</p>
-          <span class="hero-val" id="todayTask">0</span>
-        </div>
-        <div class="hero-stat" id="deadlineTodayCard" data-state="clear" data-quick="DeadlineToday">
-          <p class="hero-label" data-i18n="overview.deadlineToday">Deadline Today</p>
-          <span class="hero-val" id="deadlineToday">0</span>
-        </div>
-      </div>
-
       <div class="flow-strip">
         <div class="flow-step" data-status="Waitlist">
           <span class="flow-val flow-val-waitlist" id="waitlistProject">0</span>
@@ -369,6 +358,11 @@
 
       <label class="field-label" for="editWebsite" data-i18n="project.website">Website</label>
       <input type="text" id="editWebsite" placeholder="https://...">
+
+      <div id="editWebsiteInviteField" style="display:none;">
+        <label class="field-label" for="editWebsiteInvite" data-i18n="project.websiteInvite">Invite Website</label>
+        <input type="text" id="editWebsiteInvite" placeholder="https://..." data-i18n-ph="project.websiteInvitePh">
+      </div>
 
       <label class="field-label" for="editTaskType" data-i18n="project.taskType">Task Type</label>
       <select id="editTaskType">
