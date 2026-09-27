@@ -63,6 +63,17 @@
         <h2><i class="fa-solid fa-gauge-high"></i> <span data-i18n="overview.title">Overview</span></h2>
       </div>
 
+      <div class="hero-stats" id="heroStats">
+        <div class="hero-stat" id="todayTaskCard" data-state="clear" data-quick="TodayTask">
+          <p class="hero-label" data-i18n="overview.todayTask">Today's Task</p>
+          <span class="hero-val" id="todayTask">0</span>
+        </div>
+        <div class="hero-stat" id="deadlineTodayCard" data-state="clear" data-quick="DeadlineToday">
+          <p class="hero-label" data-i18n="overview.deadlineToday">Deadline Today</p>
+          <span class="hero-val" id="deadlineToday">0</span>
+        </div>
+      </div>
+
       <div class="flow-strip">
         <div class="flow-step" data-status="Waitlist">
           <span class="flow-val flow-val-waitlist" id="waitlistProject">0</span>
