@@ -15,7 +15,7 @@ import { showLoading, hideLoading, showToast, addNotification, getNotifications,
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 
-import { setProjects, editProject } from "./project.js";
+import { setProjects, setHomeProjects, editProject, setMode, getMode } from "./project.js";
 
 import { initFuzzyText } from "./fuzzyText.js";
 
@@ -33,8 +33,11 @@ import {
     logoutCloud,
     isCloudSyncEnabled,
     getCurrentUser,
-    changePassword
+    changePassword,
+    isAdmin,
+    pullHomeFromCloud
 } from "./cloudSync.js";
+import { loadHomeProjects } from "./storage.js";
 
 /* ==========================================
    INITIALIZE APPLICATION
@@ -116,6 +119,10 @@ async function runCloudSyncInBackground() {
         const configured = await initFirebaseApp();
 
         if (!configured) return;
+
+        // Home publik: tarik sekali di sini supaya tampil juga untuk
+        // pengunjung yang belum/tidak login.
+        await refreshHomeView();
 
         const existingUser = await waitForPersistedSession((lateUser) => {
 
@@ -313,23 +320,53 @@ page.classList.add("page-in");
 
 }
 
-homeBtn.onclick=()=>{
+// Home = data publik (semua orang boleh lihat, admin-only edit).
+// My Project = data privat (masing-masing user, bebas diedit sendiri).
+function updateAddButtonVisibility(){
+
+const canEdit = getMode()!=="home" || isAdmin();
+
+addBottomBtn.disabled=!canEdit;
+addBottomBtn.style.opacity=canEdit?"":"0.35";
+addBottomBtn.style.pointerEvents=canEdit?"":"none";
+
+}
+
+function switchMode(mode, activeBtn){
+
+setMode(mode);
 
 showPage(homePage);
 
-setActiveNav(homeBtn);
+setActiveNav(activeBtn);
+
+renderProjects();
+
+updateAddButtonVisibility();
+
+}
+
+homeBtn.onclick=()=>{
+
+switchMode("home", homeBtn);
 
 }
 
 profileBtn.onclick=()=>{
 
-showPage(homePage);
-
-setActiveNav(profileBtn);
+switchMode("myproject", profileBtn);
 
 }
 
 addBottomBtn.onclick=()=>{
+
+if(getMode()==="home" && !isAdmin()){
+
+showToast("Only admin can add Home projects.", 3000, "error");
+
+return;
+
+}
 
 document.getElementById("addProjectBtn").click();
 
@@ -337,13 +374,27 @@ document.getElementById("addProjectBtn").click();
 
 searchBtn.onclick=()=>{
 
-showPage(homePage);
-
-setActiveNav(homeBtn);
+switchMode("home", homeBtn);
 
 document.getElementById("search").focus();
 
 }
+
+// Tarik data Home publik dari cloud (bisa dipanggil ulang setelah
+// status login/role berubah, misalnya setelah login sebagai admin).
+async function refreshHomeView(){
+
+await pullHomeFromCloud();
+
+setHomeProjects(loadHomeProjects());
+
+if(getMode()==="home") renderProjects();
+
+updateAddButtonVisibility();
+
+}
+
+updateAddButtonVisibility();
 
 // Halaman Home aktif secara default saat pertama kali dibuka
 setActiveNav(homeBtn);
@@ -946,6 +997,12 @@ profileLogoutBtn.onclick=async()=>{
         showToast("Berhasil logout.");
 
         refreshProfilePage();
+
+        // Hak admin (kalau ada) hilang setelah logout -> render ulang
+        // supaya tombol Edit/Delete/Add di Home ikut disembunyikan lagi.
+        renderProjects();
+
+        updateAddButtonVisibility();
 
     }
 

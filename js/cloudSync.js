@@ -22,8 +22,13 @@ import { firebaseConfig } from "./firebaseConfig.js";
 import { addNotification } from "./helpers.js";
 
 const PROJECTS_KEY = "airdropHub";
+const HOME_PROJECTS_KEY = "airdropHub_home";
 const WALLETS_KEY = "airdropHub_wallets";
 const RESET_KEY = "airdropHub_lastReset";
+
+// Doc publik (dibaca semua orang) tempat data Home disimpan.
+const HOME_DOC_COLLECTION = "airdropHubGlobal";
+const HOME_DOC_ID = "home";
 
 // Set true saat development untuk melihat log status koneksi cloud sync.
 const DEBUG = false;
@@ -37,6 +42,16 @@ let db = null;
 let currentUid = null;
 let ready = false;
 let pushTimer = null;
+let homePushTimer = null;
+
+// true hanya kalau doc user (airdropHubUsers/{uid}) punya field role: "admin".
+// Diisi manual oleh developer lewat Firebase Console -- lihat catatan di
+// bagian pullFromCloud().
+let currentUserRole = "user";
+
+export function isAdmin() {
+    return currentUserRole === "admin";
+}
 
 function isConfigured() {
     return (
@@ -56,6 +71,10 @@ export function getCurrentUser() {
 
 function userDocRef() {
     return firebase.doc(db, "airdropHubUsers", currentUid);
+}
+
+function homeDocRef() {
+    return firebase.doc(db, HOME_DOC_COLLECTION, HOME_DOC_ID);
 }
 
 /* ==========================================
@@ -219,6 +238,7 @@ export async function logoutCloud() {
 
     ready = false;
     currentUid = null;
+    currentUserRole = "user";
 
 }
 
@@ -268,6 +288,10 @@ export async function pullFromCloud() {
             if (typeof cloud.wallets === "string") localStorage.setItem(WALLETS_KEY, cloud.wallets);
             if (typeof cloud.lastReset === "string") localStorage.setItem(RESET_KEY, cloud.lastReset);
 
+            // Role admin diatur manual di Firestore Console, di dokumen
+            // airdropHubUsers/{uid}, dengan menambah field role: "admin".
+            currentUserRole = cloud.role === "admin" ? "admin" : "user";
+
         } else {
 
             // Belum ada data di cloud untuk user ini -> upload data lokal sekarang sebagai data awal
@@ -300,12 +324,15 @@ export function pushToCloud(immediate = false) {
 
         try {
 
+            // merge:true -> supaya field "role" (diisi manual admin lewat
+            // Firestore Console) TIDAK ikut kehapus tiap kali user
+            // menyimpan project/wallet.
             await firebase.setDoc(userDocRef(), {
                 projects: localStorage.getItem(PROJECTS_KEY) || "[]",
                 wallets: localStorage.getItem(WALLETS_KEY) || "[]",
                 lastReset: localStorage.getItem(RESET_KEY) || "",
                 updatedAt: firebase.serverTimestamp()
-            });
+            }, { merge: true });
 
         } catch (error) {
 
@@ -323,6 +350,81 @@ export function pushToCloud(immediate = false) {
 
     clearTimeout(pushTimer);
     pushTimer = setTimeout(doPush, 600);
+
+    return Promise.resolve();
+
+}
+
+/* ==========================================
+   HOME (public, admin-only)
+   - pullHomeFromCloud: siapa saja boleh baca, bahkan
+     yang belum login (asal Firestore Rules mengizinkan
+     "allow read: if true;" untuk dokumen ini).
+   - pushHomeToCloud: hanya dijalankan kalau isAdmin() true.
+     Ini cuma penjaga di sisi client -- penegakan yang
+     SESUNGGUHNYA tetap wajib lewat Firestore Security Rules
+     di sisi server, karena kode di browser selalu bisa
+     dilihat/diubah orang lain lewat devtools.
+========================================== */
+
+export async function pullHomeFromCloud() {
+
+    if (!db) return;
+
+    try {
+
+        const snap = await withTimeout(firebase.getDoc(homeDocRef()), 6000, null);
+
+        if (snap === null) {
+            if (DEBUG) console.warn("[CloudSync] Timeout ambil data Home dari cloud.");
+            return;
+        }
+
+        if (snap.exists()) {
+
+            const cloud = snap.data();
+
+            if (typeof cloud.projects === "string") localStorage.setItem(HOME_PROJECTS_KEY, cloud.projects);
+
+        }
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal ambil data Home dari cloud, pakai cache lokal:", error);
+
+    }
+
+}
+
+export function pushHomeToCloud(immediate = false) {
+
+    if (!ready || !isAdmin()) return Promise.resolve();
+
+    const doPush = async () => {
+
+        try {
+
+            await firebase.setDoc(homeDocRef(), {
+                projects: localStorage.getItem(HOME_PROJECTS_KEY) || "[]",
+                updatedAt: firebase.serverTimestamp()
+            }, { merge: true });
+
+        } catch (error) {
+
+            console.warn("[CloudSync] Gagal simpan data Home ke cloud:", error);
+            addNotification("Gagal menyimpan perubahan Home ke cloud.", "error");
+
+        }
+
+    };
+
+    if (immediate) {
+        clearTimeout(homePushTimer);
+        return doPush();
+    }
+
+    clearTimeout(homePushTimer);
+    homePushTimer = setTimeout(doPush, 600);
 
     return Promise.resolve();
 

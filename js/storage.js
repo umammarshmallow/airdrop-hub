@@ -3,17 +3,22 @@
    Local Storage Manager
 ========================================== */
 
+// "My Project" -> data privat milik masing-masing user (per-uid di cloud).
 export const STORAGE_KEY = "airdropHub";
+
+// "Home" -> data publik/shared, bisa dibaca semua orang, tapi
+// hanya admin (role="admin") yang boleh menyimpan perubahan ke cloud.
+export const HOME_STORAGE_KEY = "airdropHub_home";
 
 // Set true di console browser (atau ubah di sini saat development)
 // untuk melihat log diagnostik non-critical seperti ringkasan cleanup.
 const DEBUG = false;
 
-import { pushToCloud } from "./cloudSync.js";
+import { pushToCloud, pushHomeToCloud } from "./cloudSync.js";
 
-export function loadProjects() {
+function readFromKey(key) {
     try {
-        const data = localStorage.getItem(STORAGE_KEY);
+        const data = localStorage.getItem(key);
 
         if (!data) return [];
 
@@ -26,17 +31,38 @@ export function loadProjects() {
     }
 }
 
-export function saveProjects(projects) {
+function writeToKey(key, projects) {
     try {
         localStorage.setItem(
-            STORAGE_KEY,
+            key,
             JSON.stringify(projects)
         );
-        pushToCloud();
     } catch (error) {
         console.error("Gagal menyimpan LocalStorage:", error);
     }
-    }
+}
+
+export function loadProjects() {
+    return readFromKey(STORAGE_KEY);
+}
+
+export function saveProjects(projects) {
+    writeToKey(STORAGE_KEY, projects);
+    pushToCloud();
+}
+
+/* ==========================================
+   HOME (public, admin-only edit)
+========================================== */
+
+export function loadHomeProjects() {
+    return readFromKey(HOME_STORAGE_KEY);
+}
+
+export function saveHomeProjects(projects) {
+    writeToKey(HOME_STORAGE_KEY, projects);
+    pushHomeToCloud();
+}
 
 /* ==========================================
    DAILY TASK RESET

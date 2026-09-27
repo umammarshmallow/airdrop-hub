@@ -8,9 +8,11 @@ import {
     filterProjects,
     deleteProject,
     editProject,
-    getProjects
+    getProjects,
+    isHomeMode,
+    markDailyDone
 } from "./project.js";
-import { saveProjects } from "./storage.js";
+import { isAdmin } from "./cloudSync.js";
 import { getWallets } from "./wallet.js";
 import { t } from "./i18n.js";
 import { ICON_CHECK, ICON_TRASH } from "./icons.js";
@@ -45,6 +47,10 @@ export function renderProjects() {
 );
 
     updateDashboard(getProjects());
+
+    // Home = publik (siapa saja boleh lihat), tapi Edit/Delete/Tandai-selesai
+    // cuma boleh dipakai admin. My Project selalu penuh (milik sendiri).
+    const canEdit = !isHomeMode() || isAdmin();
 
     if (projects.length === 0) {
 
@@ -113,7 +119,7 @@ export function renderProjects() {
 
                     </a>
 
-                    ${project.status === "Active"
+                    ${project.status === "Active" && canEdit
                         ? `
                             <button
                                 class="icon-btn icon-btn-green"
@@ -185,28 +191,33 @@ export function renderProjects() {
 
                 <div class="note">${project.note ? escapeHTML(project.note.trim()) : "-"}</div>
 
-                <div class="project-action">
+                ${canEdit
+                    ? `
+                    <div class="project-action">
 
-                    <button
+                        <button
 
-                        class="btn-gray"
-                        data-action="edit"
-                        data-id="${project.id}">
+                            class="btn-gray"
+                            data-action="edit"
+                            data-id="${project.id}">
 
-                        <i class="fa-solid fa-pen" aria-hidden="true"></i> ${t("project.editBtn")}
+                            <i class="fa-solid fa-pen" aria-hidden="true"></i> ${t("project.editBtn")}
 
-                    </button>
+                        </button>
 
-                    <button
-                        class="btn-red"
-                        data-action="delete"
-                        data-id="${project.id}">
+                        <button
+                            class="btn-red"
+                            data-action="delete"
+                            data-id="${project.id}">
 
-                        <i class="trash-icon">${ICON_TRASH}</i> ${t("project.deleteBtn")}
+                            <i class="trash-icon">${ICON_TRASH}</i> ${t("project.deleteBtn")}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
+                    `
+                    : ""
+                }
 
                 <div class="project-meta">
                     ${t("project.added")} ${formatDate(project.createdAt)} · ${t("project.lastUpdated")} ${formatDate(project.updatedAt)}
@@ -317,19 +328,11 @@ projectList.addEventListener("click", async (e) => {
 
         case "daily":
 
-            const project = getProjects().find(
-            p => p.id === id
-            );
+            if (markDailyDone(id)) {
 
-            if (!project) return;
+                renderProjects();
 
-            project.dailyDone = true;
-
-            project.updatedAt = Date.now();
-
-            saveProjects(getProjects());
-
-            renderProjects();
+            }
 
             break;
        
