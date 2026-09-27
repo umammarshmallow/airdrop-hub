@@ -1,0 +1,428 @@
+/* ==========================================
+   CLOUD SYNC.JS
+   Sinkronisasi data (projects) ke
+   Firebase Firestore, login pakai Email/Password
+   (supaya UID sama di semua device -> data nyambung).
+
+   Cara kerja:
+   - Kalau firebaseConfig.js belum diisi -> otomatis
+     nonaktif, aplikasi tetap jalan normal via localStorage.
+     SDK Firebase (dari gstatic.com) TIDAK di-download
+     sama sekali dalam kasus ini.
+   - Kalau sudah dikonfigurasi -> SDK Firebase baru diambil
+     saat initFirebaseApp() dipanggil (lazy load, bukan di
+     top-level file), lalu user harus login/daftar dengan
+     email, data localStorage ditarik/ditimpa dari cloud,
+     dan didorong ke cloud tiap kali disimpan.
+   - Kalau device sedang offline / gagal konek, aplikasi
+     tetap jalan normal pakai data lokal (tidak pernah blocking).
+========================================== */
+
+import { firebaseConfig } from "./firebaseConfig.js";
+import { addNotification } from "./helpers.js";
+
+const PROJECTS_KEY = "airdropHub";
+const HOME_PROJECTS_KEY = "airdropHub_home";
+const RESET_KEY = "airdropHub_lastReset";
+
+// Doc publik (dibaca semua orang) tempat data Home disimpan.
+const HOME_DOC_COLLECTION = "airdropHubGlobal";
+const HOME_DOC_ID = "home";
+
+// Set true saat development untuk melihat log status koneksi cloud sync.
+const DEBUG = false;
+
+// Fungsi-fungsi dari Firebase SDK, baru diisi setelah
+// loadFirebaseSDK() berhasil (lazy, dynamic import).
+let firebase = null;
+
+let auth = null;
+let db = null;
+let currentUid = null;
+let ready = false;
+let pushTimer = null;
+let homePushTimer = null;
+
+// true hanya kalau doc user (airdropHubUsers/{uid}) punya field role: "admin".
+// Diisi manual oleh developer lewat Firebase Console -- lihat catatan di
+// bagian pullFromCloud().
+let currentUserRole = "user";
+
+export function isAdmin() {
+    return currentUserRole === "admin";
+}
+
+function isConfigured() {
+    return (
+        firebaseConfig &&
+        firebaseConfig.apiKey &&
+        !firebaseConfig.apiKey.startsWith("GANTI_")
+    );
+}
+
+export function isCloudSyncEnabled() {
+    return ready;
+}
+
+export function getCurrentUser() {
+    return auth ? auth.currentUser : null;
+}
+
+function userDocRef() {
+    return firebase.doc(db, "airdropHubUsers", currentUid);
+}
+
+function homeDocRef() {
+    return firebase.doc(db, HOME_DOC_COLLECTION, HOME_DOC_ID);
+}
+
+/* ==========================================
+   LAZY LOAD SDK FIREBASE
+   Baru fetch modul dari gstatic.com saat benar-benar
+   dibutuhkan, bukan setiap kali app dibuka.
+========================================== */
+
+async function loadFirebaseSDK() {
+
+    if (firebase) return firebase; // sudah pernah di-load sebelumnya
+
+    const [appMod, authMod, firestoreMod] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js")
+    ]);
+
+    firebase = {
+        initializeApp: appMod.initializeApp,
+        getAuth: authMod.getAuth,
+        onAuthStateChanged: authMod.onAuthStateChanged,
+        signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
+        createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
+        signOut: authMod.signOut,
+        updatePassword: authMod.updatePassword,
+        EmailAuthProvider: authMod.EmailAuthProvider,
+        reauthenticateWithCredential: authMod.reauthenticateWithCredential,
+        getFirestore: firestoreMod.getFirestore,
+        doc: firestoreMod.doc,
+        getDoc: firestoreMod.getDoc,
+        setDoc: firestoreMod.setDoc,
+        serverTimestamp: firestoreMod.serverTimestamp
+    };
+
+    return firebase;
+
+}
+
+/* ==========================================
+   INIT APP (tidak login, cuma siapkan koneksi)
+========================================== */
+
+export async function initFirebaseApp() {
+
+    if (!isConfigured()) {
+        if (DEBUG) console.log("[CloudSync] firebaseConfig.js belum diisi, jalan mode offline.");
+        return false;
+    }
+
+    const fb = await loadFirebaseSDK();
+
+    const app = fb.initializeApp(firebaseConfig);
+    auth = fb.getAuth(app);
+    db = fb.getFirestore(app);
+
+    return true;
+
+}
+
+/* ==========================================
+   CEK SESI YANG SUDAH LOGIN SEBELUMNYA
+   (Firebase otomatis menyimpan sesi di browser,
+   jadi user tidak perlu login ulang tiap buka app)
+========================================== */
+
+function withTimeout(promise, ms, fallbackValue) {
+
+    return Promise.race([
+        promise,
+        new Promise((resolve) => setTimeout(() => resolve(fallbackValue), ms))
+    ]);
+
+}
+
+export function waitForPersistedSession(onLateResolve) {
+
+    if (!auth) return Promise.resolve(null);
+
+    return new Promise((resolve) => {
+
+        let timedOut = false;
+
+        const unsubscribe = firebase.onAuthStateChanged(auth, async (user) => {
+
+            unsubscribe();
+
+            if (user) {
+
+                currentUid = user.uid;
+                ready = true;
+
+                await pullFromCloud();
+
+            }
+
+            if (timedOut) {
+
+                // Sesi asli baru terkonfirmasi SETELAH batas waktu tunggu
+                // sudah lewat. Jangan dibuang begitu saja (itu penyebab
+                // user dipaksa login ulang padahal sebenarnya masih login) —
+                // proses diam-diam lewat callback ini.
+                if (user && typeof onLateResolve === "function") onLateResolve(user);
+
+                return;
+
+            }
+
+            resolve(user);
+
+        });
+
+        // Jangan tahan tampilan app terlalu lama hanya buat cek sesi login,
+        // tapi beri waktu cukup longgar (koneksi lambat/device lemot tidak
+        // langsung dianggap "belum login").
+        setTimeout(() => {
+
+            timedOut = true;
+            resolve(null);
+
+        }, 8000);
+
+    });
+
+}
+
+/* ==========================================
+   LOGIN / DAFTAR / LOGOUT
+========================================== */
+
+export async function loginWithEmail(email, password) {
+
+    const cred = await firebase.signInWithEmailAndPassword(auth, email, password);
+
+    currentUid = cred.user.uid;
+    ready = true;
+
+    await pullFromCloud();
+
+    return cred.user;
+
+}
+
+export async function registerWithEmail(email, password) {
+
+    const cred = await firebase.createUserWithEmailAndPassword(auth, email, password);
+
+    currentUid = cred.user.uid;
+    ready = true;
+
+    // Akun baru -> belum ada data di cloud, upload data lokal yang ada sekarang.
+    await pushToCloud(true);
+
+    return cred.user;
+
+}
+
+export async function logoutCloud() {
+
+    if (auth) await firebase.signOut(auth);
+
+    ready = false;
+    currentUid = null;
+    currentUserRole = "user";
+
+}
+
+/* ==========================================
+   GANTI PASSWORD
+========================================== */
+
+export async function changePassword(currentPassword, newPassword) {
+
+    const user = auth ? auth.currentUser : null;
+
+    if (!user) throw new Error("NOT_LOGGED_IN");
+
+    const credential = firebase.EmailAuthProvider.credential(user.email, currentPassword);
+
+    await firebase.reauthenticateWithCredential(user, credential);
+
+    await firebase.updatePassword(user, newPassword);
+
+}
+
+/* ==========================================
+   PULL (cloud -> localStorage)
+========================================== */
+
+export async function pullFromCloud() {
+
+    if (!ready) return;
+
+    try {
+
+        const snap = await withTimeout(firebase.getDoc(userDocRef()), 6000, null);
+
+        if (snap === null) {
+
+            console.warn("[CloudSync] Timeout ambil data cloud, pakai data lokal dulu.");
+            addNotification("Sinkronisasi cloud lambat/timeout — memakai data lokal untuk sementara.", "warning");
+            return;
+
+        }
+
+        if (snap.exists()) {
+
+            const cloud = snap.data();
+
+            if (typeof cloud.projects === "string") localStorage.setItem(PROJECTS_KEY, cloud.projects);
+            if (typeof cloud.lastReset === "string") localStorage.setItem(RESET_KEY, cloud.lastReset);
+
+            // Role admin diatur manual di Firestore Console, di dokumen
+            // airdropHubUsers/{uid}, dengan menambah field role: "admin".
+            currentUserRole = cloud.role === "admin" ? "admin" : "user";
+
+        } else {
+
+            // Belum ada data di cloud untuk user ini -> upload data lokal sekarang sebagai data awal
+            await pushToCloud(true);
+
+        }
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal ambil data cloud, pakai data lokal:", error);
+        addNotification("Gagal mengambil data dari cloud. Aplikasi tetap memakai data di device ini.", "error");
+
+    }
+
+}
+
+/* ==========================================
+   PUSH (localStorage -> cloud)
+   Default: di-debounce 600ms biar tidak spam write
+   saat ada banyak perubahan beruntun.
+   immediate=true: langsung kirim & ditunggu (dipakai
+   setelah import backup / register, sebelum reload).
+========================================== */
+
+export function pushToCloud(immediate = false) {
+
+    if (!ready) return Promise.resolve();
+
+    const doPush = async () => {
+
+        try {
+
+            // merge:true -> supaya field "role" (diisi manual admin lewat
+            // Firestore Console) TIDAK ikut kehapus tiap kali user
+            // menyimpan project.
+            await firebase.setDoc(userDocRef(), {
+                projects: localStorage.getItem(PROJECTS_KEY) || "[]",
+                lastReset: localStorage.getItem(RESET_KEY) || "",
+                updatedAt: firebase.serverTimestamp()
+            }, { merge: true });
+
+        } catch (error) {
+
+            console.warn("[CloudSync] Gagal simpan ke cloud (data tetap aman di device ini):", error);
+            addNotification("Gagal menyimpan perubahan ke cloud. Data tetap aman di device ini.", "error");
+
+        }
+
+    };
+
+    if (immediate) {
+        clearTimeout(pushTimer);
+        return doPush();
+    }
+
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(doPush, 600);
+
+    return Promise.resolve();
+
+}
+
+/* ==========================================
+   HOME (public, admin-only)
+   - pullHomeFromCloud: siapa saja boleh baca, bahkan
+     yang belum login (asal Firestore Rules mengizinkan
+     "allow read: if true;" untuk dokumen ini).
+   - pushHomeToCloud: hanya dijalankan kalau isAdmin() true.
+     Ini cuma penjaga di sisi client -- penegakan yang
+     SESUNGGUHNYA tetap wajib lewat Firestore Security Rules
+     di sisi server, karena kode di browser selalu bisa
+     dilihat/diubah orang lain lewat devtools.
+========================================== */
+
+export async function pullHomeFromCloud() {
+
+    if (!db) return;
+
+    try {
+
+        const snap = await withTimeout(firebase.getDoc(homeDocRef()), 6000, null);
+
+        if (snap === null) {
+            if (DEBUG) console.warn("[CloudSync] Timeout ambil data Home dari cloud.");
+            return;
+        }
+
+        if (snap.exists()) {
+
+            const cloud = snap.data();
+
+            if (typeof cloud.projects === "string") localStorage.setItem(HOME_PROJECTS_KEY, cloud.projects);
+
+        }
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal ambil data Home dari cloud, pakai cache lokal:", error);
+
+    }
+
+}
+
+export function pushHomeToCloud(immediate = false) {
+
+    if (!ready || !isAdmin()) return Promise.resolve();
+
+    const doPush = async () => {
+
+        try {
+
+            await firebase.setDoc(homeDocRef(), {
+                projects: localStorage.getItem(HOME_PROJECTS_KEY) || "[]",
+                updatedAt: firebase.serverTimestamp()
+            }, { merge: true });
+
+        } catch (error) {
+
+            console.warn("[CloudSync] Gagal simpan data Home ke cloud:", error);
+            addNotification("Gagal menyimpan perubahan Home ke cloud.", "error");
+
+        }
+
+    };
+
+    if (immediate) {
+        clearTimeout(homePushTimer);
+        return doPush();
+    }
+
+    clearTimeout(homePushTimer);
+    homePushTimer = setTimeout(doPush, 600);
+
+    return Promise.resolve();
+
+}
