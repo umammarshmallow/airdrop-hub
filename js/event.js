@@ -114,6 +114,8 @@ export function initEvents() {
 
             website: document.getElementById("editWebsite").value,
 
+            websiteInvite: document.getElementById("editWebsiteInvite").value,
+
             taskType: document.getElementById("editTaskType").value,
 
             deadline: document.getElementById("editDeadline").value,
@@ -334,6 +336,18 @@ function syncTaskChipHighlight(value) {
     taskChips.forEach(chip => {
         chip.classList.toggle("selected", chip.dataset.value === value);
     });
+
+    // Auto-scroll chip yang dipilih supaya kelihatan penuh, terutama
+    // buat user yang tidak sadar baris chip ini bisa digeser ke samping.
+    const selectedChip = [...taskChips].find(chip => chip.dataset.value === value);
+
+    if (selectedChip) {
+        selectedChip.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+        });
+    }
 
 }
 

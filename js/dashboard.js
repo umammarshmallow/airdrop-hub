@@ -2,8 +2,6 @@
    DASHBOARD.JS
 ========================================== */
 
-import { isTaskDueToday, isDeadlineToday } from "./helpers.js";
-
 /* Animasikan angka statistik dari nilai lama ke nilai baru.
    Kalau nilainya tidak berubah (mis. cuma ganti filter search),
    tidak dianimasikan ulang supaya tidak mengganggu. */
@@ -40,25 +38,17 @@ function animateCount(el, value) {
 
 export function updateDashboard(projects) {
 
-    const todayTask = document.getElementById("todayTask");
-    const todayTaskCard = document.getElementById("todayTaskCard");
-    const deadlineToday = document.getElementById("deadlineToday");
-    const deadlineTodayCard = document.getElementById("deadlineTodayCard");
     const activeProject = document.getElementById("activeProject");
     const pendingProject = document.getElementById("pendingProject");
     const waitlistProject = document.getElementById("waitlistProject");
     const completeProject = document.getElementById("completedProject");
 
-    let today = 0;
-    let deadline = 0;
     let active = 0;
     let pending = 0;
     let waitlist = 0;
     let complete = 0;
 
     projects.forEach(project => {
-
-        if (isDeadlineToday(project)) deadline++;
 
         switch (project.status) {
 
@@ -80,17 +70,7 @@ export function updateDashboard(projects) {
 
         }
 
-        if (isTaskDueToday(project)) today++;
-
     });
-
-    animateCount(todayTask, today);
-
-    if (todayTaskCard) todayTaskCard.dataset.state = today > 0 ? "alert" : "clear";
-
-    animateCount(deadlineToday, deadline);
-
-    if (deadlineTodayCard) deadlineTodayCard.dataset.state = deadline > 0 ? "alert" : "clear";
 
     animateCount(activeProject, active);
 
