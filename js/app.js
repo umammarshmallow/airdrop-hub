@@ -30,6 +30,7 @@ import {
     isCloudSyncEnabled,
     getCurrentUser,
     changePassword,
+    deleteAccountCloud,
     pullHomeFromCloud
 } from "./cloudSync.js";
 import { loadHomeProjects } from "./storage.js";
@@ -849,6 +850,8 @@ const profileLoginBtn=document.getElementById("profileLoginBtn");
 
 const profileLogoutBtn=document.getElementById("profileLogoutBtn");
 
+const switchAccountBtn=document.getElementById("switchAccountBtn");
+
 const profileLogoutWrap=document.getElementById("profileLogoutWrap");
 
 const securityCurrentPassword=document.getElementById("securityCurrentPassword");
@@ -859,7 +862,27 @@ const securityError=document.getElementById("securityError");
 
 const securityUpdateBtn=document.getElementById("securityUpdateBtn");
 
+const deleteAccountPassword=document.getElementById("deleteAccountPassword");
+
+const deleteAccountError=document.getElementById("deleteAccountError");
+
+const deleteAccountBtn=document.getElementById("deleteAccountBtn");
+
 let cloudAuthMode="login"; // "login" atau "register"
+
+function setCloudAuthMode(mode){
+
+    cloudAuthMode=mode;
+
+    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
+
+    cloudAuthRegisterLink.textContent = cloudAuthMode==="login" ? "Daftar sekarang" : "Login di sini";
+
+    cloudAuthRegisterLink.previousSibling.textContent = cloudAuthMode==="login" ? "Belum punya akun? " : "Sudah punya akun? ";
+
+    cloudAuthError.style.display="none";
+
+}
 
 function showCloudAuthModal(){
 
@@ -916,6 +939,9 @@ function refreshProfilePage(){
         securityNewPassword.value="";
         securityError.style.display="none";
 
+        deleteAccountPassword.value="";
+        deleteAccountError.style.display="none";
+
     }
 
 }
@@ -942,15 +968,7 @@ cloudAuthRegisterLink.onclick=(e)=>{
 
     e.preventDefault();
 
-    cloudAuthMode = cloudAuthMode==="login" ? "register" : "login";
-
-    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
-
-    cloudAuthRegisterLink.textContent = cloudAuthMode==="login" ? "Daftar sekarang" : "Login di sini";
-
-    cloudAuthRegisterLink.previousSibling.textContent = cloudAuthMode==="login" ? "Belum punya akun? " : "Sudah punya akun? ";
-
-    cloudAuthError.style.display="none";
+    setCloudAuthMode(cloudAuthMode==="login" ? "register" : "login");
 
 };
 
@@ -1070,6 +1088,32 @@ profileLogoutBtn.onclick=async()=>{
 
 };
 
+switchAccountBtn.onclick=async()=>{
+
+    const user=getCurrentUser();
+
+    if(!user) return;
+
+    const confirmed=await showConfirm(`Pindah akun dari ${user.email}? Kamu akan logout, lalu bisa login ke akun lain.`,"Pindah Akun");
+
+    if(!confirmed) return;
+
+    await logoutCloud();
+
+    refreshProfilePage();
+
+    renderProjects();
+
+    updateAddButtonVisibility();
+
+    closeMenu();
+
+    setCloudAuthMode("login");
+
+    showCloudAuthModal();
+
+};
+
 securityUpdateBtn.onclick=async()=>{
 
     const current=securityCurrentPassword.value;
@@ -1126,6 +1170,66 @@ securityUpdateBtn.onclick=async()=>{
     securityUpdateBtn.disabled=false;
 
     securityUpdateBtn.textContent="Update Password";
+
+};
+
+deleteAccountBtn.onclick=async()=>{
+
+    const password=deleteAccountPassword.value;
+
+    if(!password){
+
+        deleteAccountError.textContent="Masukkan password untuk konfirmasi.";
+        deleteAccountError.style.display="block";
+
+        return;
+
+    }
+
+    const user=getCurrentUser();
+
+    const confirmed=await showConfirm(
+
+        `Akun ${user ? user.email : ""} dan SEMUA project di dalamnya akan dihapus permanen dari cloud & device ini. Tindakan ini tidak bisa dibatalkan.`,
+
+        "Hapus Akun"
+
+    );
+
+    if(!confirmed) return;
+
+    deleteAccountBtn.disabled=true;
+
+    deleteAccountBtn.textContent="Menghapus...";
+
+    try{
+
+        await withUiTimeout(deleteAccountCloud(password), 8000);
+
+        showToast("Akun berhasil dihapus.");
+
+        setTimeout(()=>location.reload(),700);
+
+        return;
+
+    }catch(error){
+
+        console.error("[Security]",error);
+
+        let msg="Gagal menghapus akun.";
+
+        if(error.message==="TIMEOUT") msg="Koneksi lambat/gagal, coba lagi.";
+        else if(error.code && error.code.includes("wrong-password")) msg="Password salah.";
+        else if(error.code && error.code.includes("requires-recent-login")) msg="Sesi login sudah lama, masukkan password lagi lalu coba ulang.";
+
+        deleteAccountError.textContent=msg;
+        deleteAccountError.style.display="block";
+
+    }
+
+    deleteAccountBtn.disabled=false;
+
+    deleteAccountBtn.innerHTML=`<i class="fa-solid fa-trash-can"></i> <span data-i18n="profile.deleteAccount">Delete Account</span>`;
 
 };
 

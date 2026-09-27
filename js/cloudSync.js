@@ -100,12 +100,14 @@ async function loadFirebaseSDK() {
         createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
         signOut: authMod.signOut,
         updatePassword: authMod.updatePassword,
+        deleteUser: authMod.deleteUser,
         EmailAuthProvider: authMod.EmailAuthProvider,
         reauthenticateWithCredential: authMod.reauthenticateWithCredential,
         getFirestore: firestoreMod.getFirestore,
         doc: firestoreMod.doc,
         getDoc: firestoreMod.getDoc,
         setDoc: firestoreMod.setDoc,
+        deleteDoc: firestoreMod.deleteDoc,
         serverTimestamp: firestoreMod.serverTimestamp
     };
 
@@ -260,6 +262,50 @@ export async function changePassword(currentPassword, newPassword) {
 }
 
 /* ==========================================
+   HAPUS AKUN (PERMANEN)
+   Butuh reauthenticate (password saat ini) sama seperti
+   ganti password -- Firebase menolak operasi sensitif kalau
+   sesi login sudah "terlalu lama", jadi verifikasi dulu.
+   Urutan: hapus dokumen Firestore user -> hapus akun Auth ->
+   baru bersihkan localStorage & state lokal di device ini.
+========================================== */
+
+export async function deleteAccountCloud(currentPassword) {
+
+    const user = auth ? auth.currentUser : null;
+
+    if (!user) throw new Error("NOT_LOGGED_IN");
+
+    const credential = firebase.EmailAuthProvider.credential(user.email, currentPassword);
+
+    await firebase.reauthenticateWithCredential(user, credential);
+
+    try {
+
+        await firebase.deleteDoc(userDocRef());
+
+    } catch (error) {
+
+        // Best-effort -- kalau gagal (mis. offline), tetap lanjut hapus
+        // akun Auth-nya supaya user tidak stuck tidak bisa hapus akun.
+        console.warn("[CloudSync] Gagal hapus dokumen cloud user (lanjut hapus akun):", error);
+
+    }
+
+    await firebase.deleteUser(user);
+
+    ready = false;
+    currentUid = null;
+    currentUserRole = "user";
+
+    // Akun sudah dihapus permanen -> device ini juga harus bersih dari
+    // data privat akun tersebut.
+    localStorage.removeItem(PROJECTS_KEY);
+    localStorage.removeItem(RESET_KEY);
+
+}
+
+/* ==========================================
    PULL (cloud -> localStorage)
 ========================================== */
 
@@ -292,7 +338,16 @@ export async function pullFromCloud() {
 
         } else {
 
-            // Belum ada data di cloud untuk user ini -> upload data lokal sekarang sebagai data awal
+            // Belum ada dokumen cloud untuk akun ini. JANGAN upload apa pun
+            // yang kebetulan masih tersisa di localStorage device ini --
+            // itu bisa saja sisa akun lain yang login lebih dulu di device
+            // yang sama (mis. logout lalu login ke akun berbeda), sehingga
+            // datanya bakal ke-upload salah ke akun yang sedang login
+            // sekarang. My Project murni privat per-akun, jadi akun yang
+            // belum punya data cloud harus mulai dari benar-benar kosong.
+            localStorage.setItem(PROJECTS_KEY, "[]");
+            localStorage.removeItem(RESET_KEY);
+
             await pushToCloud(true);
 
         }
