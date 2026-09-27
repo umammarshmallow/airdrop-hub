@@ -238,11 +238,8 @@
 #saveProject, #updateProject{ background:var(--accent); color:#0a0d14; }
 #saveProject:hover, #updateProject:hover{ background:var(--accent-hover); color:white; }
 
-#closeModal, #closeEditModal, #closeWalletModal{ background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important; }
-#closeModal:hover, #closeEditModal:hover, #closeWalletModal:hover{ color:var(--text); border-color:var(--accent-line) !important; }
-
-#saveWallet{ background:var(--accent); color:#0a0d14; }
-#saveWallet:hover{ background:var(--accent-hover); color:white; }
+#closeModal, #closeEditModal{ background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important; }
+#closeModal:hover, #closeEditModal:hover{ color:var(--text); border-color:var(--accent-line) !important; }
 
 /* FIX MODAL SCROLL */
 body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
