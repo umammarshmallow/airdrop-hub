@@ -248,3 +248,13 @@
 body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
 #projectModal, #editModal{ overflow-y:auto; -webkit-overflow-scrolling:touch; }
 #projectModal .modal-content, #editModal .modal-content{ max-height:90vh; overflow-y:auto; }
+
+/* ADD PROJECT - keterangan tujuan simpan (Home / My Project) */
+.add-destination-note{
+  display:flex; align-items:center; gap:8px;
+  padding:10px 12px; margin-bottom:16px;
+  background:var(--surface-3); border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:13px; color:var(--text-muted);
+}
+.add-destination-note i{ color:var(--accent); font-size:14px; flex-shrink:0; }
