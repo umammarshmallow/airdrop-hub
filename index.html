@@ -433,6 +433,10 @@
       <label class="field-label" for="cloudAuthPassword" data-i18n="cloud.password">Password</label>
       <input type="password" id="cloudAuthPassword" placeholder="Minimum 6 characters" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
 
+      <p id="cloudAuthForgotWrap" style="text-align:right; font-size:12.5px; margin:-6px 0 12px;">
+        <a href="#" id="cloudAuthForgotLink" style="color:var(--accent);" data-i18n="cloud.forgot">Forgot password?</a>
+      </p>
+
       <p id="cloudAuthError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
 
       <div class="modal-button">
@@ -443,6 +447,30 @@
       <p style="text-align:center; font-size:12.5px; color:var(--text-muted); margin-top:14px;">
         <span data-i18n="cloud.noAccount">Don't have an account?</span> <a href="#" id="cloudAuthRegisterLink" style="color:var(--accent);" data-i18n="cloud.registerNow">Register now</a>
       </p>
+    </div>
+  </div>
+
+  <!-- ================= FORGOT PASSWORD MODAL ================= -->
+  <div class="modal" id="forgotModal">
+    <div class="modal-content">
+      <h2><i class="fa-solid fa-key"></i> <span data-i18n="forgot.title">Forgot Password</span></h2>
+
+      <div id="forgotStep1">
+        <p style="color:var(--text-muted); font-size:13px; margin:-10px 0 16px;" data-i18n="forgot.step1Desc">Enter your account email. We'll send a link to reset your password.</p>
+        <label class="field-label" for="forgotEmail" data-i18n="cloud.email">Email</label>
+        <input type="email" id="forgotEmail" placeholder="email@you.com" autocomplete="username" data-i18n-ph="cloud.emailPh">
+      </div>
+
+      <div id="forgotStep2" style="display:none;">
+        <p style="color:var(--text-muted); font-size:13px; margin:-10px 0 16px;"><span data-i18n="forgot.sentDesc">If this email is registered, a reset link has been sent to</span> <b id="forgotEmailShown"></b>. <span data-i18n="forgot.checkSpam">Check your inbox (and spam folder), open the link, set a new password, then log in.</span></p>
+      </div>
+
+      <p id="forgotError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
+
+      <div class="modal-button">
+        <button id="forgotBackBtn" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;" data-i18n="forgot.back">Back</button>
+        <button id="forgotPrimaryBtn" style="background:var(--accent); color:#0a0d14;">Send Reset Link</button>
+      </div>
     </div>
   </div>
 
