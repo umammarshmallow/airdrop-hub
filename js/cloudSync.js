@@ -99,6 +99,7 @@ async function loadFirebaseSDK() {
         signInWithEmailAndPassword: authMod.signInWithEmailAndPassword,
         createUserWithEmailAndPassword: authMod.createUserWithEmailAndPassword,
         signOut: authMod.signOut,
+        sendPasswordResetEmail: authMod.sendPasswordResetEmail,
         updatePassword: authMod.updatePassword,
         deleteUser: authMod.deleteUser,
         EmailAuthProvider: authMod.EmailAuthProvider,
@@ -240,6 +241,24 @@ export async function logoutCloud() {
     ready = false;
     currentUid = null;
     currentUserRole = "user";
+
+}
+
+/* ==========================================
+   LUPA PASSWORD
+   Pakai fitur bawaan Firebase: kirim email berisi link
+   reset password. User klik link, isi password baru di
+   halaman Firebase, lalu login lagi seperti biasa.
+========================================== */
+
+export async function sendResetEmail(email, lang) {
+
+    if (!auth || !firebase) throw new Error("NOT_CONFIGURED");
+
+    // bahasa email template (id / en)
+    auth.languageCode = lang === "id" ? "id" : "en";
+
+    await firebase.sendPasswordResetEmail(auth, email);
 
 }
 
