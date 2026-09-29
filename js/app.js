@@ -132,7 +132,7 @@ async function runCloudSyncInBackground() {
             // dari Firebase telat sedikit. Update tampilan diam-diam,
             // dan kalau modal login sempat kebuka karena dianggap
             // "belum login" tadi, tutup lagi sekarang.
-            showToast("Cloud sync aktif — login sebagai " + lateUser.email, 2500);
+            showToast(t("cloud.activeAs") + " " + lateUser.email, 2500);
             updateAccountMenuLabel(lateUser.email);
 
             dismissNotificationsByAction("login");
@@ -146,7 +146,7 @@ async function runCloudSyncInBackground() {
 
         if (existingUser) {
 
-            showToast("Cloud sync aktif — login sebagai " + existingUser.email, 2500);
+            showToast(t("cloud.activeAs") + " " + existingUser.email, 2500);
             updateAccountMenuLabel(existingUser.email);
 
             // Sudah login, peringatan "belum login" sebelumnya (kalau ada) sudah tidak relevan
@@ -170,7 +170,7 @@ async function runCloudSyncInBackground() {
             if (!alreadyWarned) {
 
                 addNotification(
-                    "Your data is only saved on this device. If you clear browser data or switch devices without logging in, everything will be lost. Login to enable cloud backup.",
+                    t("notif.loginWarning"),
                     "warning",
                     { action: "login" }
                 );
@@ -536,9 +536,8 @@ applyTheme(theme);
    SETTINGS: LANGUAGE (ID / EN)
 ========================================== */
 
-const langSwitch=document.getElementById("langSwitch");
-
-const langButtons=langSwitch.querySelectorAll("[data-lang]");
+// semua tombol bahasa (menu Settings + modal Login) dikelola bersama
+const langButtons=document.querySelectorAll("[data-lang]");
 
 function applyLang(lang, {refresh=true}={}){
 
@@ -547,6 +546,10 @@ setLang(lang);
 langButtons.forEach(btn=>btn.classList.toggle("active", btn.dataset.lang===lang));
 
 applyStaticTranslations();
+
+// judul/deskripsi/tombol modal login bergantung pada mode (Login/Register)
+// (dibungkus try: pada pemanggilan pertama saat load, variabel modal login belum dibuat)
+try{ setCloudAuthMode(cloudAuthMode); }catch(e){}
 
 if(refresh) refreshProjectsView(false);
 
@@ -802,7 +805,7 @@ closeNotifModal.onclick=closeNotifModalFn;
 
 notifClearBtn.onclick=async()=>{
 
-    const confirmed=await showConfirm("Hapus semua riwayat notifikasi?","Hapus");
+    const confirmed=await showConfirm(t("notif.clearConfirm"),t("notif.clearBtn"));
 
     if(confirmed){
 
@@ -887,7 +890,7 @@ function setCloudAuthMode(mode){
 
     const isLogin = cloudAuthMode==="login";
 
-    cloudAuthLoginBtn.textContent = isLogin ? "Login" : "Daftar";
+    cloudAuthLoginBtn.textContent = isLogin ? t("cloud.login") : t("cloud.tabRegister");
 
     // tab Login / Register + geser pill-nya
     authTabLogin.classList.toggle("active", isLogin);
@@ -981,17 +984,17 @@ function friendlyAuthError(error){
 
     const code = error && error.code ? error.code : "";
 
-    if(code.includes("invalid-email")) return "Format email tidak valid.";
+    if(code.includes("invalid-email")) return t("cloud.err.invalidEmail");
 
-    if(code.includes("user-not-found") || code.includes("invalid-credential")) return "Email/password salah atau belum terdaftar.";
+    if(code.includes("user-not-found") || code.includes("invalid-credential")) return t("cloud.err.invalidCredential");
 
-    if(code.includes("wrong-password")) return "Password salah.";
+    if(code.includes("wrong-password")) return t("cloud.err.wrongPassword");
 
-    if(code.includes("email-already-in-use")) return "Email ini sudah terdaftar, coba Login.";
+    if(code.includes("email-already-in-use")) return t("cloud.err.emailInUse");
 
-    if(code.includes("weak-password")) return "Password minimal 6 karakter.";
+    if(code.includes("weak-password")) return t("cloud.err.weakPassword");
 
-    return "Gagal login/daftar, coba lagi.";
+    return t("cloud.err.generic");
 
 }
 
@@ -1016,7 +1019,7 @@ cloudAuthSkip.onclick=()=>{
 
     closeCloudAuthModal();
 
-    showToast("Mode offline — data hanya tersimpan di device ini.", 3000, "warning");
+    showToast(t("cloud.offlineMode"), 3000, "warning");
 
 };
 
@@ -1167,7 +1170,7 @@ cloudAuthLoginBtn.onclick=async()=>{
 
     if(!email || !password){
 
-        setCloudAuthError("Email & password wajib diisi.");
+        setCloudAuthError(t("cloud.fieldsRequired"));
 
         return;
 
@@ -1175,7 +1178,7 @@ cloudAuthLoginBtn.onclick=async()=>{
 
     cloudAuthLoginBtn.disabled=true;
 
-    cloudAuthLoginBtn.textContent="Memproses...";
+    cloudAuthLoginBtn.textContent=t("cloud.processing");
 
     try{
 
@@ -1197,7 +1200,7 @@ cloudAuthLoginBtn.onclick=async()=>{
 
         updateAccountMenuLabel(user.email);
 
-        showToast("Berhasil login, memuat data...");
+        showToast(t("cloud.loginSuccess"));
 
         setTimeout(()=>location.reload(),700);
 
@@ -1209,7 +1212,7 @@ cloudAuthLoginBtn.onclick=async()=>{
 
         if(error.message==="TIMEOUT"){
 
-            setCloudAuthError("Koneksi ke server lambat/gagal. Periksa jaringan lalu coba lagi.");
+            setCloudAuthError(t("cloud.timeout"));
 
         }else{
 
@@ -1221,7 +1224,7 @@ cloudAuthLoginBtn.onclick=async()=>{
 
     cloudAuthLoginBtn.disabled=false;
 
-    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
+    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? t("cloud.login") : t("cloud.tabRegister");
 
 };
 
@@ -1243,13 +1246,13 @@ profileLogoutBtn.onclick=async()=>{
 
     if(!user) return;
 
-    const confirmed=await showConfirm(`Logout dari ${user.email}? Data tetap tersimpan di cloud.`,"Logout");
+    const confirmed=await showConfirm(t("cloud.logoutConfirm")+" "+user.email+t("cloud.logoutConfirmSuffix"),t("profile.logout"));
 
     if(confirmed){
 
         await logoutCloud();
 
-        showToast("Berhasil logout.");
+        showToast(t("cloud.logoutSuccess"));
 
         refreshProfilePage();
 
@@ -1269,7 +1272,7 @@ switchAccountBtn.onclick=async()=>{
 
     if(!user) return;
 
-    const confirmed=await showConfirm(`Pindah akun dari ${user.email}? Kamu akan logout, lalu bisa login ke akun lain.`,"Pindah Akun");
+    const confirmed=await showConfirm(t("cloud.switchConfirm").replace("{email}",user.email),t("profile.switchAccount"));
 
     if(!confirmed) return;
 
@@ -1297,7 +1300,7 @@ securityUpdateBtn.onclick=async()=>{
 
     if(!current || !next){
 
-        securityError.textContent="Semua field wajib diisi.";
+        securityError.textContent=t("security.fieldsRequired");
         securityError.style.display="block";
 
         return;
@@ -1306,7 +1309,7 @@ securityUpdateBtn.onclick=async()=>{
 
     if(next.length<6){
 
-        securityError.textContent="Password baru minimal 6 karakter.";
+        securityError.textContent=t("security.minLength");
         securityError.style.display="block";
 
         return;
@@ -1315,7 +1318,7 @@ securityUpdateBtn.onclick=async()=>{
 
     securityUpdateBtn.disabled=true;
 
-    securityUpdateBtn.textContent="Memproses...";
+    securityUpdateBtn.textContent=t("cloud.processing");
 
     try{
 
@@ -1325,17 +1328,17 @@ securityUpdateBtn.onclick=async()=>{
         securityNewPassword.value="";
         securityError.style.display="none";
 
-        showToast("Password berhasil diubah.");
+        showToast(t("cloud.passwordChanged"));
 
     }catch(error){
 
         console.error("[Security]",error);
 
-        let msg="Gagal mengubah password.";
+        let msg=t("security.failed");
 
-        if(error.message==="TIMEOUT") msg="Koneksi lambat/gagal, coba lagi.";
-        else if(error.code && error.code.includes("wrong-password")) msg="Password saat ini salah.";
-        else if(error.code && error.code.includes("weak-password")) msg="Password baru terlalu lemah.";
+        if(error.message==="TIMEOUT") msg=t("security.timeout");
+        else if(error.code && error.code.includes("wrong-password")) msg=t("security.wrongCurrent");
+        else if(error.code && error.code.includes("weak-password")) msg=t("security.weakNew");
 
         securityError.textContent=msg;
         securityError.style.display="block";
@@ -1344,7 +1347,7 @@ securityUpdateBtn.onclick=async()=>{
 
     securityUpdateBtn.disabled=false;
 
-    securityUpdateBtn.textContent="Update Password";
+    securityUpdateBtn.textContent=t("profile.updatePassword");
 
 };
 
@@ -1354,7 +1357,7 @@ deleteAccountBtn.onclick=async()=>{
 
     if(!password){
 
-        deleteAccountError.textContent="Masukkan password untuk konfirmasi.";
+        deleteAccountError.textContent=t("delete.passwordRequired");
         deleteAccountError.style.display="block";
 
         return;
@@ -1365,9 +1368,9 @@ deleteAccountBtn.onclick=async()=>{
 
     const confirmed=await showConfirm(
 
-        `Akun ${user ? user.email : ""} dan SEMUA project di dalamnya akan dihapus permanen dari cloud & device ini. Tindakan ini tidak bisa dibatalkan.`,
+        t("delete.confirm").replace("{email}", user ? user.email : ""),
 
-        "Hapus Akun"
+        t("profile.deleteAccount")
 
     );
 
@@ -1375,13 +1378,13 @@ deleteAccountBtn.onclick=async()=>{
 
     deleteAccountBtn.disabled=true;
 
-    deleteAccountBtn.textContent="Menghapus...";
+    deleteAccountBtn.textContent=t("delete.deleting");
 
     try{
 
         await withUiTimeout(deleteAccountCloud(password), 8000);
 
-        showToast("Akun berhasil dihapus.");
+        showToast(t("delete.success"));
 
         setTimeout(()=>location.reload(),700);
 
@@ -1391,11 +1394,11 @@ deleteAccountBtn.onclick=async()=>{
 
         console.error("[Security]",error);
 
-        let msg="Gagal menghapus akun.";
+        let msg=t("delete.failed");
 
-        if(error.message==="TIMEOUT") msg="Koneksi lambat/gagal, coba lagi.";
-        else if(error.code && error.code.includes("wrong-password")) msg="Password salah.";
-        else if(error.code && error.code.includes("requires-recent-login")) msg="Sesi login sudah lama, masukkan password lagi lalu coba ulang.";
+        if(error.message==="TIMEOUT") msg=t("security.timeout");
+        else if(error.code && error.code.includes("wrong-password")) msg=t("delete.wrongPassword");
+        else if(error.code && error.code.includes("requires-recent-login")) msg=t("delete.recentLogin");
 
         deleteAccountError.textContent=msg;
         deleteAccountError.style.display="block";

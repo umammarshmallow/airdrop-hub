@@ -20,6 +20,7 @@
 
 import { firebaseConfig } from "./firebaseConfig.js";
 import { addNotification } from "./helpers.js";
+import { t } from "./i18n.js";
 
 const PROJECTS_KEY = "airdropHub";
 const HOME_PROJECTS_KEY = "airdropHub_home";
@@ -374,7 +375,7 @@ export async function pullFromCloud() {
     } catch (error) {
 
         console.warn("[CloudSync] Gagal ambil data cloud, pakai data lokal:", error);
-        addNotification("Gagal mengambil data dari cloud. Aplikasi tetap memakai data di device ini.", "error");
+        addNotification(t("sync.fetchFailed"), "error");
 
     }
 
@@ -408,7 +409,7 @@ export function pushToCloud(immediate = false) {
         } catch (error) {
 
             console.warn("[CloudSync] Gagal simpan ke cloud (data tetap aman di device ini):", error);
-            addNotification("Gagal menyimpan perubahan ke cloud. Data tetap aman di device ini.", "error");
+            addNotification(t("sync.saveFailed"), "error");
 
         }
 
@@ -483,7 +484,7 @@ export function pushHomeToCloud(immediate = false) {
         } catch (error) {
 
             console.warn("[CloudSync] Gagal simpan data Home ke cloud:", error);
-            addNotification("Gagal menyimpan perubahan Home ke cloud.", "error");
+            addNotification(t("sync.homeSaveFailed"), "error");
 
         }
 
