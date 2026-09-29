@@ -260,6 +260,7 @@ body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
    LOGIN / REGISTER MODAL (cloudAuthModal)
 ========================================================== */
 #cloudAuthModal .modal-content.auth-card{
+  position:relative;
   max-width:400px;
   padding:30px 24px 24px;
   text-align:center;
@@ -424,3 +425,9 @@ body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
 }
 .auth-secondary i{ color:var(--accent); }
 .auth-secondary:hover{ border-color:var(--accent-line); background:var(--accent-soft); }
+
+/* Pemilih bahasa di pojok kanan atas modal login */
+.auth-lang{
+  position:absolute; top:14px; right:14px;
+}
+.auth-lang button{ padding:4px 10px; }
