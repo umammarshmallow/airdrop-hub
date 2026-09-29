@@ -837,7 +837,17 @@ const cloudAuthSkip=document.getElementById("cloudAuthSkip");
 
 const cloudAuthLoginBtn=document.getElementById("cloudAuthLoginBtn");
 
-const cloudAuthRegisterLink=document.getElementById("cloudAuthRegisterLink");
+const authTabLogin=document.getElementById("authTabLogin");
+
+const authTabRegister=document.getElementById("authTabRegister");
+
+const authTabPill=document.getElementById("authTabPill");
+
+const cloudAuthRemember=document.getElementById("cloudAuthRemember");
+
+const cloudAuthEye=document.getElementById("cloudAuthEye");
+
+const REMEMBER_EMAIL_KEY="airdrophub_remember_email";
 
 const profileLoggedInView=document.getElementById("profileLoggedInView");
 
@@ -875,22 +885,39 @@ function setCloudAuthMode(mode){
 
     cloudAuthMode=mode;
 
-    cloudAuthLoginBtn.textContent = cloudAuthMode==="login" ? "Login" : "Daftar";
+    const isLogin = cloudAuthMode==="login";
 
-    cloudAuthRegisterLink.textContent = cloudAuthMode==="login" ? "Daftar sekarang" : "Login di sini";
+    cloudAuthLoginBtn.textContent = isLogin ? "Login" : "Daftar";
 
-    cloudAuthRegisterLink.previousSibling.textContent = cloudAuthMode==="login" ? "Belum punya akun? " : "Sudah punya akun? ";
+    // tab Login / Register + geser pill-nya
+    authTabLogin.classList.toggle("active", isLogin);
+    authTabRegister.classList.toggle("active", !isLogin);
+    authTabPill.style.transform = isLogin ? "translateX(0)" : "translateX(100%)";
+
+    document.getElementById("cloudAuthTitle").textContent = t(isLogin ? "cloud.welcome" : "cloud.createTitle");
+    document.getElementById("cloudAuthDesc").textContent = t(isLogin ? "cloud.welcomeDesc" : "cloud.createDesc");
+
+    cloudAuthPassword.setAttribute("autocomplete", isLogin ? "current-password" : "new-password");
 
     cloudAuthError.style.display="none";
 
     // "Lupa password?" cuma relevan di mode login
-    document.getElementById("cloudAuthForgotWrap").style.display = cloudAuthMode==="login" ? "block" : "none";
+    document.getElementById("cloudAuthForgotLink").style.visibility = isLogin ? "visible" : "hidden";
 
 }
 
 function showCloudAuthModal(){
 
     cloudAuthError.style.display="none";
+
+    // isi otomatis email yang diingat (kalau "Remember me" dicentang sebelumnya)
+    try{
+        const savedEmail=localStorage.getItem(REMEMBER_EMAIL_KEY);
+        if(savedEmail && !cloudAuthEmail.value){
+            cloudAuthEmail.value=savedEmail;
+            cloudAuthRemember.checked=true;
+        }
+    }catch(e){}
 
     openModalEl(cloudAuthModal);
 
@@ -968,11 +995,20 @@ function friendlyAuthError(error){
 
 }
 
-cloudAuthRegisterLink.onclick=(e)=>{
+authTabLogin.onclick=()=>setCloudAuthMode("login");
 
-    e.preventDefault();
+authTabRegister.onclick=()=>setCloudAuthMode("register");
 
-    setCloudAuthMode(cloudAuthMode==="login" ? "register" : "login");
+// ikon mata: tampil/sembunyikan password
+cloudAuthEye.onclick=()=>{
+
+    const show = cloudAuthPassword.type==="password";
+
+    cloudAuthPassword.type = show ? "text" : "password";
+
+    cloudAuthEye.innerHTML = show
+        ? '<i class="fa-solid fa-eye-slash"></i>'
+        : '<i class="fa-solid fa-eye"></i>';
 
 };
 
@@ -1151,6 +1187,11 @@ cloudAuthLoginBtn.onclick=async()=>{
         // jaringan 4G yang agak lambat, tapi tombol tetap tidak akan macet selamanya.
         // walau koneksi ke server lambat/gagal total.
         const user = await withUiTimeout(action, 8000);
+
+        try{
+            if(cloudAuthRemember.checked) localStorage.setItem(REMEMBER_EMAIL_KEY,email);
+            else localStorage.removeItem(REMEMBER_EMAIL_KEY);
+        }catch(e){}
 
         closeCloudAuthModal();
 
