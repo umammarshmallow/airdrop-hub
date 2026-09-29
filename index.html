@@ -421,32 +421,50 @@
 
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
-    <div class="modal-content">
-      <h2><i class="fa-solid fa-cloud"></i> <span data-i18n="cloud.title">Sync Account</span></h2>
-      <p style="color:var(--text-muted); font-size:13px; margin:-10px 0 16px;" data-i18n="cloud.desc">
-        Login so your project data syncs automatically across devices.
-      </p>
+    <div class="modal-content auth-card">
+      <img class="auth-logo" src="img/logo-icon.png" alt="AirdropHub">
+      <h2 class="auth-title" id="cloudAuthTitle" data-i18n="cloud.welcome">Welcome Back!</h2>
+      <p class="auth-desc" id="cloudAuthDesc" data-i18n="cloud.welcomeDesc">Login so your project data syncs automatically across devices.</p>
 
-      <label class="field-label" for="cloudAuthEmail" data-i18n="cloud.email">Email</label>
-      <input type="email" id="cloudAuthEmail" placeholder="email@you.com" autocomplete="username" data-i18n-ph="cloud.emailPh">
-
-      <label class="field-label" for="cloudAuthPassword" data-i18n="cloud.password">Password</label>
-      <input type="password" id="cloudAuthPassword" placeholder="Minimum 6 characters" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
-
-      <p id="cloudAuthForgotWrap" style="text-align:right; font-size:12.5px; margin:-6px 0 12px;">
-        <a href="#" id="cloudAuthForgotLink" style="color:var(--accent);" data-i18n="cloud.forgot">Forgot password?</a>
-      </p>
-
-      <p id="cloudAuthError" style="color:#f0616b; font-size:12.5px; margin:-6px 0 12px; display:none;"></p>
-
-      <div class="modal-button">
-        <button id="cloudAuthSkip" style="background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border) !important;" data-i18n="cloud.skip">Later</button>
-        <button id="cloudAuthLoginBtn" style="background:var(--accent); color:#0a0d14;" data-i18n="cloud.login">Login</button>
+      <div class="auth-tabs" role="tablist">
+        <span class="auth-tab-pill" id="authTabPill"></span>
+        <button type="button" class="auth-tab active" id="authTabLogin" role="tab" data-i18n="cloud.login">Login</button>
+        <button type="button" class="auth-tab" id="authTabRegister" role="tab" data-i18n="cloud.tabRegister">Register</button>
       </div>
 
-      <p style="text-align:center; font-size:12.5px; color:var(--text-muted); margin-top:14px;">
-        <span data-i18n="cloud.noAccount">Don't have an account?</span> <a href="#" id="cloudAuthRegisterLink" style="color:var(--accent);" data-i18n="cloud.registerNow">Register now</a>
-      </p>
+      <div class="auth-field">
+        <i class="fa-solid fa-envelope auth-field-icon" aria-hidden="true"></i>
+        <div class="auth-field-body">
+          <label for="cloudAuthEmail" data-i18n="cloud.email">Email</label>
+          <input type="email" id="cloudAuthEmail" placeholder="email@you.com" autocomplete="username" data-i18n-ph="cloud.emailPh">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <i class="fa-solid fa-lock auth-field-icon" aria-hidden="true"></i>
+        <div class="auth-field-body">
+          <label for="cloudAuthPassword" data-i18n="cloud.password">Password</label>
+          <input type="password" id="cloudAuthPassword" placeholder="Minimum 6 characters" autocomplete="current-password" data-i18n-ph="cloud.passwordPh">
+        </div>
+        <button type="button" class="auth-eye" id="cloudAuthEye" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+      </div>
+
+      <div class="auth-row" id="cloudAuthForgotWrap">
+        <label class="auth-remember">
+          <input type="checkbox" id="cloudAuthRemember">
+          <span class="auth-check"></span>
+          <span data-i18n="cloud.remember">Remember me</span>
+        </label>
+        <a href="#" id="cloudAuthForgotLink" data-i18n="cloud.forgot">Forgot password?</a>
+      </div>
+
+      <p id="cloudAuthError" class="auth-error" style="display:none;"></p>
+
+      <button type="button" class="auth-primary" id="cloudAuthLoginBtn" data-i18n="cloud.login">Login</button>
+
+      <div class="auth-divider"><span data-i18n="cloud.or">Or</span></div>
+
+      <button type="button" class="auth-secondary" id="cloudAuthSkip"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> <span data-i18n="cloud.skip">Later</span></button>
     </div>
   </div>
 
