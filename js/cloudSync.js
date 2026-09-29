@@ -439,6 +439,128 @@ export function pushToCloud(immediate = false) {
      dilihat/diubah orang lain lewat devtools.
 ========================================== */
 
+/* ==========================================
+   NOTIFIKASI PERUBAHAN HOME
+   Admin tidak "mengirim" apa pun secara manual: tiap
+   user menyimpan snapshot terakhir Home yang pernah dilihat
+   (id -> nama & status). Setiap Home ditarik dari cloud,
+   snapshot dibandingkan dengan data terbaru:
+   - id baru            -> notifikasi "project baru"
+   - status berubah     -> notifikasi "status project berubah"
+   Pembukaan pertama (belum ada snapshot) hanya menyimpan
+   baseline supaya user baru tidak dibanjiri notifikasi.
+   Admin tidak dinotifikasi atas perubahannya sendiri.
+========================================== */
+
+const HOME_SEEN_KEY = "airdropHub_homeSeen";
+
+const HOME_NOTIF_GROUP_LIMIT = 3;
+
+function snapshotHome(rawProjects) {
+
+    const map = {};
+
+    try {
+
+        const list = JSON.parse(rawProjects || "[]");
+
+        if (Array.isArray(list)) {
+
+            list.forEach((p) => {
+
+                if (p && p.id != null) map[p.id] = { name: String(p.name || ""), status: String(p.status || "") };
+
+            });
+
+        }
+
+    } catch (error) { /* data rusak -> anggap kosong */ }
+
+    return map;
+
+}
+
+function saveHomeSeen(rawProjects) {
+
+    try {
+
+        localStorage.setItem(HOME_SEEN_KEY, JSON.stringify(snapshotHome(rawProjects)));
+
+    } catch (error) { /* storage penuh/diblokir: abaikan */ }
+
+}
+
+function statusLabel(status) {
+
+    const key = "opt.status." + String(status).toLowerCase();
+
+    const label = t(key);
+
+    return label === key ? status : label;
+
+}
+
+function announceHomeChanges(rawProjects) {
+
+    const current = snapshotHome(rawProjects);
+
+    let previous = null;
+
+    try {
+
+        const raw = localStorage.getItem(HOME_SEEN_KEY);
+
+        previous = raw ? JSON.parse(raw) : null;
+
+    } catch (error) { previous = null; }
+
+    // baseline pertama, atau admin (perubahan itu dibuatnya sendiri)
+    if (!previous || isAdmin()) {
+
+        saveHomeSeen(rawProjects);
+
+        return;
+
+    }
+
+    const added = [];
+    const changed = [];
+
+    Object.keys(current).forEach((id) => {
+
+        if (!previous[id]) added.push(current[id]);
+
+        else if (previous[id].status !== current[id].status) changed.push(current[id]);
+
+    });
+
+    if (added.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeNewMany").replace("{count}", added.length), "info");
+
+    } else {
+
+        added.forEach((p) => addNotification(t("notif.homeNew").replace("{name}", p.name), "info"));
+
+    }
+
+    if (changed.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeStatusMany").replace("{count}", changed.length), "info");
+
+    } else {
+
+        changed.forEach((p) => addNotification(
+            t("notif.homeStatus").replace("{name}", p.name).replace("{status}", statusLabel(p.status)),
+            "info"
+        ));
+
+    }
+
+    saveHomeSeen(rawProjects);
+
+}
+
 export async function pullHomeFromCloud() {
 
     if (!db) return;
@@ -456,7 +578,13 @@ export async function pullHomeFromCloud() {
 
             const cloud = snap.data();
 
-            if (typeof cloud.projects === "string") localStorage.setItem(HOME_PROJECTS_KEY, cloud.projects);
+            if (typeof cloud.projects === "string") {
+
+                try { announceHomeChanges(cloud.projects); } catch (error) { console.warn("[CloudSync] Gagal cek perubahan Home:", error); }
+
+                localStorage.setItem(HOME_PROJECTS_KEY, cloud.projects);
+
+            }
 
         }
 
@@ -480,6 +608,9 @@ export function pushHomeToCloud(immediate = false) {
                 projects: localStorage.getItem(HOME_PROJECTS_KEY) || "[]",
                 updatedAt: firebase.serverTimestamp()
             }, { merge: true });
+
+            // perubahan ini dibuat admin sendiri -> tidak perlu jadi notifikasi di device-nya
+            saveHomeSeen(localStorage.getItem(HOME_PROJECTS_KEY) || "[]");
 
         } catch (error) {
 

@@ -74,11 +74,14 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             projects = newProjects;
         },
 
-        async addProject(data) {
+        // silent=true dipakai saat project ditambahkan otomatis sebagai
+        // salinan (data sudah divalidasi, modal sudah ditutup, dan toast
+        // sudah ditampilkan oleh penambahan utamanya).
+        async addProject(data, { silent = false } = {}) {
 
             if (!checkPermission()) return false;
 
-            if (!(await validateProject(data))) {
+            if (!silent && !(await validateProject(data))) {
 
                 return false;
 
@@ -116,9 +119,13 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             persist();
 
-            closeAddModal();
+            if (!silent) {
 
-            showToast(addedMessage);
+                closeAddModal();
+
+                showToast(addedMessage);
+
+            }
 
             return true;
 
@@ -359,9 +366,18 @@ export function getProjects() {
 // Tujuan simpan project baru ditentukan oleh ROLE, bukan halaman
 // yang sedang dibuka: admin -> Home (publik), user lain -> My
 // Project (privat). Ini supaya tombol Add konsisten dari mode manapun.
-export function addProject(data) {
-    const store = isAdmin() ? homeProjectStore : myProjectStore;
-    return store.addProject(data);
+// Khusus admin: project yang masuk ke Home juga otomatis disalin ke
+// My Project miliknya, jadi tidak perlu menekan tombol "+" lagi.
+export async function addProject(data) {
+
+    if (!isAdmin()) return myProjectStore.addProject(data);
+
+    const success = await homeProjectStore.addProject(data);
+
+    if (success) await myProjectStore.addProject(data, { silent: true });
+
+    return success;
+
 }
 
 export function deleteProject(id) {

@@ -129,6 +129,10 @@ const dict = {
         "notif.clearAll": "Clear All",
         "notif.clearConfirm": "Clear all notification history?",
         "notif.clearBtn": "Clear",
+        "notif.homeNew": "New project added to Home: {name}",
+        "notif.homeNewMany": "{count} new projects were added to Home.",
+        "notif.homeStatus": "{name} status changed to {status}.",
+        "notif.homeStatusMany": "{count} projects in Home had their status updated.",
 
         "cloud.title": "Sync Account",
         "cloud.welcome": "Welcome Back!",
@@ -334,6 +338,10 @@ const dict = {
         "notif.clearAll": "Hapus Semua",
         "notif.clearConfirm": "Hapus semua riwayat notifikasi?",
         "notif.clearBtn": "Hapus",
+        "notif.homeNew": "Project baru ditambahkan di Home: {name}",
+        "notif.homeNewMany": "{count} project baru ditambahkan di Home.",
+        "notif.homeStatus": "Status {name} berubah menjadi {status}.",
+        "notif.homeStatusMany": "{count} project di Home diperbarui statusnya.",
 
         "cloud.title": "Sync Akun",
         "cloud.welcome": "Selamat Datang Kembali!",

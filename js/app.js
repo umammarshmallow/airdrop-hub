@@ -913,6 +913,9 @@ function showCloudAuthModal(){
 
     cloudAuthError.style.display="none";
 
+    // selalu mulai dengan password tersembunyi
+    setPasswordVisible(false);
+
     // isi otomatis email yang diingat (kalau "Remember me" dicentang sebelumnya)
     try{
         const savedEmail=localStorage.getItem(REMEMBER_EMAIL_KEY);
@@ -1002,18 +1005,19 @@ authTabLogin.onclick=()=>setCloudAuthMode("login");
 
 authTabRegister.onclick=()=>setCloudAuthMode("register");
 
-// ikon mata: tampil/sembunyikan password
-cloudAuthEye.onclick=()=>{
-
-    const show = cloudAuthPassword.type==="password";
+// ikon mata mengikuti kondisi saat ini:
+// mata dicoret = password tersembunyi, mata terbuka = password terlihat
+function setPasswordVisible(show){
 
     cloudAuthPassword.type = show ? "text" : "password";
 
     cloudAuthEye.innerHTML = show
-        ? '<i class="fa-solid fa-eye-slash"></i>'
-        : '<i class="fa-solid fa-eye"></i>';
+        ? '<i class="fa-solid fa-eye"></i>'
+        : '<i class="fa-solid fa-eye-slash"></i>';
 
-};
+}
+
+cloudAuthEye.onclick=()=>setPasswordVisible(cloudAuthPassword.type==="password");
 
 cloudAuthSkip.onclick=()=>{
 

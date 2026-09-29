@@ -85,6 +85,9 @@ export function renderProjects() {
         }
     };
 
+    // Ikon globe: user biasa (Home maupun My Project) dibawa ke link Invite
+    // kalau diisi; admin selalu ke Website resmi karena dialah yang mengelola
+    // kedua link tersebut.
     let html = "";
 
     projects.forEach((project) => {
@@ -107,7 +110,7 @@ export function renderProjects() {
                     <a
                         class="icon-btn icon-btn-blue"
                         href="${escapeHTML(formatUrl(
-                            (!canEdit && project.websiteInvite) ? project.websiteInvite : project.website
+                            (!isAdmin() && project.websiteInvite) ? project.websiteInvite : project.website
                         ))}"
                         target="_blank"
                         rel="noopener noreferrer"
