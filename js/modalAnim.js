@@ -12,6 +12,17 @@ export function openModalEl(el) {
 
     el.classList.add("show");
 
+    // Selalu mulai dari atas: tanpa ini, posisi scroll terakhir ikut
+    // tersimpan waktu modal ditutup, jadi dibuka lagi malah mentok di bawah.
+    // (harus setelah class "show" supaya elemen sudah tampil & bisa di-scroll)
+    el.scrollTop = 0;
+
+    el.querySelectorAll(".modal-content").forEach((box) => {
+
+        box.scrollTop = 0;
+
+    });
+
     // paksa reflow supaya class "in" ditambahkan di frame
     // berikutnya, jadi browser sempat animasikan transisinya
     requestAnimationFrame(() => {
