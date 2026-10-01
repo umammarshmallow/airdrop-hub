@@ -2,7 +2,8 @@
    RENDER.JS
 ========================================== */
 
-import { formatUrl, sortProjects, statusClass, statusLabel, formatDate, escapeHTML } from "./helpers.js";
+import { formatUrl, statusClass, statusLabel, formatDate, escapeHTML } from "./formatters.js";
+import { sortProjects } from "./projectRules.js";
 import { updateDashboard } from "./dashboard.js";
 import {
     filterProjects,

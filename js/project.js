@@ -22,12 +22,8 @@ import {
 
 import { isAdmin } from "./cloudSync.js";
 
-import {
-    validateProject,
-    showToast,
-    isTaskDueToday,
-    isDeadlineToday
-} from "./helpers.js";
+import { validateProject, isTaskDueToday, isDeadlineToday } from "./projectRules.js";
+import { showToast } from "./uiFeedback.js";
 
 import { showConfirm } from "./dialog.js";
 
@@ -331,7 +327,7 @@ function activeStore() {
 }
 
 /* ==========================================
-   FACADE -- dipakai oleh render.js / event.js / app.js
+   FACADE -- dipakai oleh render.js / event.js / projectsView.js / nav.js
    (mengikuti mode yang sedang aktif)
 ========================================== */
 

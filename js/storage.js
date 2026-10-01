@@ -3,18 +3,12 @@
    Local Storage Manager
 ========================================== */
 
-// "My Project" -> data privat milik masing-masing user (per-uid di cloud).
-export const STORAGE_KEY = "airdropHub";
-
-// "Home" -> data publik/shared, bisa dibaca semua orang, tapi
-// hanya admin (role="admin") yang boleh menyimpan perubahan ke cloud.
-export const HOME_STORAGE_KEY = "airdropHub_home";
-
 // Set true di console browser (atau ubah di sini saat development)
 // untuk melihat log diagnostik non-critical seperti ringkasan cleanup.
 const DEBUG = false;
 
 import { pushToCloud, pushHomeToCloud } from "./cloudSync.js";
+import { STORAGE_KEYS } from "./constants.js";
 
 function readFromKey(key) {
     try {
@@ -43,11 +37,11 @@ function writeToKey(key, projects) {
 }
 
 export function loadProjects() {
-    return readFromKey(STORAGE_KEY);
+    return readFromKey(STORAGE_KEYS.projects);
 }
 
 export function saveProjects(projects) {
-    writeToKey(STORAGE_KEY, projects);
+    writeToKey(STORAGE_KEYS.projects, projects);
     pushToCloud();
 }
 
@@ -56,19 +50,17 @@ export function saveProjects(projects) {
 ========================================== */
 
 export function loadHomeProjects() {
-    return readFromKey(HOME_STORAGE_KEY);
+    return readFromKey(STORAGE_KEYS.homeProjects);
 }
 
 export function saveHomeProjects(projects) {
-    writeToKey(HOME_STORAGE_KEY, projects);
+    writeToKey(STORAGE_KEYS.homeProjects, projects);
     pushHomeToCloud();
 }
 
 /* ==========================================
    DAILY TASK RESET
 ========================================== */
-
-const DAILY_RESET_KEY = "airdropHub_lastReset";
 
 export function resetDailyTasks(projects) {
 
@@ -78,7 +70,7 @@ export function resetDailyTasks(projects) {
     now.getFullYear() + "-" +
     String(now.getMonth() + 1).padStart(2, "0") + "-" +
     String(now.getDate()).padStart(2, "0");
-    const lastReset = localStorage.getItem(DAILY_RESET_KEY);
+    const lastReset = localStorage.getItem(STORAGE_KEYS.lastReset);
 
     if (lastReset === today) {
         return projects;
@@ -101,7 +93,7 @@ export function resetDailyTasks(projects) {
 
     });
 
-    localStorage.setItem(DAILY_RESET_KEY, today);
+    localStorage.setItem(STORAGE_KEYS.lastReset, today);
 
     saveProjects(projects);
 

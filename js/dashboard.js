@@ -2,7 +2,7 @@
    DASHBOARD.JS
 ========================================== */
 
-import { isTaskDueToday, isDeadlineToday } from "./helpers.js";
+import { isTaskDueToday, isDeadlineToday } from "./projectRules.js";
 import { isHomeMode } from "./project.js";
 
 /* Animasikan angka statistik dari nilai lama ke nilai baru.

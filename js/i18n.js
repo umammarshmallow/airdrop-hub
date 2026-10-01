@@ -3,7 +3,7 @@
    Bahasa: English (en) & Indonesia (id)
 ========================================== */
 
-const LANG_KEY = "airdropHub_lang";
+import { STORAGE_KEYS } from "./constants.js";
 
 const dict = {
 
@@ -91,10 +91,6 @@ const dict = {
         "project.low": "Low",
         "project.medium": "Medium",
         "project.high": "High",
-        "project.waitlist": "Waitlist",
-        "project.active": "Active",
-        "project.pending": "Pending",
-        "project.complete": "Completed",
         "project.nameRequired": "Project name is required.",
         "project.chainRequired": "Chain is required.",
         "project.addedSuccess": "Project added successfully.",
@@ -300,10 +296,6 @@ const dict = {
         "project.low": "Rendah",
         "project.medium": "Sedang",
         "project.high": "Tinggi",
-        "project.waitlist": "Waitlist",
-        "project.active": "Aktif",
-        "project.pending": "Pending",
-        "project.complete": "Selesai",
         "project.nameRequired": "Nama project wajib diisi.",
         "project.chainRequired": "Chain wajib diisi.",
         "project.addedSuccess": "Project berhasil ditambahkan.",
@@ -429,7 +421,7 @@ const dict = {
 
 export function getLang() {
 
-    const raw = localStorage.getItem(LANG_KEY);
+    const raw = localStorage.getItem(STORAGE_KEYS.lang);
 
     return raw === "id" ? "id" : "en";
 
@@ -437,7 +429,7 @@ export function getLang() {
 
 export function setLang(lang) {
 
-    localStorage.setItem(LANG_KEY, lang === "id" ? "id" : "en");
+    localStorage.setItem(STORAGE_KEYS.lang, lang === "id" ? "id" : "en");
 
 }
 

@@ -19,16 +19,10 @@
 ========================================== */
 
 import { firebaseConfig } from "./firebaseConfig.js";
-import { addNotification } from "./helpers.js";
+import { addNotification } from "./notifications.js";
 import { t } from "./i18n.js";
-
-const PROJECTS_KEY = "airdropHub";
-const HOME_PROJECTS_KEY = "airdropHub_home";
-const RESET_KEY = "airdropHub_lastReset";
-
-// Doc publik (dibaca semua orang) tempat data Home disimpan.
-const HOME_DOC_COLLECTION = "airdropHubGlobal";
-const HOME_DOC_ID = "home";
+import { statusLabel } from "./formatters.js";
+import { STORAGE_KEYS, FIRESTORE } from "./constants.js";
 
 // Set true saat development untuk melihat log status koneksi cloud sync.
 const DEBUG = false;
@@ -70,11 +64,11 @@ export function getCurrentUser() {
 }
 
 function userDocRef() {
-    return firebase.doc(db, "airdropHubUsers", currentUid);
+    return firebase.doc(db, FIRESTORE.usersCollection, currentUid);
 }
 
 function homeDocRef() {
-    return firebase.doc(db, HOME_DOC_COLLECTION, HOME_DOC_ID);
+    return firebase.doc(db, FIRESTORE.homeCollection, FIRESTORE.homeDocId);
 }
 
 /* ==========================================
@@ -320,8 +314,8 @@ export async function deleteAccountCloud(currentPassword) {
 
     // Akun sudah dihapus permanen -> device ini juga harus bersih dari
     // data privat akun tersebut.
-    localStorage.removeItem(PROJECTS_KEY);
-    localStorage.removeItem(RESET_KEY);
+    localStorage.removeItem(STORAGE_KEYS.projects);
+    localStorage.removeItem(STORAGE_KEYS.lastReset);
 
 }
 
@@ -349,8 +343,8 @@ export async function pullFromCloud() {
 
             const cloud = snap.data();
 
-            if (typeof cloud.projects === "string") localStorage.setItem(PROJECTS_KEY, cloud.projects);
-            if (typeof cloud.lastReset === "string") localStorage.setItem(RESET_KEY, cloud.lastReset);
+            if (typeof cloud.projects === "string") localStorage.setItem(STORAGE_KEYS.projects, cloud.projects);
+            if (typeof cloud.lastReset === "string") localStorage.setItem(STORAGE_KEYS.lastReset, cloud.lastReset);
 
             // Role admin diatur manual di Firestore Console, di dokumen
             // airdropHubUsers/{uid}, dengan menambah field role: "admin".
@@ -365,8 +359,8 @@ export async function pullFromCloud() {
             // datanya bakal ke-upload salah ke akun yang sedang login
             // sekarang. My Project murni privat per-akun, jadi akun yang
             // belum punya data cloud harus mulai dari benar-benar kosong.
-            localStorage.setItem(PROJECTS_KEY, "[]");
-            localStorage.removeItem(RESET_KEY);
+            localStorage.setItem(STORAGE_KEYS.projects, "[]");
+            localStorage.removeItem(STORAGE_KEYS.lastReset);
 
             await pushToCloud(true);
 
@@ -401,8 +395,8 @@ export function pushToCloud(immediate = false) {
             // Firestore Console) TIDAK ikut kehapus tiap kali user
             // menyimpan project.
             await firebase.setDoc(userDocRef(), {
-                projects: localStorage.getItem(PROJECTS_KEY) || "[]",
-                lastReset: localStorage.getItem(RESET_KEY) || "",
+                projects: localStorage.getItem(STORAGE_KEYS.projects) || "[]",
+                lastReset: localStorage.getItem(STORAGE_KEYS.lastReset) || "",
                 updatedAt: firebase.serverTimestamp()
             }, { merge: true });
 
@@ -452,8 +446,6 @@ export function pushToCloud(immediate = false) {
    Admin tidak dinotifikasi atas perubahannya sendiri.
 ========================================== */
 
-const HOME_SEEN_KEY = "airdropHub_homeSeen";
-
 const HOME_NOTIF_GROUP_LIMIT = 3;
 
 function snapshotHome(rawProjects) {
@@ -484,19 +476,9 @@ function saveHomeSeen(rawProjects) {
 
     try {
 
-        localStorage.setItem(HOME_SEEN_KEY, JSON.stringify(snapshotHome(rawProjects)));
+        localStorage.setItem(STORAGE_KEYS.homeSeen, JSON.stringify(snapshotHome(rawProjects)));
 
     } catch (error) { /* storage penuh/diblokir: abaikan */ }
-
-}
-
-function statusLabel(status) {
-
-    const key = "opt.status." + String(status).toLowerCase();
-
-    const label = t(key);
-
-    return label === key ? status : label;
 
 }
 
@@ -508,7 +490,7 @@ function announceHomeChanges(rawProjects) {
 
     try {
 
-        const raw = localStorage.getItem(HOME_SEEN_KEY);
+        const raw = localStorage.getItem(STORAGE_KEYS.homeSeen);
 
         previous = raw ? JSON.parse(raw) : null;
 
@@ -582,7 +564,7 @@ export async function pullHomeFromCloud() {
 
                 try { announceHomeChanges(cloud.projects); } catch (error) { console.warn("[CloudSync] Gagal cek perubahan Home:", error); }
 
-                localStorage.setItem(HOME_PROJECTS_KEY, cloud.projects);
+                localStorage.setItem(STORAGE_KEYS.homeProjects, cloud.projects);
 
             }
 
@@ -605,12 +587,12 @@ export function pushHomeToCloud(immediate = false) {
         try {
 
             await firebase.setDoc(homeDocRef(), {
-                projects: localStorage.getItem(HOME_PROJECTS_KEY) || "[]",
+                projects: localStorage.getItem(STORAGE_KEYS.homeProjects) || "[]",
                 updatedAt: firebase.serverTimestamp()
             }, { merge: true });
 
             // perubahan ini dibuat admin sendiri -> tidak perlu jadi notifikasi di device-nya
-            saveHomeSeen(localStorage.getItem(HOME_PROJECTS_KEY) || "[]");
+            saveHomeSeen(localStorage.getItem(STORAGE_KEYS.homeProjects) || "[]");
 
         } catch (error) {
 

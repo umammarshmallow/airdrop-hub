@@ -3,10 +3,6 @@
 ========================================== */
 
 import {
-    clearAddForm
-} from "./helpers.js";
-
-import {
     openModalEl,
     closeModalEl
 } from "./modalAnim.js";
@@ -58,6 +54,32 @@ function resetModalScroll(modalEl) {
         content.scrollTop = 0;
 
     }
+
+}
+
+/* ==========================================
+   CLEAR ADD FORM
+========================================== */
+
+function clearAddForm() {
+
+    document.getElementById("name").value = "";
+
+    document.getElementById("network").value = "";
+
+    document.getElementById("website").value = "";
+
+    document.getElementById("websiteInvite").value = "";
+
+    document.getElementById("deadline").value = "";
+
+    document.getElementById("note").value = "";
+
+    document.getElementById("taskType").selectedIndex = 0;
+
+    document.getElementById("priority").selectedIndex = 0;
+
+    document.getElementById("status").selectedIndex = 0;
 
 }
 
