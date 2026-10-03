@@ -124,7 +124,7 @@ header{
 .notif-item[data-type="error"] .notif-icon{ color:#f0616b; }
 .notif-item[data-type="warning"] .notif-icon{ color:var(--warning); }
 .notif-item[data-type="info"] .notif-icon{ color:var(--accent); }
-.notif-item .notif-body{ min-width:0; }
+.notif-item .notif-body{ min-width:0; flex:1; }
 .notif-item .notif-message{ color:var(--text); line-height:1.4; }
 .notif-item .notif-time{ color:var(--text-faint); font-size:11px; margin-top:4px; }
 
@@ -142,6 +142,54 @@ header{
 }
 .notif-action-btn:hover{ background:var(--accent); color:#0a0d14; }
 .notif-action-btn i{ font-size:11px; }
+
+.notif-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.notif-actions:empty{ display:none; }
+
+.notif-read-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:8px;
+  padding:6px 12px;
+  background:transparent;
+  color:var(--text-muted);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:12px; font-weight:600;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease;
+}
+.notif-read-btn:hover{ background:var(--surface-2); color:var(--text); }
+.notif-read-btn i{ font-size:11px; }
+
+.notif-footer{ display:flex; gap:8px; margin-top:14px; }
+.notif-footer-btn{
+  flex:1;
+  background:var(--surface-3);
+  color:var(--text-muted);
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  padding:11px 8px;
+  font-size:13px;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease, opacity .15s ease;
+}
+.notif-footer-btn:hover:not(:disabled){ background:var(--surface-2); color:var(--text); }
+.notif-footer-btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+.notif-dismiss-btn{
+  flex-shrink:0;
+  align-self:flex-start;
+  width:24px; height:24px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:transparent;
+  color:var(--text-faint);
+  border:none;
+  border-radius:var(--radius-sm);
+  font-size:13px;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease;
+}
+.notif-dismiss-btn:hover{ background:var(--surface-2); color:#f0616b; }
 
 /* ==========================================================
    SECTION HEADINGS
