@@ -413,9 +413,14 @@
         No notifications yet.
       </p>
 
-      <button id="notifClearBtn" style="margin-top:14px; width:100%; background:var(--surface-3); color:var(--text-muted); border:1px solid var(--border); border-radius:var(--radius-md); padding:11px; font-size:13.5px; cursor:pointer;" data-i18n="notif.clearAll">
-        Clear All
-      </button>
+      <div class="notif-footer">
+        <button id="notifMarkAllBtn" class="notif-footer-btn" data-i18n="notif.markAllRead">
+          Mark all as read
+        </button>
+        <button id="notifClearBtn" class="notif-footer-btn" data-i18n="notif.clearAll">
+          Clear Read
+        </button>
+      </div>
     </div>
   </div>
 
