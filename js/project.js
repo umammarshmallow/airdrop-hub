@@ -35,6 +35,34 @@ import {
 } from "./modal.js";
 
 /* ==========================================
+   SINKRONISASI EDIT HOME -> MY PROJECT
+   Salinan project di My Project ditandai dengan field
+   homeId (id project aslinya di Home).
+   - Admin: saat mengedit project di Home, field yang
+     DIUBAH diterapkan otomatis ke salinannya.
+   - User: salinan tidak berubah sendiri; user menekan
+     tombol "Perbarui" pada notifikasi, lalu field yang
+     diubah admin diambil dari Home versi terbaru.
+   Perubahan pribadi di field lain tetap aman.
+========================================== */
+
+const HOME_SYNC_FIELDS = [
+    "name",
+    "network",
+    "website",
+    "websiteInvite",
+    "taskType",
+    "deadline",
+    "priority",
+    "status",
+    "note"
+];
+
+function sameKey(a, b) {
+    return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
+}
+
+/* ==========================================
    FACTORY STORE
 ========================================== */
 
@@ -60,6 +88,45 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
     }
 
+    // Mencari salinan project Home di store ini: lewat homeId dulu; kalau
+    // belum ada yang tertaut (salinan lama), cocokkan nama + chain dengan
+    // salah satu petunjuk (hints) -- yang belum tertaut saja.
+    function findHomeCopies(homeId, hints) {
+
+        const linked = projects.filter(project => project.homeId === homeId);
+
+        if (linked.length) return linked;
+
+        return projects.filter(project =>
+            project.homeId == null
+            && hints.some(hint =>
+                sameKey(project.name, hint.name)
+                && sameKey(project.network, hint.network)
+            )
+        );
+
+    }
+
+    function applyFieldsToCopies(targets, homeId, fields, source) {
+
+        targets.forEach(project => {
+
+            fields.forEach(field => {
+                project[field] = source[field];
+            });
+
+            project.homeId = homeId;
+
+            project.updatedAt = Date.now();
+
+            project.staleWarned = false;
+
+        });
+
+        persist();
+
+    }
+
     return {
 
         getProjects() {
@@ -73,7 +140,9 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
         // silent=true dipakai saat project ditambahkan otomatis sebagai
         // salinan (data sudah divalidasi, modal sudah ditutup, dan toast
         // sudah ditampilkan oleh penambahan utamanya).
-        async addProject(data, { silent = false } = {}) {
+        // homeId: id project asli di Home, supaya edit di Home bisa
+        // diteruskan ke salinan ini (lihat applyHomeEdit).
+        async addProject(data, { silent = false, homeId = null } = {}) {
 
             if (!checkPermission()) return false;
 
@@ -109,7 +178,10 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
                 createdAt: Date.now(),
 
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+
+                // penanda salinan dari Home (id project aslinya)
+                ...(homeId != null ? { homeId } : {})
 
             });
 
@@ -218,6 +290,52 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             showToast("Project updated successfully.");
 
             return true;
+
+        },
+
+        // Meneruskan edit project Home ke salinannya di My Project (admin,
+        // otomatis). Hanya field yang berbeda antara before dan after.
+        applyHomeEdit(homeId, before, after) {
+
+            const changedFields = HOME_SYNC_FIELDS.filter(
+                field => String(before[field] ?? "") !== String(after[field] ?? "")
+            );
+
+            if (!changedFields.length) return false;
+
+            const targets = findHomeCopies(homeId, [
+                { name: before.name, network: before.network }
+            ]);
+
+            if (!targets.length) return false;
+
+            applyFieldsToCopies(targets, homeId, changedFields, after);
+
+            return true;
+
+        },
+
+        // Ada salinan project Home ini di store?
+        hasHomeCopy(homeId, hints) {
+            return findHomeCopies(homeId, hints).length > 0;
+        },
+
+        // Menerapkan field tertentu dari project Home (versi terbaru) ke
+        // salinannya. Dipakai tombol "Perbarui" di notifikasi (user).
+        // Mengembalikan jumlah salinan yang diperbarui.
+        syncFromHome(homeId, fields, home, hints) {
+
+            const validFields = (fields || []).filter(
+                field => HOME_SYNC_FIELDS.includes(field)
+            );
+
+            const targets = findHomeCopies(homeId, hints);
+
+            if (!validFields.length || !targets.length) return 0;
+
+            applyFieldsToCopies(targets, homeId, validFields, home);
+
+            return targets.length;
 
         },
 
@@ -351,7 +469,7 @@ export function copyHomeProjectToMyProject(id) {
         priority: source.priority,
         status: source.status,
         note: source.note
-    });
+    }, { homeId: source.id });
 
 }
 
@@ -370,7 +488,17 @@ export async function addProject(data) {
 
     const success = await homeProjectStore.addProject(data);
 
-    if (success) await myProjectStore.addProject(data, { silent: true });
+    if (success) {
+
+        // id project yang baru masuk Home = elemen terakhir
+        const homeList = homeProjectStore.getProjects();
+
+        await myProjectStore.addProject(data, {
+            silent: true,
+            homeId: homeList[homeList.length - 1].id
+        });
+
+    }
 
     return success;
 
@@ -384,8 +512,86 @@ export function editProject(id) {
     return activeStore().editProject(id);
 }
 
-export function updateProject(data) {
-    return activeStore().updateProject(data);
+// Khusus admin di halaman Home: edit project Home juga diteruskan ke
+// salinannya di My Project milik admin (hanya field yang diubah).
+export async function updateProject(data) {
+
+    if (!(isHomeMode() && isAdmin())) return activeStore().updateProject(data);
+
+    const homeId = Number(data.id);
+
+    const found = homeProjectStore.getProjects().find(
+        project => project.id === homeId
+    );
+
+    // salin dulu, karena updateProject mengubah objek aslinya
+    const before = found ? { ...found } : null;
+
+    const success = await homeProjectStore.updateProject(data);
+
+    if (success && before) {
+
+        const after = homeProjectStore.getProjects().find(
+            project => project.id === homeId
+        );
+
+        if (after) myProjectStore.applyHomeEdit(homeId, before, after);
+
+    }
+
+    return success;
+
+}
+
+// Petunjuk pencarian salinan lama (tanpa homeId): nama + chain saat
+// notifikasi dibuat, dan nama + chain Home saat ini.
+function homeCopyHints(meta, home) {
+
+    return [
+        { name: meta.oldName, network: meta.oldNetwork },
+        { name: home.name, network: home.network }
+    ];
+
+}
+
+function findHomeProject(meta) {
+
+    return homeProjectStore.getProjects().find(
+        project => project.id === Number(meta.homeId)
+    );
+
+}
+
+// Tombol "Perbarui" di notifikasi hanya tampil kalau project Home-nya
+// masih ada DAN user punya salinannya di My Project.
+export function canSyncHomeEdit(meta) {
+
+    if (!meta || meta.done) return false;
+
+    const home = findHomeProject(meta);
+
+    if (!home) return false;
+
+    return myProjectStore.hasHomeCopy(Number(meta.homeId), homeCopyHints(meta, home));
+
+}
+
+// Mengembalikan: "ok" | "noHome" | "noCopy"
+export function syncHomeEdit(meta) {
+
+    const home = findHomeProject(meta);
+
+    if (!home) return "noHome";
+
+    const updated = myProjectStore.syncFromHome(
+        Number(meta.homeId),
+        meta.fields,
+        home,
+        homeCopyHints(meta, home)
+    );
+
+    return updated > 0 ? "ok" : "noCopy";
+
 }
 
 export function filterProjects(keyword, status, task, quickFilter) {

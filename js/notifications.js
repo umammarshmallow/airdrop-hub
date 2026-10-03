@@ -61,9 +61,13 @@ export function markAllNotificationsRead() {
 
 }
 
-export function clearNotifications() {
+// Hanya menghapus notifikasi yang SUDAH dibaca; yang belum dibaca tetap
+// ada (dan titik merah di lonceng tetap menyala).
+export function clearReadNotifications() {
 
-    localStorage.setItem(STORAGE_KEYS.notifications, "[]");
+    const list = getNotifications().filter((n) => !n.read);
+
+    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(list));
 
     window.dispatchEvent(new CustomEvent(EVENTS.notification));
 
@@ -74,6 +78,42 @@ export function dismissNotificationsByAction(action) {
     const list = getNotifications().filter(
         (n) => !(n.meta && n.meta.action === action)
     );
+
+    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(list));
+
+    window.dispatchEvent(new CustomEvent(EVENTS.notification));
+
+}
+
+// Menggabungkan data baru ke meta satu notifikasi (mis. { done: true }
+// setelah tombol "Perbarui" dipakai).
+export function updateNotificationMeta(id, patch) {
+
+    const list = getNotifications().map((n) => (
+        n.id === id ? { ...n, meta: { ...(n.meta || {}), ...patch } } : n
+    ));
+
+    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(list));
+
+    window.dispatchEvent(new CustomEvent(EVENTS.notification));
+
+}
+
+export function markNotificationRead(id) {
+
+    const list = getNotifications().map((n) => (
+        n.id === id ? { ...n, read: true } : n
+    ));
+
+    localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(list));
+
+    window.dispatchEvent(new CustomEvent(EVENTS.notification));
+
+}
+
+export function removeNotification(id) {
+
+    const list = getNotifications().filter((n) => n.id !== id);
 
     localStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(list));
 

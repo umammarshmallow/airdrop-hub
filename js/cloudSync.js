@@ -437,16 +437,42 @@ export function pushToCloud(immediate = false) {
    NOTIFIKASI PERUBAHAN HOME
    Admin tidak "mengirim" apa pun secara manual: tiap
    user menyimpan snapshot terakhir Home yang pernah dilihat
-   (id -> nama & status). Setiap Home ditarik dari cloud,
-   snapshot dibandingkan dengan data terbaru:
+   (id -> nama, status, chain, deadline, prioritas, jenis task,
+   hash catatan). Setiap Home ditarik dari cloud, snapshot
+   dibandingkan dengan data terbaru:
    - id baru            -> notifikasi "project baru"
+   - id hilang          -> notifikasi "project dihapus"
    - status berubah     -> notifikasi "status project berubah"
+   - nama berubah       -> notifikasi "project ganti nama"
+   - chain/deadline/prioritas/jenis task/catatan berubah
+                        -> notifikasi "project diperbarui" (+ daftar field)
+   Notifikasi per-project (status/nama/edit) membawa meta
+   { action: "syncHomeEdit" } -> tombol "Perbarui" di Notification
+   Center. Notifikasi ringkasan (> 3 project) tidak punya tombol.
+   Snapshot lama (hanya nama & status) tetap aman: field yang
+   belum tercatat di snapshot dilewati, tidak dianggap berubah.
    Pembukaan pertama (belum ada snapshot) hanya menyimpan
    baseline supaya user baru tidak dibanjiri notifikasi.
    Admin tidak dinotifikasi atas perubahannya sendiri.
 ========================================== */
 
 const HOME_NOTIF_GROUP_LIMIT = 3;
+
+// Hash ringan untuk catatan: cukup untuk mendeteksi "berubah atau tidak"
+// tanpa menyimpan seluruh isi catatan di localStorage.
+function hashText(text) {
+
+    let hash = 5381;
+
+    for (let i = 0; i < text.length; i++) {
+
+        hash = ((hash << 5) + hash + text.charCodeAt(i)) | 0;
+
+    }
+
+    return String(hash);
+
+}
 
 function snapshotHome(rawProjects) {
 
@@ -460,7 +486,19 @@ function snapshotHome(rawProjects) {
 
             list.forEach((p) => {
 
-                if (p && p.id != null) map[p.id] = { name: String(p.name || ""), status: String(p.status || "") };
+                if (p && p.id != null) {
+
+                    map[p.id] = {
+                        name: String(p.name || ""),
+                        status: String(p.status || ""),
+                        network: String(p.network || ""),
+                        deadline: String(p.deadline || ""),
+                        priority: String(p.priority || ""),
+                        taskType: String(p.taskType || ""),
+                        noteHash: hashText(String(p.note || ""))
+                    };
+
+                }
 
             });
 
@@ -506,13 +544,82 @@ function announceHomeChanges(rawProjects) {
     }
 
     const added = [];
+    const removed = [];
+    const renamed = [];
     const changed = [];
+    const edited = [];
+
+    // field selain nama & status yang dipantau -> kunci i18n label-nya
+    // [key snapshot, kunci i18n label, nama field project untuk tombol "Perbarui"]
+    const EDIT_FIELDS = [
+        ["network", "notif.fieldChain", "network"],
+        ["deadline", "notif.fieldDeadline", "deadline"],
+        ["priority", "notif.fieldPriority", "priority"],
+        ["taskType", "notif.fieldTaskType", "taskType"],
+        ["noteHash", "notif.fieldNote", "note"]
+    ];
+
+    // Meta notifikasi -> memunculkan tombol "Perbarui" (kalau user punya
+    // salinan project ini di My Project). oldName/oldNetwork dipakai untuk
+    // mencocokkan salinan lama yang belum bertanda homeId.
+    const syncMeta = (id, before, fields) => ({
+        action: "syncHomeEdit",
+        homeId: Number(id),
+        fields,
+        oldName: before.name,
+        oldNetwork: before.network
+    });
 
     Object.keys(current).forEach((id) => {
 
-        if (!previous[id]) added.push(current[id]);
+        const now = current[id];
+        const before = previous[id];
 
-        else if (previous[id].status !== current[id].status) changed.push(current[id]);
+        if (!before) {
+
+            added.push(now);
+
+            return;
+
+        }
+
+        // before.<field> === undefined berarti snapshot lama belum mencatat
+        // field itu -> dilewati supaya tidak dianggap "berubah" semua.
+        if (before.status !== now.status) {
+
+            changed.push({ ...now, meta: syncMeta(id, before, ["status"]) });
+
+        }
+
+        if (before.name !== now.name) {
+
+            renamed.push({
+                oldName: before.name,
+                newName: now.name,
+                meta: syncMeta(id, before, ["name"])
+            });
+
+        }
+
+        const diff = EDIT_FIELDS.filter(
+            ([key]) => before[key] !== undefined && before[key] !== now[key]
+        );
+
+        if (diff.length) {
+
+            edited.push({
+                name: now.name,
+                fields: diff.map(([, labelKey]) => t(labelKey)),
+                meta: syncMeta(id, before, diff.map(([, , syncKey]) => syncKey))
+            });
+
+        }
+
+    });
+
+    Object.keys(previous).forEach((id) => {
+
+        if (!current[id]) removed.push(previous[id]);
 
     });
 
@@ -526,6 +633,16 @@ function announceHomeChanges(rawProjects) {
 
     }
 
+    if (removed.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeRemovedMany").replace("{count}", removed.length), "info");
+
+    } else {
+
+        removed.forEach((p) => addNotification(t("notif.homeRemoved").replace("{name}", p.name), "info"));
+
+    }
+
     if (changed.length > HOME_NOTIF_GROUP_LIMIT) {
 
         addNotification(t("notif.homeStatusMany").replace("{count}", changed.length), "info");
@@ -534,7 +651,36 @@ function announceHomeChanges(rawProjects) {
 
         changed.forEach((p) => addNotification(
             t("notif.homeStatus").replace("{name}", p.name).replace("{status}", statusLabel(p.status)),
-            "info"
+            "info",
+            p.meta
+        ));
+
+    }
+
+    if (renamed.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeRenamedMany").replace("{count}", renamed.length), "info");
+
+    } else {
+
+        renamed.forEach((p) => addNotification(
+            t("notif.homeRenamed").replace("{old}", p.oldName).replace("{new}", p.newName),
+            "info",
+            p.meta
+        ));
+
+    }
+
+    if (edited.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeEditedMany").replace("{count}", edited.length), "info");
+
+    } else {
+
+        edited.forEach((p) => addNotification(
+            t("notif.homeEdited").replace("{name}", p.name).replace("{fields}", p.fields.join(", ")),
+            "info",
+            p.meta
         ));
 
     }
