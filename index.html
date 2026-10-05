@@ -111,7 +111,7 @@
       </div>
     </section>
 
-    <div class="chip-scroll chip-scroll-tight" id="taskChips">
+    <div class="chip-scroll" id="taskChips">
       <button class="chip-filter selected" data-target="filterTask" data-value="All" data-i18n="filter.allTasks">All Tasks</button>
       <button class="chip-filter" data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</button>
       <button class="chip-filter" data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</button>
@@ -120,13 +120,6 @@
       <button class="chip-filter" data-target="filterTask" data-value="Other" data-i18n="project.other">Other</button>
     </div>
 
-    <div class="chip-scroll" id="checkInChips">
-      <button class="chip-filter selected" data-target="filterCheckIn" data-value="All" data-i18n="filter.allCheckIns">All Check-ins</button>
-      <button class="chip-filter" data-target="filterCheckIn" data-value="Daily" data-i18n="project.daily">Daily</button>
-      <button class="chip-filter" data-target="filterCheckIn" data-value="Weekly" data-i18n="project.weekly">Weekly</button>
-      <button class="chip-filter" data-target="filterCheckIn" data-value="Monthly" data-i18n="project.monthly">Monthly</button>
-      <button class="chip-filter" data-target="filterCheckIn" data-value="One Time" data-i18n="filter.oneTime">One Time</button>
-    </div>
 
     <div class="toolbar toolbar-hidden">
       <div class="dropdown dropdown-hidden">
@@ -158,19 +151,6 @@
         </div>
       </div>
 
-      <div class="dropdown dropdown-hidden">
-        <button class="dropbtn">
-          <span><i class="fa-solid fa-rotate"></i> <span class="label" data-i18n="project.checkIn">Check-in</span></span>
-          <i class="fa-solid fa-chevron-down arrow"></i>
-        </button>
-        <div class="dropdown-content">
-          <div data-target="filterCheckIn" data-value="All" class="selected" data-i18n="filter.allCheckIns">All Check-ins</div>
-          <div data-target="filterCheckIn" data-value="Daily" data-i18n="project.daily">Daily</div>
-          <div data-target="filterCheckIn" data-value="Weekly" data-i18n="project.weekly">Weekly</div>
-          <div data-target="filterCheckIn" data-value="Monthly" data-i18n="project.monthly">Monthly</div>
-          <div data-target="filterCheckIn" data-value="One Time" data-i18n="filter.oneTime">One Time</div>
-        </div>
-      </div>
     </div>
 
     <select id="filterStatus" hidden>
