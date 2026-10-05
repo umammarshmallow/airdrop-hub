@@ -286,7 +286,6 @@ flowSteps.forEach(step => {
 const quickFilterSelect = document.getElementById("quickFilter");
 const quickFilterCards = document.querySelectorAll(".hero-stat[data-quick]");
 const taskDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterTask"]'));
-const checkInDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterCheckIn"]'));
 
 function clearStatusTaskFilters() {
 
@@ -306,13 +305,6 @@ function clearStatusTaskFilters() {
 
     }
 
-    if (checkInDropdown) {
-
-        const allCheckInItem = checkInDropdown.querySelector('[data-value="All"]');
-
-        if (allCheckInItem) selectDropdownItem(checkInDropdown, allCheckInItem);
-
-    }
 
 }
 
@@ -344,7 +336,7 @@ quickFilterCards.forEach(card => {
 });
 
 /* =====================================================
-   CHIP FILTER (Task Type & Check-in)
+   CHIP FILTER (Task Type)
    Chip hanya tampilan; nilainya tetap lewat dropdown tersembunyi
    dan select tersembunyi dengan target yang sama.
 ===================================================== */
@@ -408,7 +400,6 @@ function setupChipFilter(target, dropdown) {
 }
 
 setupChipFilter("filterTask", taskDropdown);
-setupChipFilter("filterCheckIn", checkInDropdown);
 
 /* =====================================================
    RESET SEMUA FILTER (dipanggil saat pindah menu/mode,
