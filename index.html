@@ -111,13 +111,21 @@
       </div>
     </section>
 
-    <div class="chip-scroll" id="taskChips">
+    <div class="chip-scroll chip-scroll-tight" id="taskChips">
       <button class="chip-filter selected" data-target="filterTask" data-value="All" data-i18n="filter.allTasks">All Tasks</button>
-      <button class="chip-filter" data-target="filterTask" data-value="One Time" data-i18n="filter.oneTime">One Time</button>
-      <button class="chip-filter" data-target="filterTask" data-value="Daily" data-i18n="project.daily">Daily</button>
-      <button class="chip-filter" data-target="filterTask" data-value="Weekly" data-i18n="project.weekly">Weekly</button>
       <button class="chip-filter" data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</button>
       <button class="chip-filter" data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Social" data-i18n="project.social">Social</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Node" data-i18n="project.node">Node</button>
+      <button class="chip-filter" data-target="filterTask" data-value="Other" data-i18n="project.other">Other</button>
+    </div>
+
+    <div class="chip-scroll" id="checkInChips">
+      <button class="chip-filter selected" data-target="filterCheckIn" data-value="All" data-i18n="filter.allCheckIns">All Check-ins</button>
+      <button class="chip-filter" data-target="filterCheckIn" data-value="Daily" data-i18n="project.daily">Daily</button>
+      <button class="chip-filter" data-target="filterCheckIn" data-value="Weekly" data-i18n="project.weekly">Weekly</button>
+      <button class="chip-filter" data-target="filterCheckIn" data-value="Monthly" data-i18n="project.monthly">Monthly</button>
+      <button class="chip-filter" data-target="filterCheckIn" data-value="One Time" data-i18n="filter.oneTime">One Time</button>
     </div>
 
     <div class="toolbar toolbar-hidden">
@@ -142,11 +150,25 @@
         </button>
         <div class="dropdown-content">
           <div data-target="filterTask" data-value="All" class="selected" data-i18n="filter.allTasks">All Tasks</div>
-          <div data-target="filterTask" data-value="One Time" data-i18n="filter.oneTime">One Time</div>
-          <div data-target="filterTask" data-value="Daily" data-i18n="project.daily">Daily</div>
-          <div data-target="filterTask" data-value="Weekly" data-i18n="project.weekly">Weekly</div>
           <div data-target="filterTask" data-value="Testnet" data-i18n="project.testnet">Testnet</div>
           <div data-target="filterTask" data-value="Mainnet" data-i18n="project.mainnet">Mainnet</div>
+          <div data-target="filterTask" data-value="Social" data-i18n="project.social">Social</div>
+          <div data-target="filterTask" data-value="Node" data-i18n="project.node">Node</div>
+          <div data-target="filterTask" data-value="Other" data-i18n="project.other">Other</div>
+        </div>
+      </div>
+
+      <div class="dropdown dropdown-hidden">
+        <button class="dropbtn">
+          <span><i class="fa-solid fa-rotate"></i> <span class="label" data-i18n="project.checkIn">Check-in</span></span>
+          <i class="fa-solid fa-chevron-down arrow"></i>
+        </button>
+        <div class="dropdown-content">
+          <div data-target="filterCheckIn" data-value="All" class="selected" data-i18n="filter.allCheckIns">All Check-ins</div>
+          <div data-target="filterCheckIn" data-value="Daily" data-i18n="project.daily">Daily</div>
+          <div data-target="filterCheckIn" data-value="Weekly" data-i18n="project.weekly">Weekly</div>
+          <div data-target="filterCheckIn" data-value="Monthly" data-i18n="project.monthly">Monthly</div>
+          <div data-target="filterCheckIn" data-value="One Time" data-i18n="filter.oneTime">One Time</div>
         </div>
       </div>
     </div>
@@ -160,11 +182,18 @@
     </select>
     <select id="filterTask" hidden>
       <option value="All"></option>
-      <option value="One Time"></option>
-      <option value="Daily"></option>
-      <option value="Weekly"></option>
       <option value="Testnet"></option>
       <option value="Mainnet"></option>
+      <option value="Social"></option>
+      <option value="Node"></option>
+      <option value="Other"></option>
+    </select>
+    <select id="filterCheckIn" hidden>
+      <option value="All"></option>
+      <option value="Daily"></option>
+      <option value="Weekly"></option>
+      <option value="Monthly"></option>
+      <option value="One Time"></option>
     </select>
     <select id="quickFilter" hidden>
       <option value="None"></option>
@@ -298,12 +327,28 @@
 
       <label class="field-label" for="taskType" data-i18n="project.taskType">Task Type</label>
       <select id="taskType">
-        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
-        <option value="Daily" data-i18n="project.daily">Daily</option>
-        <option value="Weekly" data-i18n="project.weekly">Weekly</option>
         <option value="Testnet" data-i18n="project.testnet">Testnet</option>
         <option value="Mainnet" data-i18n="project.mainnet">Mainnet</option>
+        <option value="Social" data-i18n="project.social">Social</option>
+        <option value="Node" data-i18n="project.node">Node</option>
+        <option value="Other" data-i18n="project.other">Other</option>
       </select>
+
+      <label class="field-label" for="checkIn" data-i18n="project.checkIn">Check-in</label>
+      <select id="checkIn">
+        <option value="Daily" data-i18n="project.daily">Daily</option>
+        <option value="Weekly" data-i18n="project.weekly">Weekly</option>
+        <option value="Monthly" data-i18n="project.monthly">Monthly</option>
+        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
+      </select>
+
+      <div id="missionField" style="display:none;">
+        <label class="field-label" for="mission" data-i18n="project.mission">Mission</label>
+        <select id="mission">
+          <option value="New" data-i18n="project.missionNew">New Mission</option>
+          <option value="None" data-i18n="project.missionNone" selected>None</option>
+        </select>
+      </div>
 
       <label class="field-label" for="deadline" data-i18n="project.deadline">Deadline</label>
       <input type="date" id="deadline">
@@ -362,12 +407,28 @@
 
       <label class="field-label" for="editTaskType" data-i18n="project.taskType">Task Type</label>
       <select id="editTaskType">
-        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
-        <option value="Daily" data-i18n="project.daily">Daily</option>
-        <option value="Weekly" data-i18n="project.weekly">Weekly</option>
         <option value="Testnet" data-i18n="project.testnet">Testnet</option>
         <option value="Mainnet" data-i18n="project.mainnet">Mainnet</option>
+        <option value="Social" data-i18n="project.social">Social</option>
+        <option value="Node" data-i18n="project.node">Node</option>
+        <option value="Other" data-i18n="project.other">Other</option>
       </select>
+
+      <label class="field-label" for="editCheckIn" data-i18n="project.checkIn">Check-in</label>
+      <select id="editCheckIn">
+        <option value="Daily" data-i18n="project.daily">Daily</option>
+        <option value="Weekly" data-i18n="project.weekly">Weekly</option>
+        <option value="Monthly" data-i18n="project.monthly">Monthly</option>
+        <option value="One Time" data-i18n="filter.oneTime">One Time</option>
+      </select>
+
+      <div id="editMissionField" style="display:none;">
+        <label class="field-label" for="editMission" data-i18n="project.mission">Mission</label>
+        <select id="editMission">
+          <option value="New" data-i18n="project.missionNew">New Mission</option>
+          <option value="None" data-i18n="project.missionNone" selected>None</option>
+        </select>
+      </div>
 
       <label class="field-label" for="editDeadline" data-i18n="project.deadline">Deadline</label>
       <input type="date" id="editDeadline">
