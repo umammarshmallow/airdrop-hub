@@ -10,6 +10,7 @@
 }
 
 .search-input-wrap{ flex:1; min-width:0; position:relative; }
+.search-form{ margin:0; padding:0; border:0; }
 
 .search-input-wrap::before{
   content:"\f002";
