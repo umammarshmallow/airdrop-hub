@@ -415,20 +415,40 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
   padding:14px 22px 18px;
 }
 
-.side-menu-divider{
-  height:1px;
-  background:var(--border-soft);
-  margin:6px 0;
+/* Pemisah antar-grup dimatikan: setiap item sudah punya garis bawah sendiri,
+   jadi menu tampil sebagai 1 daftar utuh (tidak dobel garis / terpetak). */
+.side-menu-divider{ display:none; }
+
+/* Tombol (Pindah Akun / Keluar) disamakan ukurannya dengan item div lain */
+.side-menu-btn{
+  width:100%;
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--border-soft);
+  border-radius:0;
+  text-align:left;
+  font:inherit;
+  line-height:inherit;
+  cursor:pointer;
+  -webkit-appearance:none; appearance:none;
 }
+.side-menu-btn:not(.danger){ color:var(--text-muted); }
+#profileLogoutWrap .side-menu-btn:last-child{ border-bottom:0; }
 
 .side-menu-item.danger{ color:#f0616b; }
 .side-menu-item.danger i{ color:#f0616b; }
 .side-menu-item.danger:hover{ background:rgba(240,97,107,.1); }
 
+/* Kartu "Belum Login" dibuat menyatu dengan daftar menu:
+   tanpa kotak/border sendiri, lebar penuh, hanya garis bawah seperti item lain. */
 #profileLoggedOutView .profile-guest-card{
-  margin-left:22px; margin-right:22px;
-  width:calc(100% - 44px);
-  padding:22px 18px;
+  margin:0;
+  width:100%;
+  padding:22px 22px 24px;
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--border-soft);
+  border-radius:0;
 }
 
 /* ==========================================================
