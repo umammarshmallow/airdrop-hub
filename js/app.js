@@ -27,9 +27,7 @@ import { initAuthUI } from "./authUI.js";
 import { initForgotPassword } from "./forgotPassword.js";
 import { initVerifyEmail, showVerifyEmailModal } from "./verifyEmail.js";
 import { initProfilePage, refreshProfilePage } from "./profilePage.js";
-import { refreshProjectsView, refreshHomeView } from "./projectsView.js";
-import { dismissNotificationsByAction } from "./notifications.js";
-import { refreshNotifBadge } from "./notificationsUI.js";
+import { refreshProjectsView } from "./projectsView.js";
 import { runCloudSyncInBackground } from "./cloudStartup.js";
 
 /* ==========================================
@@ -40,25 +38,8 @@ initNav();
 initSettings();
 initPwa();
 initNotificationsUI();
-// Setelah login Google berhasil: segarkan semua tampilan di tempat
-// (tanpa reload halaman, jadi tidak kembali ke layar login).
-async function handleSignedIn() {
-
-    refreshProfilePage();
-
-    dismissNotificationsByAction("login");
-    refreshNotifBadge();
-
-    refreshProjectsView(false);
-
-    // Peran admin/role bisa berubah setelah login: tarik ulang data Home
-    await refreshHomeView();
-
-}
-
 initAuthUI({
     onAuthenticated: refreshProfilePage,
-    onSignedIn: handleSignedIn,
     onNeedsVerification: showVerifyEmailModal
 });
 initVerifyEmail({ onLogout: refreshProfilePage });
