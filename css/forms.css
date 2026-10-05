@@ -11,29 +11,31 @@
 
 .search-input-wrap{ flex:1; min-width:0; position:relative; }
 
-.search::before{
+.search-input-wrap::before{
   content:"\f002";
   font-family:'Font Awesome 6 Free';
   font-weight:900;
   position:absolute;
-  left:16px; top:50%; transform:translateY(-50%);
+  left:15px; top:50%; transform:translateY(-50%);
   color:var(--text-faint);
-  font-size:15px;
+  font-size:14px;
   pointer-events:none;
+  z-index:1;
 }
 
 .search input{
   width:100%;
+  height:46px;
   background:var(--surface);
   color:var(--text);
-  padding:14px 16px 14px 42px;
+  padding:0 14px 0 40px;
   border-radius:var(--radius-md);
   border:1px solid var(--border);
-  font-size:14.5px;
+  font-size:14px;
   transition:.2s;
 }
 
-.search input::placeholder{ color:var(--text-faint); }
+.search input::placeholder{ color:var(--text-faint); font-size:13.5px; }
 .search input:focus{ border-color:var(--accent-line); background:var(--surface-2); }
 
 /* Icon-only dropdown (Sort, sejajar search bar) */
