@@ -148,7 +148,7 @@ export function renderProjects() {
                        : ""
                     }
 
-                    ${project.status === "Active" && !isHomeMode()
+                    ${project.status === "Active" && !isHomeMode() && (project.checkIn === "Daily" || project.mission === "New")
                         ? `
                             <button
                                 class="icon-btn icon-btn-green"
@@ -168,14 +168,6 @@ export function renderProjects() {
 
             </div>
 
-            <div class="card-checkin">
-                <span class="chip"><i class="fa-solid fa-rotate" aria-hidden="true"></i> ${checkInLabel(project.checkIn)}</span>
-                ${project.mission === "New"
-                    ? `<span class="chip chip-mission"><i class="fa-solid fa-bolt" aria-hidden="true"></i> ${t("project.missionNew")}</span>`
-                    : ""
-                }
-            </div>
-
             <button
                 class="detail-toggle"
                 data-action="toggle"
@@ -187,12 +179,6 @@ export function renderProjects() {
             </button>
 
             <div class="project-detail" id="detail-${project.id}">
-
-                <div class="chip-group">
-
-                    <span class="chip"><i class="fa-solid fa-link" aria-hidden="true"></i> ${escapeHTML(project.network)}</span>
-
-                </div>
 
                 <div class="info-grid">
 
@@ -217,6 +203,14 @@ export function renderProjects() {
                         <div>
                             <div class="info-label">${t("project.priority")}</div>
                             <div class="info-value">${priorityLabel(project.priority)}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-tile">
+                        <i class="fa-solid fa-link info-icon" aria-hidden="true"></i>
+                        <div>
+                            <div class="info-label">${t("project.chain")}</div>
+                            <div class="info-value">${escapeHTML(project.network)}</div>
                         </div>
                     </div>
 
