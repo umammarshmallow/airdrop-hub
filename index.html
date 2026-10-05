@@ -96,7 +96,9 @@
 
     <section class="search search-with-sort">
       <div class="search-input-wrap">
-        <input type="search" id="search" name="project-search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="search" data-lpignore="true" data-1p-ignore placeholder="Search projects by name or chain..." data-i18n-ph="search.placeholder">
+        <form class="search-form" role="search" autocomplete="off" novalidate onsubmit="return false;">
+          <input type="search" id="search" name="project-search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="search" enterkeyhint="search" data-lpignore="true" data-1p-ignore placeholder="Search projects by name or chain..." data-i18n-ph="search.placeholder">
+        </form>
       </div>
 
       <div class="dropdown dropdown-icon-only" id="sortDropdown">
