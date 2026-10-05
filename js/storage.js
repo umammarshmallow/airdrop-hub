@@ -9,6 +9,7 @@ const DEBUG = false;
 
 import { pushToCloud, pushHomeToCloud } from "./cloudSync.js";
 import { STORAGE_KEYS } from "./constants.js";
+import { normalizeProject, applyMissionUpdate } from "./projectSchema.js";
 
 function readFromKey(key) {
     try {
@@ -18,7 +19,8 @@ function readFromKey(key) {
 
         const projects = JSON.parse(data);
 
-        return Array.isArray(projects) ? projects : [];
+        // data lama (taskType Daily/Weekly/One Time) dimigrasi ke taskType + checkIn
+        return Array.isArray(projects) ? projects.map(normalizeProject) : [];
     } catch (error) {
         console.error("Gagal membaca LocalStorage:", error);
         return [];
@@ -59,6 +61,41 @@ export function saveHomeProjects(projects) {
 }
 
 /* ==========================================
+   MISI BARU DARI HOME -> SALINAN DI MY PROJECT
+   cloudSync.js mengantre perubahan misi saat Home ditarik; di sini
+   antrean itu diterapkan ke My Project (dipanggil setelah data My
+   Project selesai ditarik dari cloud, supaya tidak tertimpa).
+========================================== */
+
+export function applyPendingMissions(projects) {
+
+    let queue = [];
+
+    try {
+
+        const raw = localStorage.getItem(STORAGE_KEYS.pendingMissions);
+
+        queue = raw ? JSON.parse(raw) : [];
+
+    } catch (error) { queue = []; }
+
+    if (!Array.isArray(queue) || !queue.length) return projects;
+
+    let changed = 0;
+
+    queue.forEach(update => {
+        changed += applyMissionUpdate(projects, update);
+    });
+
+    localStorage.removeItem(STORAGE_KEYS.pendingMissions);
+
+    if (changed) saveProjects(projects);
+
+    return projects;
+
+}
+
+/* ==========================================
    DAILY TASK RESET
 ========================================== */
 
@@ -80,15 +117,10 @@ export function resetDailyTasks(projects) {
 
         if (project.status !== "Active") return;
 
-        switch (project.taskType) {
-
-            case "Daily":
-            case "Weekly":
-            case "Testnet":
-            case "Mainnet":
-                project.dailyDone = false;
-                break;
-
+        // One Time tidak pernah direset; selain itu status "selesai" kembali
+        // kosong tiap hari (Weekly/Monthly baru dianggap due di hari yang cocok).
+        if (project.checkIn !== "One Time") {
+            project.dailyDone = false;
         }
 
     });

@@ -15,6 +15,7 @@ const sortBy = document.getElementById("sortBy");
 sortBy.addEventListener("change", renderProjects);
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
+const filterCheckIn = document.getElementById("filterCheckIn");
 const quickFilter = document.getElementById("quickFilter");
 const saveProjectBtn = document.getElementById("saveProject");
 const updateProjectBtn = document.getElementById("updateProject");
@@ -50,6 +51,11 @@ export function initEvents() {
         renderProjects
     );
 
+    filterCheckIn.addEventListener(
+        "change",
+        renderProjects
+    );
+
     quickFilter.addEventListener(
         "change",
         renderProjects
@@ -72,6 +78,10 @@ export function initEvents() {
             websiteInvite: document.getElementById("websiteInvite").value,
 
             taskType: document.getElementById("taskType").value,
+
+            checkIn: document.getElementById("checkIn").value,
+
+            mission: document.getElementById("mission").value,
 
             deadline: document.getElementById("deadline").value,
 
@@ -110,6 +120,13 @@ export function initEvents() {
             websiteInvite: document.getElementById("editWebsiteInvite").value,
 
             taskType: document.getElementById("editTaskType").value,
+
+            checkIn: document.getElementById("editCheckIn").value,
+
+            // undefined = kolom Misi tidak tersedia (bukan edit Home oleh admin)
+            mission: document.getElementById("editMissionField").dataset.allowed === "1"
+                ? document.getElementById("editMission").value
+                : undefined,
 
             deadline: document.getElementById("editDeadline").value,
 
@@ -192,7 +209,7 @@ function selectDropdownItem(dropdown, item) {
     const value = item.dataset.value;
     const target = item.dataset.target;
 
-    if (target === "filterStatus" || target === "filterTask") {
+    if (target === "filterStatus" || target === "filterTask" || target === "filterCheckIn") {
         clearQuickFilter();
     }
 
@@ -269,6 +286,7 @@ flowSteps.forEach(step => {
 const quickFilterSelect = document.getElementById("quickFilter");
 const quickFilterCards = document.querySelectorAll(".hero-stat[data-quick]");
 const taskDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterTask"]'));
+const checkInDropdown = [...dropdowns].find(d => d.querySelector('[data-target="filterCheckIn"]'));
 
 function clearStatusTaskFilters() {
 
@@ -285,6 +303,14 @@ function clearStatusTaskFilters() {
         const allTaskItem = taskDropdown.querySelector('[data-value="All"]');
 
         if (allTaskItem) selectDropdownItem(taskDropdown, allTaskItem);
+
+    }
+
+    if (checkInDropdown) {
+
+        const allCheckInItem = checkInDropdown.querySelector('[data-value="All"]');
+
+        if (allCheckInItem) selectDropdownItem(checkInDropdown, allCheckInItem);
 
     }
 
@@ -318,62 +344,71 @@ quickFilterCards.forEach(card => {
 });
 
 /* =====================================================
-   TASK TYPE CHIP FILTER (pengganti dropdown Task Type)
+   CHIP FILTER (Task Type & Check-in)
+   Chip hanya tampilan; nilainya tetap lewat dropdown tersembunyi
+   dan select tersembunyi dengan target yang sama.
 ===================================================== */
 
-const taskChips = document.querySelectorAll(".chip-filter[data-target=\"filterTask\"]");
-const filterTaskSelect = document.getElementById("filterTask");
+function setupChipFilter(target, dropdown) {
 
-function syncTaskChipHighlight(value) {
+    const chips = document.querySelectorAll(`.chip-filter[data-target="${target}"]`);
+    const select = document.getElementById(target);
 
-    taskChips.forEach(chip => {
-        chip.classList.toggle("selected", chip.dataset.value === value);
+    function syncChipHighlight(value) {
+
+        chips.forEach(chip => {
+            chip.classList.toggle("selected", chip.dataset.value === value);
+        });
+
+        // Auto-scroll chip yang dipilih supaya kelihatan penuh, terutama
+        // buat user yang tidak sadar baris chip ini bisa digeser ke samping.
+        const selectedChip = [...chips].find(chip => chip.dataset.value === value);
+
+        if (selectedChip) {
+            selectedChip.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest"
+            });
+        }
+
+    }
+
+    chips.forEach(chip => {
+
+        chip.addEventListener("click", () => {
+
+            if (!dropdown) return;
+
+            // chip yang sedang aktif (selain "All") diklik lagi ->
+            // nonaktifkan, balik ke "All"
+            const isActive = chip.classList.contains("selected");
+            const targetValue = (isActive && chip.dataset.value !== "All")
+                ? "All"
+                : chip.dataset.value;
+
+            const matchingItem = dropdown.querySelector(`[data-value="${targetValue}"]`);
+
+            if (matchingItem) {
+                selectDropdownItem(dropdown, matchingItem);
+            }
+
+        });
+
     });
 
-    // Auto-scroll chip yang dipilih supaya kelihatan penuh, terutama
-    // buat user yang tidak sadar baris chip ini bisa digeser ke samping.
-    const selectedChip = [...taskChips].find(chip => chip.dataset.value === value);
+    if (select) {
 
-    if (selectedChip) {
-        selectedChip.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest",
-            inline: "nearest"
+        select.addEventListener("change", () => {
+            syncChipHighlight(select.value);
         });
+
     }
 
 }
 
-taskChips.forEach(chip => {
-
-    chip.addEventListener("click", () => {
-
-        if (!taskDropdown) return;
-
-        // chip yang sedang aktif (selain "All Tasks") diklik lagi ->
-        // nonaktifkan, balik ke "All Tasks"
-        const isActive = chip.classList.contains("selected");
-        const targetValue = (isActive && chip.dataset.value !== "All")
-            ? "All"
-            : chip.dataset.value;
-
-        const matchingItem = taskDropdown.querySelector(`[data-value="${targetValue}"]`);
-
-        if (matchingItem) {
-            selectDropdownItem(taskDropdown, matchingItem);
-        }
-
-    });
-
-});
-
-if (filterTaskSelect) {
-
-    filterTaskSelect.addEventListener("change", () => {
-        syncTaskChipHighlight(filterTaskSelect.value);
-    });
-
-}
+setupChipFilter("filterTask", taskDropdown);
+setupChipFilter("filterCheckIn", checkInDropdown);
 
 /* =====================================================
    RESET SEMUA FILTER (dipanggil saat pindah menu/mode,

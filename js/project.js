@@ -21,6 +21,7 @@ import {
 } from "./storage.js";
 
 import { isAdmin } from "./cloudSync.js";
+import { DEFAULT_MISSION, resolveMission, findHomeCopies } from "./projectSchema.js";
 
 import { validateProject, isTaskDueToday, isDeadlineToday } from "./projectRules.js";
 import { showToast } from "./uiFeedback.js";
@@ -38,11 +39,13 @@ import {
    SINKRONISASI EDIT HOME -> MY PROJECT
    Salinan project di My Project ditandai dengan field
    homeId (id project aslinya di Home).
-   - Admin: saat mengedit project di Home, field yang
-     DIUBAH diterapkan otomatis ke salinannya.
-   - User: salinan tidak berubah sendiri; user menekan
-     tombol "Perbarui" pada notifikasi, lalu field yang
-     diubah admin diambil dari Home versi terbaru.
+   - Admin: saat menyimpan edit Home, field yang DIUBAH diterapkan
+     otomatis ke salinannya di My Project (tanpa notifikasi, karena
+     admin sendiri yang mengedit).
+   - User: otomatis HANYA untuk "Misi Baru" (check-in Weekly/Monthly/
+     One Time), lewat antrean misi (lihat applyPendingMissions di
+     storage.js). Perubahan lain lewat notifikasi dengan tombol
+     "Perbarui"; field yang diubah diambil dari Home versi terbaru.
    Perubahan pribadi di field lain tetap aman.
 ========================================== */
 
@@ -52,15 +55,13 @@ const HOME_SYNC_FIELDS = [
     "website",
     "websiteInvite",
     "taskType",
+    "checkIn",
+    "mission",
     "deadline",
     "priority",
     "status",
     "note"
 ];
-
-function sameKey(a, b) {
-    return String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
-}
 
 /* ==========================================
    FACTORY STORE
@@ -88,22 +89,10 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
     }
 
-    // Mencari salinan project Home di store ini: lewat homeId dulu; kalau
-    // belum ada yang tertaut (salinan lama), cocokkan nama + chain dengan
-    // salah satu petunjuk (hints) -- yang belum tertaut saja.
-    function findHomeCopies(homeId, hints) {
+    // Mencari salinan project Home di store ini (lihat findHomeCopies).
+    function findCopies(homeId, hints) {
 
-        const linked = projects.filter(project => project.homeId === homeId);
-
-        if (linked.length) return linked;
-
-        return projects.filter(project =>
-            project.homeId == null
-            && hints.some(hint =>
-                sameKey(project.name, hint.name)
-                && sameKey(project.network, hint.network)
-            )
-        );
+        return findHomeCopies(projects, homeId, hints);
 
     }
 
@@ -114,6 +103,14 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             fields.forEach(field => {
                 project[field] = source[field];
             });
+
+            // misi hanya berlaku untuk check-in tertentu; misi baru juga
+            // mengaktifkan lagi project supaya masuk Today's Task
+            project.mission = resolveMission(project.checkIn, project.mission);
+
+            if (fields.includes("mission") && project.mission === "New") {
+                project.dailyDone = false;
+            }
 
             project.homeId = homeId;
 
@@ -165,6 +162,10 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
                 websiteInvite: (data.websiteInvite || "").trim(),
 
                 taskType: data.taskType,
+
+                checkIn: data.checkIn,
+
+                mission: resolveMission(data.checkIn, data.mission),
 
                 deadline: data.deadline,
 
@@ -235,7 +236,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             if (!project) return;
 
-            fillEditForm(project);
+            // kolom Misi hanya muncul saat admin mengedit project Home
+            fillEditForm(project, { showMission: !!canMutate && isAdmin() });
 
             openEditModal();
 
@@ -264,6 +266,10 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             project.websiteInvite = (data.websiteInvite || "").trim();
 
             project.taskType = data.taskType;
+
+            project.checkIn = data.checkIn;
+
+            project.mission = resolveMission(data.checkIn, data.mission, project.mission);
 
             project.deadline = data.deadline;
 
@@ -297,13 +303,17 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
         // otomatis). Hanya field yang berbeda antara before dan after.
         applyHomeEdit(homeId, before, after) {
 
+            // proyek lama belum punya misi -> dianggap "None" supaya bukan perubahan
+            const valueOf = (project, field) =>
+                String(project[field] ?? (field === "mission" ? DEFAULT_MISSION : ""));
+
             const changedFields = HOME_SYNC_FIELDS.filter(
-                field => String(before[field] ?? "") !== String(after[field] ?? "")
+                field => valueOf(before, field) !== valueOf(after, field)
             );
 
             if (!changedFields.length) return false;
 
-            const targets = findHomeCopies(homeId, [
+            const targets = findCopies(homeId, [
                 { name: before.name, network: before.network }
             ]);
 
@@ -317,7 +327,7 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
         // Ada salinan project Home ini di store?
         hasHomeCopy(homeId, hints) {
-            return findHomeCopies(homeId, hints).length > 0;
+            return findCopies(homeId, hints).length > 0;
         },
 
         // Menerapkan field tertentu dari project Home (versi terbaru) ke
@@ -329,7 +339,7 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
                 field => HOME_SYNC_FIELDS.includes(field)
             );
 
-            const targets = findHomeCopies(homeId, hints);
+            const targets = findCopies(homeId, hints);
 
             if (!validFields.length || !targets.length) return 0;
 
@@ -351,6 +361,10 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             project.dailyDone = true;
 
+            // menyelesaikan project = misi baru dianggap tuntas
+            // (kalau tidak, besok muncul lagi karena dailyDone di-reset harian)
+            if (project.mission === "New") project.mission = DEFAULT_MISSION;
+
             project.updatedAt = Date.now();
 
             persist();
@@ -359,7 +373,7 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
         },
 
-        filterProjects(keyword = "", status = "All", task = "All", quickFilter = "None") {
+        filterProjects(keyword = "", status = "All", task = "All", quickFilter = "None", checkIn = "All") {
 
             keyword = keyword.toLowerCase();
 
@@ -380,6 +394,11 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
                     ||
                     project.taskType === task;
 
+                const checkInMatch =
+                    checkIn === "All"
+                    ||
+                    project.checkIn === checkIn;
+
                 const quickFilterMatch =
                     quickFilter === "None"
                     ||
@@ -391,6 +410,7 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
                     keywordMatch &&
                     statusMatch &&
                     taskMatch &&
+                    checkInMatch &&
                     quickFilterMatch
                 );
 
@@ -465,6 +485,8 @@ export function copyHomeProjectToMyProject(id) {
         website: source.website,
         websiteInvite: source.websiteInvite || "",
         taskType: source.taskType,
+        checkIn: source.checkIn,
+        mission: source.mission,
         deadline: source.deadline,
         priority: source.priority,
         status: source.status,
@@ -512,8 +534,9 @@ export function editProject(id) {
     return activeStore().editProject(id);
 }
 
-// Khusus admin di halaman Home: edit project Home juga diteruskan ke
-// salinannya di My Project milik admin (hanya field yang diubah).
+// Khusus admin di halaman Home: edit project Home juga diteruskan otomatis
+// ke salinannya di My Project milik admin (hanya field yang diubah), tanpa
+// notifikasi karena admin sendiri yang mengedit.
 export async function updateProject(data) {
 
     if (!(isHomeMode() && isAdmin())) return activeStore().updateProject(data);
@@ -594,8 +617,8 @@ export function syncHomeEdit(meta) {
 
 }
 
-export function filterProjects(keyword, status, task, quickFilter) {
-    return activeStore().filterProjects(keyword, status, task, quickFilter);
+export function filterProjects(keyword, status, task, quickFilter, checkIn) {
+    return activeStore().filterProjects(keyword, status, task, quickFilter, checkIn);
 }
 
 export function markDailyDone(id) {

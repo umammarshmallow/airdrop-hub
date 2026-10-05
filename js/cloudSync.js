@@ -23,6 +23,7 @@ import { addNotification } from "./notifications.js";
 import { t } from "./i18n.js";
 import { statusLabel } from "./formatters.js";
 import { STORAGE_KEYS, FIRESTORE } from "./constants.js";
+import { normalizeProject, migrateTaskFields } from "./projectSchema.js";
 
 // Set true saat development untuk melihat log status koneksi cloud sync.
 const DEBUG = false;
@@ -443,6 +444,8 @@ export function pushToCloud(immediate = false) {
    - id baru            -> notifikasi "project baru"
    - id hilang          -> notifikasi "project dihapus"
    - status berubah     -> notifikasi "status project berubah"
+   - misi berubah       -> salinan di My Project diperbarui otomatis;
+                           notifikasi hanya jika menjadi "Misi Baru"
    - nama berubah       -> notifikasi "project ganti nama"
    - chain/deadline/prioritas/jenis task/catatan berubah
                         -> notifikasi "project diperbarui" (+ daftar field)
@@ -484,7 +487,10 @@ function snapshotHome(rawProjects) {
 
         if (Array.isArray(list)) {
 
-            list.forEach((p) => {
+            list.forEach((raw) => {
+
+                // data Home di cloud bisa masih skema lama (taskType Daily/Weekly/...)
+                const p = normalizeProject(raw);
 
                 if (p && p.id != null) {
 
@@ -495,6 +501,8 @@ function snapshotHome(rawProjects) {
                         deadline: String(p.deadline || ""),
                         priority: String(p.priority || ""),
                         taskType: String(p.taskType || ""),
+                        checkIn: String(p.checkIn || ""),
+                        mission: String(p.mission || "None"),
                         noteHash: hashText(String(p.note || ""))
                     };
 
@@ -517,6 +525,25 @@ function saveHomeSeen(rawProjects) {
         localStorage.setItem(STORAGE_KEYS.homeSeen, JSON.stringify(snapshotHome(rawProjects)));
 
     } catch (error) { /* storage penuh/diblokir: abaikan */ }
+
+}
+
+// Antrean perubahan misi: diterapkan ke My Project nanti (setelah data
+// My Project selesai ditarik dari cloud supaya tidak tertimpa).
+function queueMissionUpdates(updates) {
+
+    try {
+
+        const raw = localStorage.getItem(STORAGE_KEYS.pendingMissions);
+
+        const queue = raw ? JSON.parse(raw) : [];
+
+        localStorage.setItem(
+            STORAGE_KEYS.pendingMissions,
+            JSON.stringify((Array.isArray(queue) ? queue : []).concat(updates))
+        );
+
+    } catch (error) { /* antrean gagal disimpan -> abaikan */ }
 
 }
 
@@ -548,6 +575,8 @@ function announceHomeChanges(rawProjects) {
     const renamed = [];
     const changed = [];
     const edited = [];
+    const missionNew = [];
+    const missionUpdates = [];
 
     // field selain nama & status yang dipantau -> kunci i18n label-nya
     // [key snapshot, kunci i18n label, nama field project untuk tombol "Perbarui"]
@@ -556,6 +585,7 @@ function announceHomeChanges(rawProjects) {
         ["deadline", "notif.fieldDeadline", "deadline"],
         ["priority", "notif.fieldPriority", "priority"],
         ["taskType", "notif.fieldTaskType", "taskType"],
+        ["checkIn", "notif.fieldCheckIn", "checkIn"],
         ["noteHash", "notif.fieldNote", "note"]
     ];
 
@@ -573,13 +603,22 @@ function announceHomeChanges(rawProjects) {
     Object.keys(current).forEach((id) => {
 
         const now = current[id];
-        const before = previous[id];
+        let before = previous[id];
 
         if (!before) {
 
             added.push(now);
 
             return;
+
+        }
+
+        // Snapshot dari versi lama menyimpan taskType skema lama (mis. "Daily"):
+        // migrasikan dulu supaya perubahan skema tidak dianggap edit admin.
+        // Snapshot yang lebih tua lagi (tanpa taskType) dilewati saja.
+        if (before && before.taskType !== undefined && before.checkIn === undefined) {
+
+            before = { ...before, ...migrateTaskFields(before.taskType) };
 
         }
 
@@ -598,6 +637,24 @@ function announceHomeChanges(rawProjects) {
                 newName: now.name,
                 meta: syncMeta(id, before, ["name"])
             });
+
+        }
+
+        // Misi: tidak ada tombol "Perbarui" -- salinan di My Project diperbarui
+        // otomatis lewat antrean (lihat applyPendingMissions di storage.js),
+        // notifikasi hanya memberi tahu kalau ada misi baru.
+        if (before.mission !== undefined && before.mission !== now.mission) {
+
+            missionUpdates.push({
+                homeId: Number(id),
+                mission: now.mission,
+                hints: [
+                    { name: before.name, network: before.network },
+                    { name: now.name, network: now.network }
+                ]
+            });
+
+            if (now.mission === "New") missionNew.push(now);
 
         }
 
@@ -654,6 +711,18 @@ function announceHomeChanges(rawProjects) {
             "info",
             p.meta
         ));
+
+    }
+
+    if (missionUpdates.length) queueMissionUpdates(missionUpdates);
+
+    if (missionNew.length > HOME_NOTIF_GROUP_LIMIT) {
+
+        addNotification(t("notif.homeMissionNewMany").replace("{count}", missionNew.length), "info");
+
+    } else {
+
+        missionNew.forEach((p) => addNotification(t("notif.homeMissionNew").replace("{name}", p.name), "info"));
 
     }
 

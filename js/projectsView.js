@@ -8,6 +8,7 @@
 import {
     loadProjects,
     loadHomeProjects,
+    applyPendingMissions,
     resetDailyTasks,
     cleanupStaleProjects,
     checkStaleWarnings
@@ -23,6 +24,9 @@ import { updateAddButtonVisibility } from "./nav.js";
 export function refreshProjectsView(showStaleToast = true) {
 
     let projects = loadProjects();
+
+    // Terapkan misi baru dari Home (kalau ada) ke salinan project ini
+    projects = applyPendingMissions(projects);
 
     // Reset task harian bila hari sudah berganti
     projects = resetDailyTasks(projects);

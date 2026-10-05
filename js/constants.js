@@ -33,6 +33,10 @@ export const STORAGE_KEYS = Object.freeze({
     // dipakai untuk mendeteksi perubahan Home dari admin.
     homeSeen: "airdropHub_homeSeen",
 
+    // Antrean perubahan misi Home yang menunggu diterapkan ke salinan
+    // di My Project (diterapkan setelah data My Project selesai ditarik).
+    pendingMissions: "airdropHub_pendingMissions",
+
     // Riwayat Notification Center.
     notifications: "airdropHub_notifications",
 

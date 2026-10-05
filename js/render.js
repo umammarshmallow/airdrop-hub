@@ -27,6 +27,7 @@ const search = document.getElementById("search");
 const sortBy = document.getElementById("sortBy");
 const filterStatus = document.getElementById("filterStatus");
 const filterTask = document.getElementById("filterTask");
+const filterCheckIn = document.getElementById("filterCheckIn");
 const quickFilter = document.getElementById("quickFilter");
 
 /* ==========================================
@@ -39,7 +40,8 @@ export function renderProjects() {
         search.value,
         filterStatus.value,
         filterTask.value,
-        quickFilter.value
+        quickFilter.value,
+        filterCheckIn.value
     );
 
     const projects = sortProjects(
@@ -68,10 +70,20 @@ export function renderProjects() {
 
     const taskTypeLabel = (value) => {
         switch (value) {
-            case "Daily": return t("project.daily");
-            case "Weekly": return t("project.weekly");
             case "Testnet": return t("project.testnet");
             case "Mainnet": return t("project.mainnet");
+            case "Social": return t("project.social");
+            case "Node": return t("project.node");
+            case "Other": return t("project.other");
+            default: return value;
+        }
+    };
+
+    const checkInLabel = (value) => {
+        switch (value) {
+            case "Daily": return t("project.daily");
+            case "Weekly": return t("project.weekly");
+            case "Monthly": return t("project.monthly");
             case "One Time": return t("filter.oneTime");
             default: return value;
         }
@@ -156,6 +168,14 @@ export function renderProjects() {
 
             </div>
 
+            <div class="card-checkin">
+                <span class="chip"><i class="fa-solid fa-rotate" aria-hidden="true"></i> ${checkInLabel(project.checkIn)}</span>
+                ${project.mission === "New"
+                    ? `<span class="chip chip-mission"><i class="fa-solid fa-bolt" aria-hidden="true"></i> ${t("project.missionNew")}</span>`
+                    : ""
+                }
+            </div>
+
             <button
                 class="detail-toggle"
                 data-action="toggle"
@@ -181,6 +201,14 @@ export function renderProjects() {
                         <div>
                             <div class="info-label">${t("project.task")}</div>
                             <div class="info-value">${taskTypeLabel(project.taskType)}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-tile">
+                        <i class="fa-solid fa-rotate info-icon" aria-hidden="true"></i>
+                        <div>
+                            <div class="info-label">${t("project.checkIn")}</div>
+                            <div class="info-value">${checkInLabel(project.checkIn)}</div>
                         </div>
                     </div>
 

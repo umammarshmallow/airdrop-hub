@@ -9,6 +9,7 @@ import {
 
 import { isAdmin } from "./cloudSync.js";
 import { t } from "./i18n.js";
+import { MISSION_CHECK_INS } from "./projectSchema.js";
 
 /* ==========================================
    ELEMENT
@@ -58,6 +59,28 @@ function resetModalScroll(modalEl) {
 }
 
 /* ==========================================
+   KOLOM MISI (khusus admin)
+   Muncul di form Tambah (admin) dan form Edit project Home, dan hanya
+   kalau Check-in-nya Weekly / Monthly / One Time.
+========================================== */
+
+function updateMissionField(checkInId, wrapperId, allowed) {
+
+    const wrapper = document.getElementById(wrapperId);
+
+    if (!wrapper) return;
+
+    wrapper.dataset.allowed = allowed ? "1" : "0";
+
+    const checkIn = document.getElementById(checkInId).value;
+
+    wrapper.style.display = allowed && MISSION_CHECK_INS.includes(checkIn)
+        ? "block"
+        : "none";
+
+}
+
+/* ==========================================
    CLEAR ADD FORM
 ========================================== */
 
@@ -76,6 +99,10 @@ function clearAddForm() {
     document.getElementById("note").value = "";
 
     document.getElementById("taskType").selectedIndex = 0;
+
+    document.getElementById("checkIn").selectedIndex = 0;
+
+    document.getElementById("mission").value = "None";
 
     document.getElementById("priority").selectedIndex = 0;
 
@@ -104,6 +131,8 @@ export function openAddModal() {
     if (inviteField) {
         inviteField.style.display = admin ? "block" : "none";
     }
+
+    updateMissionField("checkIn", "missionField", admin);
 
     resetModalScroll(projectModal);
 
@@ -147,7 +176,7 @@ export function closeEditModal() {
    FILL EDIT FORM
 ========================================== */
 
-export function fillEditForm(project) {
+export function fillEditForm(project, { showMission = false } = {}) {
 
     document.getElementById("editId").value = project.id;
 
@@ -166,6 +195,12 @@ export function fillEditForm(project) {
 
     document.getElementById("editTaskType").value = project.taskType;
 
+    document.getElementById("editCheckIn").value = project.checkIn;
+
+    document.getElementById("editMission").value = project.mission === "New" ? "New" : "None";
+
+    updateMissionField("editCheckIn", "editMissionField", showMission);
+
     document.getElementById("editDeadline").value = project.deadline || "";
 
     document.getElementById("editPriority").value = project.priority;
@@ -183,6 +218,16 @@ export function fillEditForm(project) {
 export function initModal() {
 
     addProjectBtn.addEventListener("click", openAddModal);
+
+    // tampil/sembunyikan kolom Misi saat Check-in diganti
+    document.getElementById("checkIn").addEventListener("change", () => {
+        updateMissionField("checkIn", "missionField", isAdmin());
+    });
+
+    document.getElementById("editCheckIn").addEventListener("change", () => {
+        const wrapper = document.getElementById("editMissionField");
+        updateMissionField("editCheckIn", "editMissionField", wrapper.dataset.allowed === "1");
+    });
 
     closeModalBtn.addEventListener("click", closeAddModal);
 
