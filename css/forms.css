@@ -51,6 +51,7 @@
   scrollbar-width:none;
 }
 .chip-scroll::-webkit-scrollbar{ display:none; }
+.chip-scroll-tight{ margin-bottom:10px; }
 
 .chip-filter{
   flex-shrink:0;

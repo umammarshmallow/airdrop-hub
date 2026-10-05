@@ -276,6 +276,15 @@
 
 .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
 
+.card-checkin{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 2px; }
+
+.chip-mission{
+  background:var(--warning-soft);
+  border-color:var(--warning);
+  color:var(--warning);
+  font-weight:600;
+}
+
 .chip{
   display:inline-flex; align-items:center; gap:6px;
   background:var(--surface-3);
