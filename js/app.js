@@ -27,7 +27,9 @@ import { initAuthUI } from "./authUI.js";
 import { initForgotPassword } from "./forgotPassword.js";
 import { initVerifyEmail, showVerifyEmailModal } from "./verifyEmail.js";
 import { initProfilePage, refreshProfilePage } from "./profilePage.js";
-import { refreshProjectsView } from "./projectsView.js";
+import { refreshProjectsView, refreshHomeView } from "./projectsView.js";
+import { dismissNotificationsByAction } from "./notifications.js";
+import { refreshNotifBadge } from "./notificationsUI.js";
 import { runCloudSyncInBackground } from "./cloudStartup.js";
 
 /* ==========================================
@@ -38,8 +40,25 @@ initNav();
 initSettings();
 initPwa();
 initNotificationsUI();
+// Setelah login Google berhasil: segarkan semua tampilan di tempat
+// (tanpa reload halaman, jadi tidak kembali ke layar login).
+async function handleSignedIn() {
+
+    refreshProfilePage();
+
+    dismissNotificationsByAction("login");
+    refreshNotifBadge();
+
+    refreshProjectsView(false);
+
+    // Peran admin/role bisa berubah setelah login: tarik ulang data Home
+    await refreshHomeView();
+
+}
+
 initAuthUI({
     onAuthenticated: refreshProfilePage,
+    onSignedIn: handleSignedIn,
     onNeedsVerification: showVerifyEmailModal
 });
 initVerifyEmail({ onLogout: refreshProfilePage });
@@ -63,6 +82,32 @@ document.addEventListener("visibilitychange", () => {
     }
 
 });
+
+let midnightTimer = null;
+
+function scheduleMidnightRefresh() {
+
+    clearTimeout(midnightTimer);
+
+    const now = new Date();
+
+    // 00:00:02 besok (jeda 2 detik supaya pasti sudah masuk hari baru)
+    const nextMidnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0, 0, 2
+    );
+
+    midnightTimer = setTimeout(() => {
+
+        refreshProjectsView();
+
+        scheduleMidnightRefresh();
+
+    }, nextMidnight - now);
+
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -90,12 +135,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hubCanvas = document.getElementById("hubFuzzyText");
         if (hubCanvas) initFuzzyText(hubCanvas, "Hub");
 
-        // Mengecek pergantian hari setiap 1 menit
-        setInterval(() => {
-
-            refreshProjectsView();
-
-        }, 60000);
+        // Pergantian hari: jadwalkan satu kali tepat lewat tengah malam
+        // (hemat baterai dibanding mengecek tiap menit). Kembali ke tab
+        // tetap memicu refresh lewat event visibilitychange di atas.
+        scheduleMidnightRefresh();
 
     } catch (error) {
 

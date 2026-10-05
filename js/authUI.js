@@ -270,7 +270,7 @@ function initSubmit(onAuthenticated, onNeedsVerification) {
    setelah login/daftar berhasil (mis. refresh halaman profil).
 ========================================== */
 
-export function initAuthUI({ onAuthenticated, onNeedsVerification } = {}) {
+export function initAuthUI({ onAuthenticated, onNeedsVerification, onSignedIn } = {}) {
 
     authTabLogin.addEventListener("click", () => setCloudAuthMode("login"));
 
@@ -288,7 +288,7 @@ export function initAuthUI({ onAuthenticated, onNeedsVerification } = {}) {
 
     initSubmit(onAuthenticated, onNeedsVerification);
 
-    initGoogleLogin(onAuthenticated);
+    initGoogleLogin(onAuthenticated, onSignedIn);
 
 }
 
@@ -298,7 +298,7 @@ export function initAuthUI({ onAuthenticated, onNeedsVerification } = {}) {
    akun). Email Google sudah terverifikasi -> cloud langsung aktif.
 ========================================== */
 
-function initGoogleLogin(onAuthenticated) {
+function initGoogleLogin(onAuthenticated, onSignedIn) {
 
     cloudAuthGoogle.addEventListener("click", async () => {
 
@@ -316,7 +316,29 @@ function initGoogleLogin(onAuthenticated) {
 
             showToast(t("cloud.loginSuccess"));
 
-            setTimeout(() => location.reload(), 700);
+            // Data cloud sudah ditarik di loginWithGoogle(): cukup segarkan
+            // tampilan di tempat (tanpa reload, jadi tidak lewat layar login lagi).
+            if (typeof onSignedIn === "function") {
+
+                try {
+
+                    await onSignedIn(user);
+
+                } catch (refreshError) {
+
+                    console.warn("[CloudAuth] Gagal menyegarkan tampilan, muat ulang:", refreshError);
+
+                    setTimeout(() => location.reload(), 300);
+
+                }
+
+            } else {
+
+                setTimeout(() => location.reload(), 700);
+
+            }
+
+            cloudAuthGoogle.disabled = false;
 
             return;
 
