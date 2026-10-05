@@ -641,15 +641,13 @@
       </div>
 
       <div id="profileLoggedOutView" style="display:none;">
-        <div class="profile-guest-card" style="margin:14px 0;">
+        <div class="profile-guest-card">
           <div class="profile-guest-icon"><i class="fa-solid fa-user-plus"></i></div>
           <h3 style="font-family:var(--font-display); font-size:16px; margin-bottom:6px;" data-i18n="profile.notLoggedIn">Not Logged In</h3>
           <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:18px;" data-i18n="profile.loginDesc">Login so your project data syncs automatically across devices.</p>
           <button id="profileLoginBtn" class="btn-add" style="width:100%;" data-i18n="profile.loginRegister">Login / Register</button>
         </div>
       </div>
-
-      <div class="side-menu-divider"></div>
 
       <div class="side-menu-item" style="cursor:default;">
         <i class="fa-solid fa-moon" id="themeIcon"></i>
@@ -676,14 +674,13 @@
       </div>
 
       <div id="profileLogoutWrap" style="display:none;">
-        <div class="side-menu-divider"></div>
-        <button id="switchAccountBtn" class="side-menu-item" style="width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer;">
+        <button id="switchAccountBtn" class="side-menu-item side-menu-btn" type="button">
           <i class="fa-solid fa-right-left"></i>
-          <span data-i18n="profile.switchAccount">Switch Account</span>
+          <span style="flex:1;" data-i18n="profile.switchAccount">Switch Account</span>
         </button>
-        <button id="profileLogoutBtn" class="side-menu-item danger" style="width:100%; background:none; border:none; text-align:left; font-family:inherit; cursor:pointer;">
+        <button id="profileLogoutBtn" class="side-menu-item side-menu-btn danger" type="button">
           <i class="fa-solid fa-right-from-bracket"></i>
-          <span data-i18n="profile.logout">Log out</span>
+          <span style="flex:1;" data-i18n="profile.logout">Log out</span>
         </button>
       </div>
     </div>
