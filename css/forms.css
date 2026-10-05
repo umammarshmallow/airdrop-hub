@@ -33,6 +33,7 @@
   border:1px solid var(--border);
   font-size:14px;
   transition:.2s;
+  -webkit-appearance:none; appearance:none;
 }
 
 .search input::placeholder{ color:var(--text-faint); font-size:13.5px; }
