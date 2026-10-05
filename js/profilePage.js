@@ -8,7 +8,9 @@ import {
     getCurrentUser,
     logoutCloud,
     changePassword,
-    deleteAccountCloud
+    deleteAccountCloud,
+    isEmailVerified,
+    hasPasswordLogin
 } from "./cloudSync.js";
 
 import { showToast } from "./uiFeedback.js";
@@ -16,6 +18,7 @@ import { showConfirm } from "./dialog.js";
 import { renderProjects } from "./render.js";
 import { closeMenu, updateAddButtonVisibility } from "./nav.js";
 import { showCloudAuthModal, setCloudAuthMode } from "./authUI.js";
+import { showVerifyEmailModal } from "./verifyEmail.js";
 import { withUiTimeout } from "./asyncUtils.js";
 import { t } from "./i18n.js";
 
@@ -31,6 +34,10 @@ const profileLoginBtn = document.getElementById("profileLoginBtn");
 const profileLogoutBtn = document.getElementById("profileLogoutBtn");
 const switchAccountBtn = document.getElementById("switchAccountBtn");
 const profileLogoutWrap = document.getElementById("profileLogoutWrap");
+const profileSyncBadge = document.getElementById("profileSyncBadge");
+const profileVerifyBox = document.getElementById("profileVerifyBox");
+const profileVerifyBtn = document.getElementById("profileVerifyBtn");
+const securityPasswordCard = document.getElementById("securityPasswordCard");
 
 const securityCurrentPassword = document.getElementById("securityCurrentPassword");
 const securityNewPassword = document.getElementById("securityNewPassword");
@@ -57,6 +64,20 @@ export function refreshProfilePage() {
 
         profileEmailDisplay.textContent = user.email;
         profileAvatar.textContent = user.email.charAt(0).toUpperCase();
+
+        // Email belum diverifikasi -> cloud nonaktif: ganti lencana "Cloud sync
+        // aktif" dengan ajakan verifikasi.
+        const verified = isEmailVerified(user);
+
+        profileSyncBadge.style.display = verified ? "" : "none";
+        profileVerifyBox.style.display = verified ? "none" : "flex";
+
+        // Akun Google tidak punya password: sembunyikan form ganti/konfirmasi
+        // password (hapus akun memakai verifikasi ulang lewat Google).
+        const passwordAccount = hasPasswordLogin(user);
+
+        securityPasswordCard.style.display = passwordAccount ? "" : "none";
+        deleteAccountPassword.style.display = passwordAccount ? "" : "none";
 
     } else {
 
@@ -208,7 +229,8 @@ async function handleDeleteAccount() {
 
     const password = deleteAccountPassword.value;
 
-    if (!password) {
+    // Akun Google tidak memakai password (verifikasi ulang lewat popup Google)
+    if (hasPasswordLogin() && !password) {
 
         deleteAccountError.textContent = t("delete.passwordRequired");
         deleteAccountError.style.display = "block";
@@ -275,6 +297,14 @@ export function initProfilePage() {
         closeMenu();
 
         showCloudAuthModal();
+
+    });
+
+    profileVerifyBtn.addEventListener("click", () => {
+
+        closeMenu();
+
+        showVerifyEmailModal();
 
     });
 

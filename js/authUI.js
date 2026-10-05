@@ -7,9 +7,9 @@
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
-import { loginWithEmail, registerWithEmail } from "./cloudSync.js";
+import { loginWithEmail, registerWithEmail, loginWithGoogle } from "./cloudSync.js";
 import { withUiTimeout } from "./asyncUtils.js";
-import { t } from "./i18n.js";
+import { getLang, t } from "./i18n.js";
 import { STORAGE_KEYS } from "./constants.js";
 
 /* ==========================================
@@ -24,6 +24,7 @@ const cloudAuthSkip = document.getElementById("cloudAuthSkip");
 const cloudAuthLoginBtn = document.getElementById("cloudAuthLoginBtn");
 const cloudAuthRemember = document.getElementById("cloudAuthRemember");
 const cloudAuthEye = document.getElementById("cloudAuthEye");
+const cloudAuthGoogle = document.getElementById("cloudAuthGoogle");
 
 const authTabLogin = document.getElementById("authTabLogin");
 const authTabRegister = document.getElementById("authTabRegister");
@@ -139,6 +140,14 @@ function friendlyAuthError(error) {
 
     if (code.includes("weak-password")) return t("cloud.err.weakPassword");
 
+    if (code.includes("too-many-requests")) return t("cloud.err.tooMany");
+
+    if (code.includes("popup-blocked")) return t("cloud.err.popupBlocked");
+
+    if (code.includes("account-exists-with-different-credential")) return t("cloud.err.accountExists");
+
+    if (code.includes("operation-not-allowed")) return t("cloud.err.googleDisabled");
+
     return t("cloud.err.generic");
 
 }
@@ -164,7 +173,7 @@ function setPasswordVisible(show) {
    SUBMIT LOGIN / REGISTER
 ========================================== */
 
-function initSubmit(onAuthenticated) {
+function initSubmit(onAuthenticated, onNeedsVerification) {
 
     cloudAuthLoginBtn.addEventListener("click", async () => {
 
@@ -188,7 +197,7 @@ function initSubmit(onAuthenticated) {
 
             const action = cloudAuthMode === "login"
                 ? loginWithEmail(email, password)
-                : registerWithEmail(email, password);
+                : registerWithEmail(email, password, getLang());
 
             // Batas waktu 8 detik: cukup toleran untuk jaringan 4G yang agak
             // lambat, tapi tombol tetap tidak akan macet selamanya walau
@@ -205,6 +214,25 @@ function initSubmit(onAuthenticated) {
             closeCloudAuthModal();
 
             if (typeof onAuthenticated === "function") onAuthenticated(user);
+
+            // Email belum diverifikasi: cloud belum aktif -> minta verifikasi
+            // dulu (tanpa reload), cloud baru aktif setelah link diklik.
+            if (!user.emailVerified) {
+
+                cloudAuthLoginBtn.disabled = false;
+
+                cloudAuthLoginBtn.textContent = cloudAuthMode === "login" ? t("cloud.login") : t("cloud.tabRegister");
+
+                if (typeof onNeedsVerification === "function") {
+
+                    // tunggu animasi tutup modal login selesai
+                    setTimeout(() => onNeedsVerification(user), 240);
+
+                }
+
+                return;
+
+            }
 
             showToast(t("cloud.loginSuccess"));
 
@@ -242,7 +270,7 @@ function initSubmit(onAuthenticated) {
    setelah login/daftar berhasil (mis. refresh halaman profil).
 ========================================== */
 
-export function initAuthUI({ onAuthenticated } = {}) {
+export function initAuthUI({ onAuthenticated, onNeedsVerification } = {}) {
 
     authTabLogin.addEventListener("click", () => setCloudAuthMode("login"));
 
@@ -258,6 +286,57 @@ export function initAuthUI({ onAuthenticated } = {}) {
 
     });
 
-    initSubmit(onAuthenticated);
+    initSubmit(onAuthenticated, onNeedsVerification);
+
+    initGoogleLogin(onAuthenticated);
+
+}
+
+/* ==========================================
+   LOGIN DENGAN GOOGLE
+   Popup Google, tanpa batas waktu tombol (user butuh waktu memilih
+   akun). Email Google sudah terverifikasi -> cloud langsung aktif.
+========================================== */
+
+function initGoogleLogin(onAuthenticated) {
+
+    cloudAuthGoogle.addEventListener("click", async () => {
+
+        cloudAuthError.style.display = "none";
+
+        cloudAuthGoogle.disabled = true;
+
+        try {
+
+            const user = await loginWithGoogle();
+
+            closeCloudAuthModal();
+
+            if (typeof onAuthenticated === "function") onAuthenticated(user);
+
+            showToast(t("cloud.loginSuccess"));
+
+            setTimeout(() => location.reload(), 700);
+
+            return;
+
+        } catch (error) {
+
+            const code = (error && error.code) || "";
+
+            // user menutup popup sendiri -> bukan error
+            if (!code.includes("popup-closed-by-user") && !code.includes("cancelled-popup-request")) {
+
+                console.error("[CloudAuth]", error);
+
+                setCloudAuthError(friendlyAuthError(error));
+
+            }
+
+        }
+
+        cloudAuthGoogle.disabled = false;
+
+    });
 
 }

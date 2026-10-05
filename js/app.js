@@ -25,6 +25,7 @@ import { initPwa } from "./pwa.js";
 import { initNotificationsUI } from "./notificationsUI.js";
 import { initAuthUI } from "./authUI.js";
 import { initForgotPassword } from "./forgotPassword.js";
+import { initVerifyEmail, showVerifyEmailModal } from "./verifyEmail.js";
 import { initProfilePage, refreshProfilePage } from "./profilePage.js";
 import { refreshProjectsView } from "./projectsView.js";
 import { runCloudSyncInBackground } from "./cloudStartup.js";
@@ -37,7 +38,11 @@ initNav();
 initSettings();
 initPwa();
 initNotificationsUI();
-initAuthUI({ onAuthenticated: refreshProfilePage });
+initAuthUI({
+    onAuthenticated: refreshProfilePage,
+    onNeedsVerification: showVerifyEmailModal
+});
+initVerifyEmail({ onLogout: refreshProfilePage });
 initForgotPassword();
 initProfilePage();
 

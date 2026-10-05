@@ -64,6 +64,16 @@ export function getCurrentUser() {
     return auth ? auth.currentUser : null;
 }
 
+// Email sudah diverifikasi? (akun Google otomatis terverifikasi)
+export function isEmailVerified(user = getCurrentUser()) {
+    return !!(user && user.emailVerified);
+}
+
+// true kalau akun punya password (login email); akun Google-only tidak.
+export function hasPasswordLogin(user = getCurrentUser()) {
+    return !!(user && user.providerData.some((p) => p.providerId === "password"));
+}
+
 function userDocRef() {
     return firebase.doc(db, FIRESTORE.usersCollection, currentUid);
 }
@@ -100,6 +110,12 @@ async function loadFirebaseSDK() {
         deleteUser: authMod.deleteUser,
         EmailAuthProvider: authMod.EmailAuthProvider,
         reauthenticateWithCredential: authMod.reauthenticateWithCredential,
+        reauthenticateWithPopup: authMod.reauthenticateWithPopup,
+        sendEmailVerification: authMod.sendEmailVerification,
+        reload: authMod.reload,
+        GoogleAuthProvider: authMod.GoogleAuthProvider,
+        signInWithPopup: authMod.signInWithPopup,
+        getAdditionalUserInfo: authMod.getAdditionalUserInfo,
         getFirestore: firestoreMod.getFirestore,
         doc: firestoreMod.doc,
         getDoc: firestoreMod.getDoc,
@@ -162,10 +178,19 @@ export function waitForPersistedSession(onLateResolve) {
 
             if (user) {
 
-                currentUid = user.uid;
-                ready = true;
+                // Akun yang belum verifikasi: cek ulang ke server dulu (user
+                // mungkin baru klik link di email), dan JANGAN aktifkan cloud
+                // sebelum terverifikasi.
+                if (!user.emailVerified) await refreshVerification(user);
 
-                await pullFromCloud();
+                if (user.emailVerified) {
+
+                    currentUid = user.uid;
+                    ready = true;
+
+                    await pullFromCloud();
+
+                }
 
             }
 
@@ -203,28 +228,118 @@ export function waitForPersistedSession(onLateResolve) {
    LOGIN / DAFTAR / LOGOUT
 ========================================== */
 
+// Memuat ulang data akun dari server supaya status emailVerified terbaru
+// (dan token baru, karena aturan Firestore membaca klaim email_verified).
+async function refreshVerification(user) {
+
+    try {
+
+        await firebase.reload(user);
+
+        if (user.emailVerified) await user.getIdToken(true);
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal cek status verifikasi email:", error);
+
+    }
+
+}
+
+// Mengaktifkan sinkronisasi cloud untuk akun yang sudah terverifikasi.
+// newAccount=true: akun baru -> unggah data lokal yang ada sekarang.
+async function activateCloud(user, newAccount) {
+
+    currentUid = user.uid;
+    ready = true;
+
+    if (newAccount) {
+
+        await pushToCloud(true);
+
+    } else {
+
+        await pullFromCloud();
+
+    }
+
+}
+
 export async function loginWithEmail(email, password) {
 
     const cred = await firebase.signInWithEmailAndPassword(auth, email, password);
 
-    currentUid = cred.user.uid;
-    ready = true;
+    // Belum verifikasi: login berhasil tapi cloud TIDAK diaktifkan.
+    if (!cred.user.emailVerified) await refreshVerification(cred.user);
 
-    await pullFromCloud();
+    if (cred.user.emailVerified) await activateCloud(cred.user, false);
 
     return cred.user;
 
 }
 
-export async function registerWithEmail(email, password) {
+export async function registerWithEmail(email, password, lang) {
 
     const cred = await firebase.createUserWithEmailAndPassword(auth, email, password);
 
-    currentUid = cred.user.uid;
-    ready = true;
+    // Kirim email verifikasi; cloud baru aktif setelah link diklik.
+    await sendVerificationEmail(lang, cred.user);
 
-    // Akun baru -> belum ada data di cloud, upload data lokal yang ada sekarang.
-    await pushToCloud(true);
+    return cred.user;
+
+}
+
+// Kirim (ulang) email verifikasi ke akun yang sedang login.
+export async function sendVerificationEmail(lang, user = getCurrentUser()) {
+
+    if (!auth || !firebase || !user) throw new Error("NOT_LOGGED_IN");
+
+    auth.languageCode = lang === "id" ? "id" : "en";
+
+    await firebase.sendEmailVerification(user);
+
+}
+
+// Dipanggil tombol "Saya sudah verifikasi". Mengembalikan true kalau
+// emailnya sudah terverifikasi (dan cloud sudah diaktifkan).
+export async function checkEmailVerified() {
+
+    const user = getCurrentUser();
+
+    if (!user) throw new Error("NOT_LOGGED_IN");
+
+    await refreshVerification(user);
+
+    if (!user.emailVerified) return false;
+
+    // Akun yang baru dibuat belum punya dokumen cloud -> unggah data lokal
+    // (sama seperti perilaku daftar sebelumnya). Akun lama -> tarik dari cloud.
+    let hasDoc = false;
+
+    try {
+
+        const snap = await firebase.getDoc(firebase.doc(db, FIRESTORE.usersCollection, user.uid));
+
+        hasDoc = snap.exists();
+
+    } catch (error) { /* gagal cek -> anggap sudah ada, aman: pull tidak menimpa cloud */ hasDoc = true; }
+
+    await activateCloud(user, !hasDoc);
+
+    return true;
+
+}
+
+// Login / daftar dengan akun Google. Email Google sudah terverifikasi.
+export async function loginWithGoogle() {
+
+    const provider = new firebase.GoogleAuthProvider();
+
+    const cred = await firebase.signInWithPopup(auth, provider);
+
+    const info = firebase.getAdditionalUserInfo(cred);
+
+    await activateCloud(cred.user, !!(info && info.isNewUser));
 
     return cred.user;
 
@@ -291,9 +406,18 @@ export async function deleteAccountCloud(currentPassword) {
 
     if (!user) throw new Error("NOT_LOGGED_IN");
 
-    const credential = firebase.EmailAuthProvider.credential(user.email, currentPassword);
+    if (hasPasswordLogin(user)) {
 
-    await firebase.reauthenticateWithCredential(user, credential);
+        const credential = firebase.EmailAuthProvider.credential(user.email, currentPassword);
+
+        await firebase.reauthenticateWithCredential(user, credential);
+
+    } else {
+
+        // akun Google tidak punya password -> verifikasi ulang lewat popup Google
+        await firebase.reauthenticateWithPopup(user, new firebase.GoogleAuthProvider());
+
+    }
 
     try {
 

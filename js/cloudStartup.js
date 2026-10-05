@@ -4,7 +4,7 @@
    background, TIDAK menahan tampilnya app.
 ========================================== */
 
-import { initFirebaseApp, waitForPersistedSession } from "./cloudSync.js";
+import { initFirebaseApp, waitForPersistedSession, isEmailVerified } from "./cloudSync.js";
 
 import { showToast } from "./uiFeedback.js";
 import {
@@ -15,6 +15,7 @@ import {
 
 import { t } from "./i18n.js";
 import { showCloudAuthModal, closeCloudAuthModal } from "./authUI.js";
+import { showVerifyEmailModal } from "./verifyEmail.js";
 import { refreshProfilePage } from "./profilePage.js";
 import { refreshNotifBadge } from "./notificationsUI.js";
 import { refreshProjectsView, refreshHomeView } from "./projectsView.js";
@@ -41,26 +42,47 @@ export async function runCloudSyncInBackground() {
             // dari Firebase telat sedikit. Update tampilan diam-diam,
             // dan kalau modal login sempat kebuka karena dianggap
             // "belum login" tadi, tutup lagi sekarang.
-            showToast(t("cloud.activeAs") + " " + lateUser.email, 2500);
             refreshProfilePage();
 
             dismissNotificationsByAction("login");
             refreshNotifBadge();
 
-            refreshProjectsView(false);
-
             closeCloudAuthModal();
+
+            // Email belum diverifikasi -> cloud belum aktif, minta verifikasi
+            if (!isEmailVerified(lateUser)) {
+
+                showVerifyEmailModal();
+
+                return;
+
+            }
+
+            showToast(t("cloud.activeAs") + " " + lateUser.email, 2500);
+
+            refreshProjectsView(false);
 
         });
 
         if (existingUser) {
 
-            showToast(t("cloud.activeAs") + " " + existingUser.email, 2500);
             refreshProfilePage();
 
             // Sudah login, peringatan "belum login" sebelumnya (kalau ada) sudah tidak relevan
             dismissNotificationsByAction("login");
             refreshNotifBadge();
+
+            if (!isEmailVerified(existingUser)) {
+
+                // Login tapi email belum diverifikasi: cloud tidak aktif,
+                // app tetap jalan dengan data lokal.
+                showVerifyEmailModal();
+
+                return;
+
+            }
+
+            showToast(t("cloud.activeAs") + " " + existingUser.email, 2500);
 
             // Data lokal mungkin baru saja ditimpa oleh data cloud, refresh tampilan.
             refreshProjectsView(false);
