@@ -6,7 +6,7 @@
    "Add to Home Screen" prompt).
 ========================================== */
 
-const CACHE_NAME = "airdrop-hub-shell-v15";
+const CACHE_NAME = "airdrop-hub-shell-v17";
 
 const SHELL_FILES = [
   "./",
