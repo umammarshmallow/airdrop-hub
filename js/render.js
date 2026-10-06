@@ -411,7 +411,11 @@ projectList.addEventListener("click", async (e) => {
 
         case "copyToMyProject":
 
-            await copyHomeProjectToMyProject(id);
+            if (await copyHomeProjectToMyProject(id)) {
+
+                renderProjects();
+
+            }
 
             break;
        

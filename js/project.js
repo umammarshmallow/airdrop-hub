@@ -25,6 +25,7 @@ import { DEFAULT_MISSION, resolveMission, findHomeCopies } from "./projectSchema
 
 import { validateProject, isTaskDueToday, isDeadlineToday } from "./projectRules.js";
 import { showToast } from "./uiFeedback.js";
+import { t } from "./i18n.js";
 
 import { showConfirm } from "./dialog.js";
 
@@ -474,8 +475,21 @@ function activeStore() {
    (mengikuti mode yang sedang aktif)
 ========================================== */
 
+// Sudah ada salinan project Home ini di My Project viewer? Dicek lewat
+// homeId; salinan lama yang belum bertanda dicocokkan lewat nama + chain.
+export function isHomeProjectCopied(homeProject) {
+
+    if (!homeProject) return false;
+
+    return myProjectStore.hasHomeCopy(Number(homeProject.id), [
+        { name: homeProject.name, network: homeProject.network }
+    ]);
+
+}
+
 // Menyalin project Home (publik) menjadi entri baru di My Project
 // (privat) milik viewer. Dipakai oleh ikon "+" pada kartu Home.
+// Satu project Home hanya bisa disalin 1x -- kalau sudah ada, ditolak.
 export function copyHomeProjectToMyProject(id) {
 
     const source = homeProjectStore.getProjects().find(
@@ -483,6 +497,14 @@ export function copyHomeProjectToMyProject(id) {
     );
 
     if (!source) return false;
+
+    if (isHomeProjectCopied(source)) {
+
+        showToast(t("project.alreadyInMyProject"), 3000, "error");
+
+        return false;
+
+    }
 
     return myProjectStore.addProject({
         name: source.name,
