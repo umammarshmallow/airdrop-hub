@@ -8,7 +8,7 @@
 import {
     loadProjects,
     loadHomeProjects,
-    applyPendingMissions,
+    applyPendingHomeUpdates,
     resetDailyTasks,
     cleanupStaleProjects,
     checkStaleWarnings
@@ -25,8 +25,8 @@ export function refreshProjectsView(showStaleToast = true) {
 
     let projects = loadProjects();
 
-    // Terapkan misi baru dari Home (kalau ada) ke salinan project ini
-    projects = applyPendingMissions(projects);
+    // Terapkan perubahan otomatis dari Home (misi & funding) ke salinan project ini
+    projects = applyPendingHomeUpdates(projects);
 
     // Reset task harian bila hari sudah berganti
     projects = resetDailyTasks(projects);

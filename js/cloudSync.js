@@ -570,12 +570,16 @@ export function pushToCloud(immediate = false) {
    - status berubah     -> notifikasi "status project berubah"
    - misi berubah       -> salinan di My Project diperbarui otomatis;
                            notifikasi hanya jika menjadi "Misi Baru"
+   - funding berubah    -> salinan di My Project diperbarui otomatis
+                           (sama seperti misi); notifikasi hanya pemberitahuan
    - nama berubah       -> notifikasi "project ganti nama"
-   - chain/deadline/prioritas/jenis task/catatan berubah
+   - chain/deadline/funding/prioritas/jenis task/catatan berubah
                         -> notifikasi "project diperbarui" (+ daftar field)
    Notifikasi per-project (status/nama/edit) membawa meta
    { action: "syncHomeEdit" } -> tombol "Perbarui" di Notification
-   Center. Notifikasi ringkasan (> 3 project) tidak punya tombol.
+   Center. Field yang diterapkan otomatis (funding) tidak ikut tombol:
+   kalau hanya field itu yang berubah, notifikasi tanpa tombol sama sekali.
+   Notifikasi ringkasan (> 3 project) tidak punya tombol.
    Snapshot lama (hanya nama & status) tetap aman: field yang
    belum tercatat di snapshot dilewati, tidak dianggap berubah.
    Pembukaan pertama (belum ada snapshot) hanya menyimpan
@@ -623,6 +627,7 @@ function snapshotHome(rawProjects) {
                         status: String(p.status || ""),
                         network: String(p.network || ""),
                         deadline: String(p.deadline || ""),
+                        funding: String(p.funding || ""),
                         priority: String(p.priority || ""),
                         taskType: String(p.taskType || ""),
                         checkIn: String(p.checkIn || ""),
@@ -652,18 +657,19 @@ function saveHomeSeen(rawProjects) {
 
 }
 
-// Antrean perubahan misi: diterapkan ke My Project nanti (setelah data
-// My Project selesai ditarik dari cloud supaya tidak tertimpa).
-function queueMissionUpdates(updates) {
+// Antrean perubahan otomatis (misi & funding): diterapkan ke My Project
+// nanti (setelah data My Project selesai ditarik dari cloud supaya tidak
+// tertimpa).
+function queueAutoUpdates(updates) {
 
     try {
 
-        const raw = localStorage.getItem(STORAGE_KEYS.pendingMissions);
+        const raw = localStorage.getItem(STORAGE_KEYS.pendingHomeUpdates);
 
         const queue = raw ? JSON.parse(raw) : [];
 
         localStorage.setItem(
-            STORAGE_KEYS.pendingMissions,
+            STORAGE_KEYS.pendingHomeUpdates,
             JSON.stringify((Array.isArray(queue) ? queue : []).concat(updates))
         );
 
@@ -700,18 +706,23 @@ function announceHomeChanges(rawProjects) {
     const changed = [];
     const edited = [];
     const missionNew = [];
-    const missionUpdates = [];
+    const autoUpdates = [];
 
     // field selain nama & status yang dipantau -> kunci i18n label-nya
     // [key snapshot, kunci i18n label, nama field project untuk tombol "Perbarui"]
     const EDIT_FIELDS = [
         ["network", "notif.fieldChain", "network"],
         ["deadline", "notif.fieldDeadline", "deadline"],
+        ["funding", "notif.fieldFunding", "funding"],
         ["priority", "notif.fieldPriority", "priority"],
         ["taskType", "notif.fieldTaskType", "taskType"],
         ["checkIn", "notif.fieldCheckIn", "checkIn"],
         ["noteHash", "notif.fieldNote", "note"]
     ];
+
+    // field project yang diterapkan otomatis ke salinan user (tanpa tombol
+    // "Perbarui") -- dikecualikan dari meta notifikasi.
+    const AUTO_SYNC_FIELDS = ["funding"];
 
     // Meta notifikasi -> memunculkan tombol "Perbarui" (kalau user punya
     // salinan project ini di My Project). oldName/oldNetwork dipakai untuk
@@ -764,34 +775,48 @@ function announceHomeChanges(rawProjects) {
 
         }
 
-        // Misi: tidak ada tombol "Perbarui" -- salinan di My Project diperbarui
-        // otomatis lewat antrean (lihat applyPendingMissions di storage.js),
-        // notifikasi hanya memberi tahu kalau ada misi baru.
-        if (before.mission !== undefined && before.mission !== now.mission) {
-
-            missionUpdates.push({
-                homeId: Number(id),
-                mission: now.mission,
-                hints: [
-                    { name: before.name, network: before.network },
-                    { name: now.name, network: now.network }
-                ]
-            });
-
-            if (now.mission === "New") missionNew.push(now);
-
-        }
-
         const diff = EDIT_FIELDS.filter(
             ([key]) => before[key] !== undefined && before[key] !== now[key]
         );
 
+        // Misi & Funding: tidak ada tombol "Perbarui" -- salinan di My Project
+        // diperbarui otomatis lewat antrean (lihat applyPendingHomeUpdates di
+        // storage.js). Notifikasi hanya memberi tahu (misi: hanya kalau menjadi
+        // "Misi Baru"; funding: lewat notifikasi "project diperbarui" di bawah).
+        const missionChanged = before.mission !== undefined && before.mission !== now.mission;
+        const fundingChanged = diff.some(([key]) => key === "funding");
+
+        if (missionChanged || fundingChanged) {
+
+            const update = {
+                homeId: Number(id),
+                hints: [
+                    { name: before.name, network: before.network },
+                    { name: now.name, network: now.network }
+                ]
+            };
+
+            if (missionChanged) update.mission = now.mission;
+            if (fundingChanged) update.funding = now.funding;
+
+            autoUpdates.push(update);
+
+            if (missionChanged && now.mission === "New") missionNew.push(now);
+
+        }
+
         if (diff.length) {
+
+            // field yang berlaku otomatis tidak ikut tombol "Perbarui";
+            // kalau tidak ada field tersisa, notifikasi tanpa tombol.
+            const manualFields = diff
+                .filter(([, , syncKey]) => !AUTO_SYNC_FIELDS.includes(syncKey))
+                .map(([, , syncKey]) => syncKey);
 
             edited.push({
                 name: now.name,
                 fields: diff.map(([, labelKey]) => t(labelKey)),
-                meta: syncMeta(id, before, diff.map(([, , syncKey]) => syncKey))
+                meta: manualFields.length ? syncMeta(id, before, manualFields) : undefined
             });
 
         }
@@ -838,7 +863,7 @@ function announceHomeChanges(rawProjects) {
 
     }
 
-    if (missionUpdates.length) queueMissionUpdates(missionUpdates);
+    if (autoUpdates.length) queueAutoUpdates(autoUpdates);
 
     if (missionNew.length > HOME_NOTIF_GROUP_LIMIT) {
 

@@ -108,20 +108,31 @@ export function findHomeCopies(projects, homeId, hints) {
 
 }
 
-// Menerapkan satu perubahan misi Home ke salinannya. Misi baru juga
-// mengaktifkan kembali project (dailyDone=false) supaya masuk Today's Task.
-// Mengembalikan jumlah salinan yang diubah.
-export function applyMissionUpdate(projects, update) {
+// Menerapkan satu perubahan Home yang berlaku otomatis (Misi dan/atau
+// Funding) ke salinannya. Hanya field yang ada di update yang disentuh.
+// Misi baru juga mengaktifkan kembali project (dailyDone=false) supaya
+// masuk Today's Task. Mengembalikan jumlah salinan yang diubah.
+export function applyHomeAutoUpdate(projects, update) {
 
     const targets = findHomeCopies(projects, update.homeId, update.hints || []);
 
     targets.forEach(project => {
 
-        project.mission = resolveMission(project.checkIn, update.mission);
+        if (update.mission !== undefined) {
+
+            project.mission = resolveMission(project.checkIn, update.mission);
+
+            if (project.mission === "New") project.dailyDone = false;
+
+        }
+
+        if (update.funding !== undefined) {
+
+            project.funding = String(update.funding).trim();
+
+        }
 
         project.homeId = update.homeId;
-
-        if (project.mission === "New") project.dailyDone = false;
 
     });
 

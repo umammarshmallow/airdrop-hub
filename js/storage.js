@@ -9,7 +9,7 @@ const DEBUG = false;
 
 import { pushToCloud, pushHomeToCloud } from "./cloudSync.js";
 import { STORAGE_KEYS } from "./constants.js";
-import { normalizeProject, applyMissionUpdate } from "./projectSchema.js";
+import { normalizeProject, applyHomeAutoUpdate } from "./projectSchema.js";
 
 function readFromKey(key) {
     try {
@@ -61,19 +61,19 @@ export function saveHomeProjects(projects) {
 }
 
 /* ==========================================
-   MISI BARU DARI HOME -> SALINAN DI MY PROJECT
-   cloudSync.js mengantre perubahan misi saat Home ditarik; di sini
-   antrean itu diterapkan ke My Project (dipanggil setelah data My
+   PERUBAHAN OTOMATIS DARI HOME (MISI & FUNDING) -> SALINAN DI MY PROJECT
+   cloudSync.js mengantre perubahan misi/funding saat Home ditarik; di
+   sini antrean itu diterapkan ke My Project (dipanggil setelah data My
    Project selesai ditarik dari cloud, supaya tidak tertimpa).
 ========================================== */
 
-export function applyPendingMissions(projects) {
+export function applyPendingHomeUpdates(projects) {
 
     let queue = [];
 
     try {
 
-        const raw = localStorage.getItem(STORAGE_KEYS.pendingMissions);
+        const raw = localStorage.getItem(STORAGE_KEYS.pendingHomeUpdates);
 
         queue = raw ? JSON.parse(raw) : [];
 
@@ -84,10 +84,10 @@ export function applyPendingMissions(projects) {
     let changed = 0;
 
     queue.forEach(update => {
-        changed += applyMissionUpdate(projects, update);
+        changed += applyHomeAutoUpdate(projects, update);
     });
 
-    localStorage.removeItem(STORAGE_KEYS.pendingMissions);
+    localStorage.removeItem(STORAGE_KEYS.pendingHomeUpdates);
 
     if (changed) saveProjects(projects);
 

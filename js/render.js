@@ -36,6 +36,12 @@ const quickFilter = document.getElementById("quickFilter");
 
 export function renderProjects() {
 
+    // Simpan detail yang sedang terbuka: render ulang otomatis (timer 1 menit,
+    // kembali ke tab, sync cloud) mengganti seluruh innerHTML sehingga
+    // detail yang sedang dibaca ikut menutup sendiri.
+    const openDetailIds = [...projectList.querySelectorAll(".project-detail.open")]
+        .map(detail => detail.id);
+
     const filtered = filterProjects(
         search.value,
         filterStatus.value,
@@ -222,6 +228,14 @@ export function renderProjects() {
                         </div>
                     </div>
 
+                    <div class="info-tile">
+                        <i class="fa-solid fa-coins info-icon" aria-hidden="true"></i>
+                        <div>
+                            <div class="info-label">${t("project.funding")}</div>
+                            <div class="info-value">${project.funding ? escapeHTML(project.funding) : "-"}</div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="note">${project.note ? escapeHTML(project.note.trim()) : "-"}</div>
@@ -266,6 +280,30 @@ export function renderProjects() {
     });
 
     projectList.innerHTML = html;
+
+    // Buka kembali detail yang tadi terbuka (tanpa animasi supaya tidak berkedip)
+    openDetailIds.forEach(detailId => {
+
+        const detail = document.getElementById(detailId);
+
+        if (!detail) return;
+
+        detail.classList.add("open");
+        detail.style.animation = "none";
+
+        const toggle = detail.closest(".project-card")?.querySelector(".detail-toggle");
+
+        if (toggle) {
+
+            toggle.classList.add("open");
+
+            const label = toggle.querySelector("span");
+
+            if (label) label.textContent = t("project.hideDetails");
+
+        }
+
+    });
 
     projectList.removeAttribute("aria-busy");
 

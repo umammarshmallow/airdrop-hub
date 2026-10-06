@@ -42,8 +42,8 @@ import {
    - Admin: saat menyimpan edit Home, field yang DIUBAH diterapkan
      otomatis ke salinannya di My Project (tanpa notifikasi, karena
      admin sendiri yang mengedit).
-   - User: otomatis HANYA untuk "Misi Baru" (check-in Weekly/Monthly/
-     One Time), lewat antrean misi (lihat applyPendingMissions di
+   - User: otomatis untuk "Misi Baru" (check-in Weekly/Monthly/One Time)
+     dan Funding, lewat antrean (lihat applyPendingHomeUpdates di
      storage.js). Perubahan lain lewat notifikasi dengan tombol
      "Perbarui"; field yang diubah diambil dari Home versi terbaru.
    Perubahan pribadi di field lain tetap aman.
@@ -58,6 +58,7 @@ const HOME_SYNC_FIELDS = [
     "checkIn",
     "mission",
     "deadline",
+    "funding",
     "priority",
     "status",
     "note"
@@ -169,6 +170,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
                 deadline: data.deadline,
 
+                funding: (data.funding || "").trim(),
+
                 priority: data.priority,
 
                 status: data.status,
@@ -272,6 +275,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             project.mission = resolveMission(data.checkIn, data.mission, project.mission);
 
             project.deadline = data.deadline;
+
+            project.funding = (data.funding || "").trim();
 
             project.priority = data.priority;
 
@@ -488,6 +493,7 @@ export function copyHomeProjectToMyProject(id) {
         checkIn: source.checkIn,
         mission: source.mission,
         deadline: source.deadline,
+        funding: source.funding || "",
         priority: source.priority,
         status: source.status,
         note: source.note

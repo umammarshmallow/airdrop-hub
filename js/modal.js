@@ -96,6 +96,10 @@ function clearAddForm() {
 
     document.getElementById("deadline").value = "";
 
+    syncDeadlineClear("deadline", "clearDeadline");
+
+    document.getElementById("funding").value = "";
+
     document.getElementById("note").value = "";
 
     document.getElementById("taskType").selectedIndex = 0;
@@ -107,6 +111,45 @@ function clearAddForm() {
     document.getElementById("priority").selectedIndex = 0;
 
     document.getElementById("status").selectedIndex = 0;
+
+}
+
+/* ==========================================
+   HAPUS / RESET DEADLINE
+   Tombol "Hapus" di samping input tanggal: muncul hanya saat
+   deadline terisi, dan mengosongkannya (input date di sebagian
+   browser mobile tidak punya cara bawaan untuk mengosongkan).
+========================================== */
+
+function syncDeadlineClear(inputId, buttonId) {
+
+    const button = document.getElementById(buttonId);
+
+    if (!button) return;
+
+    button.hidden = !document.getElementById(inputId).value;
+
+}
+
+function initDeadlineClear(inputId, buttonId) {
+
+    const input = document.getElementById(inputId);
+
+    const button = document.getElementById(buttonId);
+
+    input.addEventListener("input", () => syncDeadlineClear(inputId, buttonId));
+
+    input.addEventListener("change", () => syncDeadlineClear(inputId, buttonId));
+
+    button.addEventListener("click", () => {
+
+        input.value = "";
+
+        syncDeadlineClear(inputId, buttonId);
+
+        input.focus();
+
+    });
 
 }
 
@@ -203,6 +246,10 @@ export function fillEditForm(project, { showMission = false } = {}) {
 
     document.getElementById("editDeadline").value = project.deadline || "";
 
+    syncDeadlineClear("editDeadline", "clearEditDeadline");
+
+    document.getElementById("editFunding").value = project.funding || "";
+
     document.getElementById("editPriority").value = project.priority;
 
     document.getElementById("editStatus").value = project.status;
@@ -218,6 +265,10 @@ export function fillEditForm(project, { showMission = false } = {}) {
 export function initModal() {
 
     addProjectBtn.addEventListener("click", openAddModal);
+
+    initDeadlineClear("deadline", "clearDeadline");
+
+    initDeadlineClear("editDeadline", "clearEditDeadline");
 
     // tampil/sembunyikan kolom Misi saat Check-in diganti
     document.getElementById("checkIn").addEventListener("change", () => {

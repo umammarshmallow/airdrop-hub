@@ -85,6 +85,8 @@ export function initEvents() {
 
             deadline: document.getElementById("deadline").value,
 
+            funding: document.getElementById("funding").value,
+
             priority: document.getElementById("priority").value,
 
             status: document.getElementById("status").value,
@@ -129,6 +131,8 @@ export function initEvents() {
                 : undefined,
 
             deadline: document.getElementById("editDeadline").value,
+
+            funding: document.getElementById("editFunding").value,
 
             priority: document.getElementById("editPriority").value,
 
