@@ -333,7 +333,13 @@
       </div>
 
       <label class="field-label" for="deadline" data-i18n="project.deadline">Deadline</label>
-      <input type="date" id="deadline">
+      <div class="deadline-row">
+        <input type="date" id="deadline">
+        <button type="button" class="deadline-clear-btn" id="clearDeadline" hidden data-i18n-title="project.clearDeadlineTitle" title="Clear deadline"><i class="fa-solid fa-eraser" aria-hidden="true"></i> <span data-i18n="project.clearDeadline">Clear</span></button>
+      </div>
+
+      <label class="field-label" for="funding" data-i18n="project.funding">Funding</label>
+      <input type="text" id="funding" placeholder="e.g. $5M" data-i18n-ph="project.fundingPh" autocomplete="off">
 
       <label class="field-label" for="priority" data-i18n="project.priority">Priority</label>
       <select id="priority">
@@ -413,7 +419,13 @@
       </div>
 
       <label class="field-label" for="editDeadline" data-i18n="project.deadline">Deadline</label>
-      <input type="date" id="editDeadline">
+      <div class="deadline-row">
+        <input type="date" id="editDeadline">
+        <button type="button" class="deadline-clear-btn" id="clearEditDeadline" hidden data-i18n-title="project.clearDeadlineTitle" title="Clear deadline"><i class="fa-solid fa-eraser" aria-hidden="true"></i> <span data-i18n="project.clearDeadline">Clear</span></button>
+      </div>
+
+      <label class="field-label" for="editFunding" data-i18n="project.funding">Funding</label>
+      <input type="text" id="editFunding" placeholder="e.g. $5M" data-i18n-ph="project.fundingPh" autocomplete="off">
 
       <label class="field-label" for="editPriority" data-i18n="project.priority">Priority</label>
       <select id="editPriority">
