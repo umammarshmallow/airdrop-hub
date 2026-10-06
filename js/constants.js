@@ -76,3 +76,6 @@ export const EVENTS = Object.freeze({
     notification: "airdrophub:notification"
 
 });
+
+// Alamat email penerima feedback/saran (tombol "Feedback & Saran" di Settings).
+export const FEEDBACK_EMAIL = "airdrophub.support@gmail.com";
