@@ -479,6 +479,37 @@
     </div>
   </div>
 
+  <!-- ================= FEEDBACK MODAL ================= -->
+  <div class="modal" id="feedbackModal">
+    <div class="modal-content">
+      <div class="page-header" style="margin-bottom:10px;">
+        <h2><i class="fa-solid fa-comment-dots"></i> <span data-i18n="feedback.title">Send Feedback</span></h2>
+        <button id="closeFeedbackModal" class="close-menu-btn" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p data-i18n="feedback.desc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 14px; line-height:1.5;">Choose how you want to send your feedback or suggestion.</p>
+
+      <div class="feedback-options">
+        <button type="button" class="feedback-option" data-feedback="app">
+          <i class="fa-solid fa-envelope"></i>
+          <span data-i18n="feedback.optApp">Email app</span>
+        </button>
+        <button type="button" class="feedback-option" data-feedback="gmail">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span data-i18n="feedback.optGmail">Gmail (web)</span>
+        </button>
+        <button type="button" class="feedback-option" data-feedback="copy">
+          <i class="fa-solid fa-copy"></i>
+          <span data-i18n="feedback.optCopy">Copy email address</span>
+        </button>
+      </div>
+
+      <p id="feedbackEmailText" class="feedback-email-text"></p>
+    </div>
+  </div>
+
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
     <div class="modal-content auth-card">
@@ -678,6 +709,12 @@
           <button type="button" data-lang="id">ID</button>
         </div>
       </div>
+
+      <button id="feedbackBtn" class="side-menu-item side-menu-btn" type="button">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span style="flex:1;" data-i18n="settings.feedback">Feedback &amp; Suggestions</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
+      </button>
 
       <div id="installAppBtn" class="side-menu-item" style="display:none;">
         <i class="fa-solid fa-mobile-screen-button"></i>
