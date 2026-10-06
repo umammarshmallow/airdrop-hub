@@ -572,6 +572,9 @@ export function pushToCloud(immediate = false) {
                            notifikasi hanya jika menjadi "Misi Baru"
    - funding berubah    -> salinan di My Project diperbarui otomatis
                            (sama seperti misi); notifikasi hanya pemberitahuan
+   - website / link invite berubah
+                        -> salinan di My Project diperbarui otomatis,
+                           TANPA notifikasi
    - nama berubah       -> notifikasi "project ganti nama"
    - chain/deadline/funding/prioritas/jenis task/catatan berubah
                         -> notifikasi "project diperbarui" (+ daftar field)
@@ -628,6 +631,8 @@ function snapshotHome(rawProjects) {
                         network: String(p.network || ""),
                         deadline: String(p.deadline || ""),
                         funding: String(p.funding || ""),
+                        website: String(p.website || ""),
+                        websiteInvite: String(p.websiteInvite || ""),
                         priority: String(p.priority || ""),
                         taskType: String(p.taskType || ""),
                         checkIn: String(p.checkIn || ""),
@@ -786,7 +791,13 @@ function announceHomeChanges(rawProjects) {
         const missionChanged = before.mission !== undefined && before.mission !== now.mission;
         const fundingChanged = diff.some(([key]) => key === "funding");
 
-        if (missionChanged || fundingChanged) {
+        // Website & link invite: ikut otomatis tanpa notifikasi. Snapshot lama
+        // belum menyimpan field ini (undefined) -> dilewati supaya tidak
+        // dianggap berubah pada sinkron pertama setelah update.
+        const websiteChanged = before.website !== undefined && before.website !== now.website;
+        const inviteChanged = before.websiteInvite !== undefined && before.websiteInvite !== now.websiteInvite;
+
+        if (missionChanged || fundingChanged || websiteChanged || inviteChanged) {
 
             const update = {
                 homeId: Number(id),
@@ -798,6 +809,8 @@ function announceHomeChanges(rawProjects) {
 
             if (missionChanged) update.mission = now.mission;
             if (fundingChanged) update.funding = now.funding;
+            if (websiteChanged) update.website = now.website;
+            if (inviteChanged) update.websiteInvite = now.websiteInvite;
 
             autoUpdates.push(update);
 

@@ -108,8 +108,8 @@ export function findHomeCopies(projects, homeId, hints) {
 
 }
 
-// Menerapkan satu perubahan Home yang berlaku otomatis (Misi dan/atau
-// Funding) ke salinannya. Hanya field yang ada di update yang disentuh.
+// Menerapkan satu perubahan Home yang berlaku otomatis (Misi, Funding,
+// Website, dan/atau Link Invite) ke salinannya. Hanya field yang ada di update yang disentuh.
 // Misi baru juga mengaktifkan kembali project (dailyDone=false) supaya
 // masuk Today's Task. Mengembalikan jumlah salinan yang diubah.
 export function applyHomeAutoUpdate(projects, update) {
@@ -129,6 +129,18 @@ export function applyHomeAutoUpdate(projects, update) {
         if (update.funding !== undefined) {
 
             project.funding = String(update.funding).trim();
+
+        }
+
+        if (update.website !== undefined) {
+
+            project.website = String(update.website).trim();
+
+        }
+
+        if (update.websiteInvite !== undefined) {
+
+            project.websiteInvite = String(update.websiteInvite).trim();
 
         }
 

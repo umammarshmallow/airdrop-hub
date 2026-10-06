@@ -43,8 +43,9 @@ import {
    - Admin: saat menyimpan edit Home, field yang DIUBAH diterapkan
      otomatis ke salinannya di My Project (tanpa notifikasi, karena
      admin sendiri yang mengedit).
-   - User: otomatis untuk "Misi Baru" (check-in Weekly/Monthly/One Time)
-     dan Funding, lewat antrean (lihat applyPendingHomeUpdates di
+   - User: otomatis untuk "Misi Baru" (check-in Weekly/Monthly/One Time),
+     Funding, Website, dan Link Invite (dua terakhir tanpa notifikasi),
+     lewat antrean (lihat applyPendingHomeUpdates di
      storage.js). Perubahan lain lewat notifikasi dengan tombol
      "Perbarui"; field yang diubah diambil dari Home versi terbaru.
    Perubahan pribadi di field lain tetap aman.
