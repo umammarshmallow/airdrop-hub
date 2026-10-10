@@ -486,3 +486,10 @@ body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
   word-break:break-all;
   user-select:all;
 }
+
+/* Keterangan kecil di bawah kolom form (mis. Jam Reset) */
+.field-hint{
+  margin:-6px 0 12px;
+  font-size:12px; line-height:1.45;
+  color:var(--text-faint);
+}
