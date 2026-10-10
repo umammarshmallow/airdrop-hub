@@ -234,6 +234,67 @@
 
   <!-- ================= PROFILE PAGE ================= -->
 
+  <!-- ================= HELP / FAQ PAGE ================= -->
+  <div id="helpPage" class="app-page" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="fa-solid fa-circle-question"></i> <span data-i18n="help.title">Help &amp; FAQ</span></h2>
+        <button id="closeHelpPageBtn" class="close-menu-btn" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="help-intro" data-i18n="help.intro">Short answers to the most common questions. Tap a question to open it.</p>
+
+      <div class="help-list">
+      <details class="help-item">
+        <summary><span data-i18n="help.q1">What is an airdrop, and what is Airdrop Hub for?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a1">An airdrop is a free token giveaway from a crypto project to users who meet certain requirements, usually by completing some tasks.
+Airdrop Hub helps you keep track of the projects you follow, their tasks, deadlines and latest status, so nothing slips by.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q2">What is the difference between Home and My Project?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a2">Home is the list of projects managed by the admin. Everyone can see it, but only the admin can change it.
+My Project is your own private list. Only you can see it, and you can add, edit or delete freely.
+Projects you add with the Add button go to My Project (for the admin, they go to Home). When the admin updates a project in Home, you get a notification and can tap Update to copy the change into My Project.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q3">How do I add a project to My Project?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a3">There are two ways.
+1. From Home: tap the + icon on a project card and it is copied into My Project.
+2. Create your own: tap the Add button at the bottom, fill in the form, then tap Save. The top of the form tells you where the project will be saved.
+Open the My Project tab at the bottom to see the result. If you already copied a Home project before, you will be told it is already there.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q4">What is the difference between Testnet and Mainnet?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a4">Testnet: a practice network. Its tokens have no value, so it is safe to try things.
+Mainnet: the real network. Transactions use real assets and usually cost gas fees.
+Social: tasks on social media, such as following or joining a community.
+Node: running a node, a piece of software that helps keep a project's network running.
+Other: any task outside those four types.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q5">What do the statuses and the numbers in Overview mean?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a5">Waitlist: you signed up and are waiting for access.
+Pending: put on hold because there has been no clarity or any update from the organizer.
+Active: you are working on it.
+Completed: finished.
+Today's Task counts Active projects whose check-in schedule falls today and that you have not marked done. Daily shows every day and resets at 00:00 or 07:00 as you choose, Weekly once a week, Monthly once a month, and One Time only on its deadline date.
+Deadline Today counts projects whose deadline is today.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q6">Why should I log in?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a6">Without logging in, your data is stored only on this device and can be lost if the browser data is cleared. When you log in, your projects sync automatically across all your devices. Your email must be verified for cloud sync to work.</p>
+      </details>
+      <details class="help-item">
+        <summary><span data-i18n="help.q7">Is my data safe?</span><i class="fa-solid fa-chevron-down help-chevron" aria-hidden="true"></i></summary>
+        <p class="help-answer" data-i18n="help.a7">Your My Project data can only be read by your own account. Home data is open to everyone, but only the admin can change it.
+You can delete your account and all its data at any time from the Security page.</p>
+      </details>
+      </div>
+    </section>
+  </div>
+
   <!-- ================= SECURITY PAGE ================= -->
   <div id="securityPage" class="app-page" style="display:none;">
     <section>
@@ -324,6 +385,15 @@
         <option value="One Time" data-i18n="filter.oneTime">One Time</option>
       </select>
 
+      <div id="resetTimeField">
+        <label class="field-label" for="resetTime" data-i18n="project.resetTime">Reset Time</label>
+        <select id="resetTime">
+          <option value="00:00" selected>00:00</option>
+          <option value="07:00">07:00</option>
+        </select>
+        <div class="field-hint" data-i18n="project.resetTimeHint">When the "done" status of a Daily task clears again (device time).</div>
+      </div>
+
       <div id="missionField" style="display:none;">
         <label class="field-label" for="mission" data-i18n="project.mission">Mission</label>
         <select id="mission">
@@ -409,6 +479,15 @@
         <option value="Monthly" data-i18n="project.monthly">Monthly</option>
         <option value="One Time" data-i18n="filter.oneTime">One Time</option>
       </select>
+
+      <div id="editResetTimeField">
+        <label class="field-label" for="editResetTime" data-i18n="project.resetTime">Reset Time</label>
+        <select id="editResetTime">
+          <option value="00:00" selected>00:00</option>
+          <option value="07:00">07:00</option>
+        </select>
+        <div class="field-hint" data-i18n="project.resetTimeHint">When the "done" status of a Daily task clears again (device time).</div>
+      </div>
 
       <div id="editMissionField" style="display:none;">
         <label class="field-label" for="editMission" data-i18n="project.mission">Mission</label>
@@ -715,6 +794,12 @@
         <span style="flex:1;" data-i18n="settings.feedback">Feedback &amp; Suggestions</span>
         <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
       </button>
+
+      <div id="helpMenuBtn" class="side-menu-item" role="button" tabindex="0">
+        <i class="fa-solid fa-circle-question"></i>
+        <span style="flex:1;" data-i18n="settings.help">Help &amp; FAQ</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
+      </div>
 
       <div id="installAppBtn" class="side-menu-item" style="display:none;">
         <i class="fa-solid fa-mobile-screen-button"></i>
