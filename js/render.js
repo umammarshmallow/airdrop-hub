@@ -200,7 +200,7 @@ export function renderProjects() {
                         <i class="fa-solid fa-rotate info-icon" aria-hidden="true"></i>
                         <div>
                             <div class="info-label">${t("project.checkIn")}</div>
-                            <div class="info-value">${checkInLabel(project.checkIn)}${project.checkIn === "Daily" && project.resetTime === "07:00" ? " · 07:00" : ""}</div>
+                            <div class="info-value">${checkInLabel(project.checkIn)}${project.checkIn === "Daily" ? " · " + (project.resetTime === "07:00" ? "07:00" : "00:00") : ""}</div>
                         </div>
                     </div>
 
