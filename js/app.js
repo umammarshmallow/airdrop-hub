@@ -64,29 +64,47 @@ document.addEventListener("visibilitychange", () => {
 
 });
 
-let midnightTimer = null;
+let resetTimer = null;
 
-function scheduleMidnightRefresh() {
+// Jam reset harian: 00:00 (pergantian hari) dan 07:00 (reset Daily jam 07:00).
+const RESET_HOURS = [0, 7];
 
-    clearTimeout(midnightTimer);
+function scheduleResetRefresh() {
+
+    clearTimeout(resetTimer);
 
     const now = new Date();
 
-    // 00:00:02 besok (jeda 2 detik supaya pasti sudah masuk hari baru)
-    const nextMidnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0, 0, 2
-    );
+    // Kandidat: tiap jam reset hari ini dan besok, +2 detik supaya pasti
+    // sudah lewat batasnya. Ambil yang paling dekat setelah sekarang.
+    const candidates = [];
 
-    midnightTimer = setTimeout(() => {
+    for (let dayOffset = 0; dayOffset <= 1; dayOffset++) {
+
+        RESET_HOURS.forEach(hour => {
+
+            candidates.push(new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + dayOffset,
+                hour, 0, 2
+            ));
+
+        });
+
+    }
+
+    const next = candidates
+        .filter(date => date > now)
+        .sort((a, b) => a - b)[0];
+
+    resetTimer = setTimeout(() => {
 
         refreshProjectsView();
 
-        scheduleMidnightRefresh();
+        scheduleResetRefresh();
 
-    }, nextMidnight - now);
+    }, next - now);
 
 }
 
@@ -116,10 +134,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hubCanvas = document.getElementById("hubFuzzyText");
         if (hubCanvas) initFuzzyText(hubCanvas, "Hub");
 
-        // Pergantian hari: jadwalkan satu kali tepat lewat tengah malam
-        // (hemat baterai dibanding mengecek tiap menit). Kembali ke tab
-        // tetap memicu refresh lewat event visibilitychange di atas.
-        scheduleMidnightRefresh();
+        // Jam reset (00:00 dan 07:00): jadwalkan satu kali tepat lewat jam
+        // reset berikutnya (hemat baterai dibanding mengecek tiap menit).
+        // Kembali ke tab tetap memicu refresh lewat event visibilitychange di atas.
+        scheduleResetRefresh();
 
     } catch (error) {
 

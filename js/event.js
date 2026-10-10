@@ -83,6 +83,8 @@ export function initEvents() {
 
             mission: document.getElementById("mission").value,
 
+            resetTime: document.getElementById("resetTime").value,
+
             deadline: document.getElementById("deadline").value,
 
             funding: document.getElementById("funding").value,
@@ -129,6 +131,8 @@ export function initEvents() {
             mission: document.getElementById("editMissionField").dataset.allowed === "1"
                 ? document.getElementById("editMission").value
                 : undefined,
+
+            resetTime: document.getElementById("editResetTime").value,
 
             deadline: document.getElementById("editDeadline").value,
 

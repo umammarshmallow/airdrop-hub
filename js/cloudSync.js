@@ -637,6 +637,7 @@ function snapshotHome(rawProjects) {
                         taskType: String(p.taskType || ""),
                         checkIn: String(p.checkIn || ""),
                         mission: String(p.mission || "None"),
+                        resetTime: String(p.resetTime || "00:00"),
                         noteHash: hashText(String(p.note || ""))
                     };
 
@@ -722,6 +723,7 @@ function announceHomeChanges(rawProjects) {
         ["priority", "notif.fieldPriority", "priority"],
         ["taskType", "notif.fieldTaskType", "taskType"],
         ["checkIn", "notif.fieldCheckIn", "checkIn"],
+        ["resetTime", "notif.fieldResetTime", "resetTime"],
         ["noteHash", "notif.fieldNote", "note"]
     ];
 

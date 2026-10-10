@@ -81,6 +81,22 @@ function updateMissionField(checkInId, wrapperId, allowed) {
 }
 
 /* ==========================================
+   KOLOM JAM RESET (khusus Check-in Daily)
+========================================== */
+
+function updateResetTimeField(checkInId, wrapperId) {
+
+    const wrapper = document.getElementById(wrapperId);
+
+    if (!wrapper) return;
+
+    wrapper.style.display = document.getElementById(checkInId).value === "Daily"
+        ? "block"
+        : "none";
+
+}
+
+/* ==========================================
    CLEAR ADD FORM
 ========================================== */
 
@@ -107,6 +123,8 @@ function clearAddForm() {
     document.getElementById("checkIn").selectedIndex = 0;
 
     document.getElementById("mission").value = "None";
+
+    document.getElementById("resetTime").value = "00:00";
 
     document.getElementById("priority").selectedIndex = 0;
 
@@ -177,6 +195,8 @@ export function openAddModal() {
 
     updateMissionField("checkIn", "missionField", admin);
 
+    updateResetTimeField("checkIn", "resetTimeField");
+
     resetModalScroll(projectModal);
 
     openModalEl(projectModal);
@@ -244,6 +264,10 @@ export function fillEditForm(project, { showMission = false } = {}) {
 
     updateMissionField("editCheckIn", "editMissionField", showMission);
 
+    document.getElementById("editResetTime").value = project.resetTime === "07:00" ? "07:00" : "00:00";
+
+    updateResetTimeField("editCheckIn", "editResetTimeField");
+
     document.getElementById("editDeadline").value = project.deadline || "";
 
     syncDeadlineClear("editDeadline", "clearEditDeadline");
@@ -273,11 +297,13 @@ export function initModal() {
     // tampil/sembunyikan kolom Misi saat Check-in diganti
     document.getElementById("checkIn").addEventListener("change", () => {
         updateMissionField("checkIn", "missionField", isAdmin());
+        updateResetTimeField("checkIn", "resetTimeField");
     });
 
     document.getElementById("editCheckIn").addEventListener("change", () => {
         const wrapper = document.getElementById("editMissionField");
         updateMissionField("editCheckIn", "editMissionField", wrapper.dataset.allowed === "1");
+        updateResetTimeField("editCheckIn", "editResetTimeField");
     });
 
     closeModalBtn.addEventListener("click", closeAddModal);

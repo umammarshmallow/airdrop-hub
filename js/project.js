@@ -21,7 +21,7 @@ import {
 } from "./storage.js";
 
 import { isAdmin } from "./cloudSync.js";
-import { DEFAULT_MISSION, resolveMission, findHomeCopies } from "./projectSchema.js";
+import { DEFAULT_MISSION, DEFAULT_RESET_TIME, resolveMission, resolveResetTime, findHomeCopies } from "./projectSchema.js";
 
 import { validateProject, isTaskDueToday, isDeadlineToday } from "./projectRules.js";
 import { showToast } from "./uiFeedback.js";
@@ -59,6 +59,7 @@ const HOME_SYNC_FIELDS = [
     "taskType",
     "checkIn",
     "mission",
+    "resetTime",
     "deadline",
     "funding",
     "priority",
@@ -110,6 +111,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             // misi hanya berlaku untuk check-in tertentu; misi baru juga
             // mengaktifkan lagi project supaya masuk Today's Task
             project.mission = resolveMission(project.checkIn, project.mission);
+
+            project.resetTime = resolveResetTime(project.checkIn, project.resetTime);
 
             if (fields.includes("mission") && project.mission === "New") {
                 project.dailyDone = false;
@@ -169,6 +172,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
                 checkIn: data.checkIn,
 
                 mission: resolveMission(data.checkIn, data.mission),
+
+                resetTime: resolveResetTime(data.checkIn, data.resetTime),
 
                 deadline: data.deadline,
 
@@ -276,6 +281,8 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             project.mission = resolveMission(data.checkIn, data.mission, project.mission);
 
+            project.resetTime = resolveResetTime(data.checkIn, data.resetTime, project.resetTime);
+
             project.deadline = data.deadline;
 
             project.funding = (data.funding || "").trim();
@@ -312,7 +319,11 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
 
             // proyek lama belum punya misi -> dianggap "None" supaya bukan perubahan
             const valueOf = (project, field) =>
-                String(project[field] ?? (field === "mission" ? DEFAULT_MISSION : ""));
+                String(project[field] ?? (
+                    field === "mission" ? DEFAULT_MISSION
+                    : field === "resetTime" ? DEFAULT_RESET_TIME
+                    : ""
+                ));
 
             const changedFields = HOME_SYNC_FIELDS.filter(
                 field => valueOf(before, field) !== valueOf(after, field)
@@ -367,6 +378,9 @@ function makeProjectStore(loadFn, saveFn, canMutate, deniedMessage, addedMessage
             if (!project) return false;
 
             project.dailyDone = true;
+
+            // waktu ditandai selesai: dipakai untuk reset Daily di jam 07:00
+            project.doneAt = Date.now();
 
             // menyelesaikan project = misi baru dianggap tuntas
             // (kalau tidak, besok muncul lagi karena dailyDone di-reset harian)
@@ -515,6 +529,7 @@ export function copyHomeProjectToMyProject(id) {
         taskType: source.taskType,
         checkIn: source.checkIn,
         mission: source.mission,
+        resetTime: source.resetTime,
         deadline: source.deadline,
         funding: source.funding || "",
         priority: source.priority,

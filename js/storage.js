@@ -99,6 +99,28 @@ export function applyPendingHomeUpdates(projects) {
    DAILY TASK RESET
 ========================================== */
 
+// Momen reset terakhir (<= sekarang) untuk jam reset tertentu, mis. 07:00:
+// kalau sekarang belum jam 07:00, batasnya adalah 07:00 kemarin.
+function lastResetBoundary(resetTime, now) {
+
+    const [hour, minute] = String(resetTime).split(":").map(Number);
+
+    const boundary = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hour || 0,
+        minute || 0,
+        0,
+        0
+    );
+
+    if (boundary > now) boundary.setDate(boundary.getDate() - 1);
+
+    return boundary;
+
+}
+
 export function resetDailyTasks(projects) {
 
     const now = new Date();
@@ -109,23 +131,55 @@ export function resetDailyTasks(projects) {
     String(now.getDate()).padStart(2, "0");
     const lastReset = localStorage.getItem(STORAGE_KEYS.lastReset);
 
-    if (lastReset === today) {
-        return projects;
-    }
+    // true saat hari sudah berganti sejak reset terakhir (reset jam 00:00)
+    const newDay = lastReset !== today;
+
+    let changed = false;
 
     projects.forEach(project => {
 
         if (project.status !== "Active") return;
 
-        // One Time tidak pernah direset; selain itu status "selesai" kembali
-        // kosong tiap hari (Weekly/Monthly baru dianggap due di hari yang cocok).
-        if (project.checkIn !== "One Time") {
+        // One Time tidak pernah direset
+        if (project.checkIn === "One Time") return;
+
+        // Daily dengan jam reset 07:00: status "selesai" dikosongkan kalau
+        // ditandai selesai SEBELUM batas 07:00 terakhir. Data lama tanpa
+        // doneAt memakai aturan pergantian hari seperti biasa.
+        if (project.checkIn === "Daily" && project.resetTime === "07:00") {
+
+            const doneAt = Number(project.doneAt);
+
+            const hasDoneAt = Number.isFinite(doneAt) && doneAt > 0;
+
+            const shouldReset = hasDoneAt
+                ? doneAt < lastResetBoundary(project.resetTime, now).getTime()
+                : newDay;
+
+            if (shouldReset && project.dailyDone) {
+                project.dailyDone = false;
+                changed = true;
+            }
+
+            return;
+
+        }
+
+        // Selain itu status "selesai" kembali kosong tiap hari jam 00:00
+        // (Weekly/Monthly baru dianggap due di hari yang cocok).
+        if (newDay) {
             project.dailyDone = false;
         }
 
     });
 
-    localStorage.setItem(STORAGE_KEYS.lastReset, today);
+    if (!newDay && !changed) {
+        return projects;
+    }
+
+    if (newDay) {
+        localStorage.setItem(STORAGE_KEYS.lastReset, today);
+    }
 
     saveProjects(projects);
 

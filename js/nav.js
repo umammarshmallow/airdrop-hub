@@ -1,8 +1,8 @@
 /* ==========================================
    NAV.JS
    Navigasi halaman: bottom nav (Home / Search /
-   Add / My Project), side menu (hamburger), dan
-   halaman Security.
+   Add / My Project), side menu (hamburger), halaman
+   Security, dan halaman Bantuan / FAQ.
 ========================================== */
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
@@ -21,8 +21,9 @@ const searchBtn = document.getElementById("searchBtn");
 
 const homePage = document.getElementById("homePage");
 const securityPage = document.getElementById("securityPage");
+const helpPage = document.getElementById("helpPage");
 
-const allPages = [homePage, securityPage];
+const allPages = [homePage, securityPage, helpPage];
 const bottomNavButtons = [homeBtn, searchBtn, addBottomBtn, profileBtn];
 
 const navIndicator = document.getElementById("navIndicator");
@@ -34,6 +35,9 @@ const sideMenuOverlay = document.getElementById("sideMenuOverlay");
 
 const profileSecurityBtn = document.getElementById("profileSecurityBtn");
 const closeSecurityPageBtn = document.getElementById("closeSecurityPageBtn");
+
+const helpMenuBtn = document.getElementById("helpMenuBtn");
+const closeHelpPageBtn = document.getElementById("closeHelpPageBtn");
 
 /* ==========================================
    BOTTOM NAV
@@ -150,6 +154,34 @@ function closeSecurityPage() {
 }
 
 /* ==========================================
+   HELP / FAQ PAGE
+========================================== */
+
+function openHelpPage() {
+
+    closeMenu();
+
+    showPage(helpPage);
+
+    setActiveNav(null);
+
+    bottomNav.style.display = "none";
+
+    window.scrollTo(0, 0);
+
+}
+
+function closeHelpPage() {
+
+    showPage(homePage);
+
+    setActiveNav(homeBtn);
+
+    bottomNav.style.display = "flex";
+
+}
+
+/* ==========================================
    HAMBURGER MENU
 ========================================== */
 
@@ -228,6 +260,22 @@ export function initNav() {
     profileSecurityBtn.addEventListener("click", openSecurityPage);
 
     closeSecurityPageBtn.addEventListener("click", closeSecurityPage);
+
+    helpMenuBtn.addEventListener("click", openHelpPage);
+
+    helpMenuBtn.addEventListener("keydown", (e) => {
+
+        if (e.key === "Enter" || e.key === " ") {
+
+            e.preventDefault();
+
+            openHelpPage();
+
+        }
+
+    });
+
+    closeHelpPageBtn.addEventListener("click", closeHelpPage);
 
     sideMenuOverlay.addEventListener("click", (e) => {
 

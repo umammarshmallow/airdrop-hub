@@ -24,6 +24,13 @@ export const MISSION_CHECK_INS = ["Weekly", "Monthly", "One Time"];
 
 export const DEFAULT_MISSION = "None";
 
+// Jam reset status "selesai" untuk check-in Daily (waktu perangkat).
+// 00:00 = pergantian hari (perilaku lama), 07:00 = reset jam 7 pagi.
+// Check-in selain Daily selalu 00:00 (kolom ini hanya muncul untuk Daily).
+export const RESET_TIMES = ["00:00", "07:00"];
+
+export const DEFAULT_RESET_TIME = "00:00";
+
 export const DEFAULT_TASK_TYPE = "Other";
 
 export const DEFAULT_CHECK_IN = "Daily";
@@ -78,6 +85,18 @@ export function resolveMission(checkIn, requested, current = DEFAULT_MISSION) {
     const value = requested === undefined ? current : requested;
 
     return value === "New" ? "New" : DEFAULT_MISSION;
+
+}
+
+// Nilai jam reset yang akan disimpan. requested === undefined berarti form
+// tidak menyediakan kolomnya -> pertahankan nilai lama.
+export function resolveResetTime(checkIn, requested, current = DEFAULT_RESET_TIME) {
+
+    if (checkIn !== "Daily") return DEFAULT_RESET_TIME;
+
+    const value = requested === undefined ? current : requested;
+
+    return RESET_TIMES.includes(value) ? value : DEFAULT_RESET_TIME;
 
 }
 
