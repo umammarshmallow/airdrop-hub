@@ -7,7 +7,7 @@
 import { getLang, setLang, applyStaticTranslations, t } from "./i18n.js";
 import { refreshCloudAuthTexts } from "./authUI.js";
 import { refreshProjectsView } from "./projectsView.js";
-import { STORAGE_KEYS, FEEDBACK_EMAIL } from "./constants.js";
+import { STORAGE_KEYS, FEEDBACK_EMAIL, APPRECIATION_URL } from "./constants.js";
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
 
@@ -224,6 +224,28 @@ function initFeedback() {
 }
 
 /* ==========================================
+   KIRIM APRESIASI UNTUK DEV
+   Tombol di menu Pengaturan yang membuka link apresiasi/donasi.
+   Tersembunyi selama APPRECIATION_URL belum diisi.
+========================================== */
+
+function initAppreciation() {
+
+    const button = document.getElementById("appreciationBtn");
+
+    if (!button) return;
+
+    if (!/^https:\/\//i.test(APPRECIATION_URL)) return;
+
+    button.style.display = "";
+
+    button.addEventListener("click", () => {
+        window.open(APPRECIATION_URL, "_blank", "noopener,noreferrer");
+    });
+
+}
+
+/* ==========================================
    INIT
 ========================================== */
 
@@ -242,6 +264,8 @@ export function initSettings() {
     });
 
     initFeedback();
+
+    initAppreciation();
 
     applyLang(getLang(), { refresh: false });
 

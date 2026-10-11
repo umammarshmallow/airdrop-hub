@@ -79,3 +79,7 @@ export const EVENTS = Object.freeze({
 
 // Alamat email penerima feedback/saran (tombol "Feedback & Saran" di Settings).
 export const FEEDBACK_EMAIL = "airdrophub.support@gmail.com";
+
+// Link "Kirim Apresiasi untuk Dev" di menu Pengaturan (mis. Saweria / Trakteer).
+// Isi dengan alamat lengkap (https://...). Kalau dikosongkan, menunya disembunyikan.
+export const APPRECIATION_URL = "";
