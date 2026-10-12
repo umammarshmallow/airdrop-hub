@@ -589,6 +589,51 @@ You can delete your account and all its data at any time from the Security page.
     </div>
   </div>
 
+  <!-- ================= APPRECIATION MODAL ================= -->
+  <div class="modal" id="appreciationModal">
+    <div class="modal-content">
+      <div class="page-header" style="margin-bottom:10px;">
+        <h2><i class="fa-solid fa-heart"></i> <span data-i18n="settings.appreciation">Send Appreciation to the Dev</span></h2>
+        <button id="closeAppreciationModal" class="close-menu-btn" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="appreciation-desc" data-i18n="appreciation.desc">Thanks for using AirdropHub! If you find it useful, you can send a voluntary tip in USDT. It's completely optional.</p>
+
+      <div class="appreciation-badges">
+        <span class="appreciation-badge" id="appreciationAsset"></span>
+        <span class="appreciation-badge" id="appreciationNetwork"></span>
+      </div>
+
+      <div id="appreciationQrWrap">
+        <div class="appreciation-qr" id="appreciationQr"></div>
+        <p class="appreciation-qr-hint" data-i18n="appreciation.scan">Scan with your wallet app</p>
+      </div>
+
+      <span class="appreciation-label" data-i18n="appreciation.addressLabel">Wallet address</span>
+      <div class="appreciation-address" id="appreciationAddress"></div>
+
+      <button type="button" class="appreciation-copy" id="appreciationCopyBtn">
+        <i class="fa-solid fa-copy"></i>
+        <span data-i18n="appreciation.copy">Copy address</span>
+      </button>
+      <p class="appreciation-status" id="appreciationStatus" role="status" aria-live="polite"></p>
+
+      <div class="appreciation-warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p data-i18n="appreciation.warn">Send only USDT on the BNB Smart Chain (BEP-20) network. Other tokens or networks may result in lost funds, and transfers can't be reversed.</p>
+      </div>
+
+      <p class="appreciation-verify" id="appreciationVerify"></p>
+
+      <a class="appreciation-explorer" id="appreciationExplorer" target="_blank" rel="noopener noreferrer">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        <span data-i18n="appreciation.explorer">View on BscScan</span>
+      </a>
+    </div>
+  </div>
+
   <!-- ================= CLOUD LOGIN MODAL ================= -->
   <div class="modal" id="cloudAuthModal">
     <div class="modal-content auth-card">
@@ -807,10 +852,10 @@ You can delete your account and all its data at any time from the Security page.
         <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
       </div>
 
-      <button id="appreciationBtn" class="side-menu-item side-menu-btn" type="button" style="display:none;">
+      <button id="appreciationBtn" class="side-menu-item side-menu-btn" type="button">
         <i class="fa-solid fa-heart"></i>
         <span style="flex:1;" data-i18n="settings.appreciation">Send Appreciation to the Dev</span>
-        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:13px; color:var(--text-faint);"></i>
+        <i class="fa-solid fa-chevron-right" style="font-size:13px; color:var(--text-faint);"></i>
       </button>
 
       <div id="profileLogoutWrap" style="display:none;">
