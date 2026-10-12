@@ -7,7 +7,8 @@
 import { getLang, setLang, applyStaticTranslations, t } from "./i18n.js";
 import { refreshCloudAuthTexts } from "./authUI.js";
 import { refreshProjectsView } from "./projectsView.js";
-import { STORAGE_KEYS, FEEDBACK_EMAIL, APPRECIATION_URL } from "./constants.js";
+import { STORAGE_KEYS, FEEDBACK_EMAIL, APPRECIATION_WALLET } from "./constants.js";
+import { QR_ADDRESS, QR_ROWS } from "./appreciationQr.js";
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
 
@@ -224,23 +225,228 @@ function initFeedback() {
 }
 
 /* ==========================================
-   KIRIM APRESIASI UNTUK DEV
-   Tombol di menu Pengaturan yang membuka link apresiasi/donasi.
-   Tersembunyi selama APPRECIATION_URL belum diisi.
+   KIRIM APRESIASI UNTUK DEV (USDT / BEP-20)
+   Tombol di menu Pengaturan membuka kotak berisi QR dan alamat dompet
+   (lihat APPRECIATION_WALLET di constants.js). Tidak ada data yang
+   dikirim ke mana pun; alamat hanya ditampilkan dan bisa disalin.
+   Menu disembunyikan kalau alamat tidak berformat benar.
 ========================================== */
+
+const appreciationModal = document.getElementById("appreciationModal");
+
+const WALLET_PATTERN = /^0x[a-fA-F0-9]{40}$/;
+
+let appreciationCopyTimer = null;
+
+// Menggambar QR dari data baris "0/1" menjadi satu SVG (latar putih + zona
+// tenang 4 modul supaya mudah dipindai di tema gelap maupun terang).
+// QR hanya tampil kalau datanya memang untuk alamat yang sama.
+function renderAppreciationQr() {
+
+    const wrap = document.getElementById("appreciationQrWrap");
+    const box = document.getElementById("appreciationQr");
+
+    if (!wrap || !box) return;
+
+    const matches = QR_ADDRESS === APPRECIATION_WALLET.address
+        && Array.isArray(QR_ROWS)
+        && QR_ROWS.length > 0;
+
+    wrap.style.display = matches ? "" : "none";
+
+    if (!matches) {
+
+        box.innerHTML = "";
+
+        return;
+
+    }
+
+    const size = QR_ROWS.length;
+    const quiet = 4;
+    const total = size + quiet * 2;
+
+    let path = "";
+
+    QR_ROWS.forEach((row, y) => {
+
+        let x = 0;
+
+        while (x < size) {
+
+            if (row[x] === "1") {
+
+                const start = x;
+
+                while (x < size && row[x] === "1") x++;
+
+                path += `M${start + quiet} ${y + quiet}h${x - start}v1h-${x - start}z`;
+
+            } else {
+
+                x++;
+
+            }
+
+        }
+
+    });
+
+    box.innerHTML =
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" ` +
+        `role="img" aria-label="${t("appreciation.qrLabel")}" shape-rendering="crispEdges">` +
+        `<rect width="${total}" height="${total}" fill="#fff"/>` +
+        `<path d="${path}" fill="#000"/></svg>`;
+
+}
+
+function openAppreciationModal() {
+
+    const { address, asset, network, explorerUrl } = APPRECIATION_WALLET;
+
+    document.getElementById("appreciationAsset").textContent = asset;
+    document.getElementById("appreciationNetwork").textContent = network;
+    document.getElementById("appreciationAddress").textContent = address;
+
+    // bantu donatur memastikan alamat tidak tertukar (mis. oleh malware clipboard)
+    document.getElementById("appreciationVerify").textContent =
+        t("appreciation.verify")
+            .replace("{start}", address.slice(0, 8))
+            .replace("{end}", address.slice(-6));
+
+    document.getElementById("appreciationExplorer").href = explorerUrl + address;
+
+    resetAppreciationCopyState();
+
+    renderAppreciationQr();
+
+    openModalEl(appreciationModal);
+
+}
+
+function closeAppreciationModal() {
+
+    closeModalEl(appreciationModal);
+
+}
+
+function resetAppreciationCopyState() {
+
+    clearTimeout(appreciationCopyTimer);
+
+    const button = document.getElementById("appreciationCopyBtn");
+
+    button.classList.remove("copied");
+
+    button.querySelector("span").textContent = t("appreciation.copy");
+
+    document.getElementById("appreciationStatus").textContent = "";
+
+}
+
+async function copyAppreciationAddress() {
+
+    const address = APPRECIATION_WALLET.address;
+
+    let copied = false;
+
+    try {
+
+        if (navigator.clipboard && window.isSecureContext) {
+
+            await navigator.clipboard.writeText(address);
+
+            copied = true;
+
+        }
+
+    } catch (error) { copied = false; }
+
+    if (!copied) {
+
+        const temp = document.createElement("textarea");
+
+        temp.value = address;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.opacity = "0";
+
+        document.body.appendChild(temp);
+        temp.select();
+
+        try { copied = document.execCommand("copy"); } catch (error) { copied = false; }
+
+        temp.remove();
+
+    }
+
+    const button = document.getElementById("appreciationCopyBtn");
+    const status = document.getElementById("appreciationStatus");
+
+    clearTimeout(appreciationCopyTimer);
+
+    if (copied) {
+
+        button.classList.add("copied");
+
+        button.querySelector("span").textContent = t("appreciation.copied");
+
+        status.textContent = "";
+
+        appreciationCopyTimer = setTimeout(resetAppreciationCopyState, 2200);
+
+    } else {
+
+        // gagal menyalin: tandai alamatnya supaya mudah disalin manual
+        status.textContent = t("appreciation.copyFailed");
+
+        const addressEl = document.getElementById("appreciationAddress");
+        const range = document.createRange();
+
+        range.selectNodeContents(addressEl);
+
+        const selection = window.getSelection();
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+    }
+
+}
 
 function initAppreciation() {
 
     const button = document.getElementById("appreciationBtn");
 
-    if (!button) return;
+    if (!button || !appreciationModal) return;
 
-    if (!/^https:\/\//i.test(APPRECIATION_URL)) return;
+    if (!WALLET_PATTERN.test(APPRECIATION_WALLET.address)) {
 
-    button.style.display = "";
+        button.style.display = "none";
 
-    button.addEventListener("click", () => {
-        window.open(APPRECIATION_URL, "_blank", "noopener,noreferrer");
+        return;
+
+    }
+
+    button.addEventListener("click", openAppreciationModal);
+
+    document.getElementById("closeAppreciationModal")
+        .addEventListener("click", closeAppreciationModal);
+
+    document.getElementById("appreciationCopyBtn")
+        .addEventListener("click", copyAppreciationAddress);
+
+    // klik area gelap di luar kotak = tutup
+    appreciationModal.addEventListener("click", (e) => {
+
+        if (e.target === appreciationModal) closeAppreciationModal();
+
+    });
+
+    document.addEventListener("keydown", (e) => {
+
+        if (e.key === "Escape" && appreciationModal.classList.contains("show")) closeAppreciationModal();
+
     });
 
 }

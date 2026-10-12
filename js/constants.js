@@ -80,6 +80,15 @@ export const EVENTS = Object.freeze({
 // Alamat email penerima feedback/saran (tombol "Feedback & Saran" di Settings).
 export const FEEDBACK_EMAIL = "airdrophub.support@gmail.com";
 
-// Link "Kirim Apresiasi untuk Dev" di menu Pengaturan (mis. Saweria / Trakteer).
-// Isi dengan alamat lengkap (https://...). Kalau dikosongkan, menunya disembunyikan.
-export const APPRECIATION_URL = "";
+// Dompet untuk "Kirim Apresiasi untuk Dev" di menu Pengaturan.
+// Penerimaan: USDT lewat jaringan BNB Smart Chain (BEP-20).
+// PENTING: kalau alamat diganti, QR di js/appreciationQr.js juga harus dibuat
+// ulang. Selama QR belum cocok dengan alamat ini, QR otomatis disembunyikan
+// (alamat teks tetap tampil) supaya tidak ada QR yang mengarah ke alamat lama.
+// Kalau alamat tidak berformat 0x + 40 karakter heksadesimal, menunya disembunyikan.
+export const APPRECIATION_WALLET = {
+    address: "0x8c9971b411D9EB89aafd7D5aAe4a23C7B8619eA2",
+    asset: "USDT",
+    network: "BNB Smart Chain (BEP-20)",
+    explorerUrl: "https://bscscan.com/address/"
+};
