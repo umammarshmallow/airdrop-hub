@@ -487,6 +487,123 @@ body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
   user-select:all;
 }
 
+/* ==========================================================
+   APRESIASI — kirim USDT (BEP-20) ke dompet dev
+========================================================== */
+.appreciation-desc{
+  margin:0 0 12px;
+  color:var(--text-muted);
+  font-size:12.5px; line-height:1.5;
+}
+
+.appreciation-badges{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+
+.appreciation-badge{
+  padding:4px 10px;
+  border-radius:999px;
+  background:var(--accent-soft);
+  border:1px solid var(--accent-line);
+  color:var(--accent);
+  font-size:11.5px; font-weight:700;
+}
+
+/* QR selalu hitam di atas putih (syarat agar terbaca), apa pun temanya */
+.appreciation-qr{
+  width:min(220px, 70%);
+  margin:0 auto 6px;
+  padding:10px;
+  background:#fff;
+  border-radius:var(--radius-md);
+}
+.appreciation-qr svg{ display:block; width:100%; height:auto; }
+
+.appreciation-qr-hint{
+  margin:0 0 14px;
+  text-align:center;
+  font-size:11.5px; color:var(--text-faint);
+}
+
+.appreciation-label{
+  display:block;
+  margin:0 0 6px;
+  font-size:11.5px; font-weight:600;
+  color:var(--text-faint);
+  text-transform:uppercase; letter-spacing:.04em;
+}
+
+.appreciation-address{
+  padding:11px 12px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-family:var(--font-mono);
+  font-size:12px; line-height:1.5;
+  color:var(--text);
+  word-break:break-all;
+  user-select:all;
+}
+
+.appreciation-copy{
+  width:100%;
+  margin-top:8px;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 14px;
+  background:var(--surface-3);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  color:var(--text);
+  font:inherit; font-size:13.5px; font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+.appreciation-copy i{ color:var(--accent); }
+.appreciation-copy:hover{ border-color:var(--accent-line); background:var(--surface); }
+.appreciation-copy.copied{ border-color:var(--success); color:var(--success); }
+.appreciation-copy.copied i{ color:var(--success); }
+
+.appreciation-status{
+  min-height:16px;
+  margin:6px 0 0;
+  text-align:center;
+  font-size:11.5px; color:var(--danger);
+}
+
+.appreciation-warning{
+  display:flex; gap:10px;
+  margin-top:10px;
+  padding:11px 12px;
+  background:var(--warning-soft);
+  border:1px solid var(--warning);
+  border-radius:var(--radius-sm);
+  font-size:12px; line-height:1.5;
+  color:var(--text);
+}
+.appreciation-warning i{ flex-shrink:0; margin-top:2px; color:var(--warning); }
+.appreciation-warning p{ margin:0; }
+
+.appreciation-verify{
+  margin:10px 0 0;
+  text-align:center;
+  font-size:11.5px; line-height:1.5;
+  color:var(--text-faint);
+}
+
+.appreciation-explorer{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-top:8px;
+  font-size:12px;
+  color:var(--accent);
+  text-decoration:none;
+}
+.appreciation-explorer:hover{ text-decoration:underline; }
+
+/* isi cukup tinggi: di layar HP pendek kotaknya harus bisa di-scroll */
+#appreciationModal .modal-content{
+  max-height:calc(100vh - 40px);
+  max-height:calc(100dvh - 40px);
+  overflow-y:auto;
+}
+
 /* Keterangan kecil di bawah kolom form (mis. Jam Reset) */
 .field-hint{
   margin:-6px 0 12px;
