@@ -7,7 +7,7 @@
 
 import { openModalEl, closeModalEl } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
-import { loginWithEmail, registerWithEmail, loginWithGoogle } from "./cloudSync.js";
+import { loginWithEmail, registerWithEmail, loginWithGoogle, prepareLoginSlot } from "./cloudSync.js";
 import { withUiTimeout } from "./asyncUtils.js";
 import { getLang, t } from "./i18n.js";
 import { STORAGE_KEYS } from "./constants.js";
@@ -72,12 +72,25 @@ export function refreshCloudAuthTexts() {
    OPEN / CLOSE
 ========================================== */
 
-export function showCloudAuthModal() {
+// email: isi otomatis (mis. login ulang akun yang sesinya berakhir).
+// reuseApp: pakai slot sesi akun itu lagi supaya akunnya tidak jadi dobel.
+export function showCloudAuthModal({ email = "", reuseApp = null } = {}) {
+
+    // Setiap login akun baru memakai slot sesi baru, jadi akun lain yang
+    // sudah login di perangkat ini tidak ikut tertimpa.
+    prepareLoginSlot(reuseApp);
 
     cloudAuthError.style.display = "none";
 
     // selalu mulai dengan password tersembunyi
     setPasswordVisible(false);
+
+    if (email) {
+
+        cloudAuthEmail.value = email;
+        cloudAuthPassword.value = "";
+
+    }
 
     // isi otomatis email yang diingat (kalau "Remember me" dicentang sebelumnya)
     try {

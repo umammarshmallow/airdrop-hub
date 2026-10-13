@@ -15,6 +15,8 @@ import {
 
 import { t } from "./i18n.js";
 import { showCloudAuthModal, closeCloudAuthModal } from "./authUI.js";
+import { openAccountSwitcher, closeAccountSwitcher } from "./accountSwitcher.js";
+import { getSavedAccounts } from "./accounts.js";
 import { showVerifyEmailModal } from "./verifyEmail.js";
 import { refreshProfilePage } from "./profilePage.js";
 import { refreshNotifBadge } from "./notificationsUI.js";
@@ -48,6 +50,7 @@ export async function runCloudSyncInBackground() {
             refreshNotifBadge();
 
             closeCloudAuthModal();
+            closeAccountSwitcher();
 
             // Email belum diverifikasi -> cloud belum aktif, minta verifikasi
             if (!isEmailVerified(lateUser)) {
@@ -89,7 +92,11 @@ export async function runCloudSyncInBackground() {
 
         } else {
 
-            showCloudAuthModal();
+            // Ada akun tersimpan di perangkat ini -> tampilkan daftarnya
+            // (ketuk untuk masuk tanpa login ulang). Belum ada -> form login.
+            if (getSavedAccounts().length > 0) openAccountSwitcher();
+            else showCloudAuthModal();
+
             refreshProfilePage();
 
             // Peringatan risiko kehilangan data cukup dikirim sekali,

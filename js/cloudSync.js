@@ -25,6 +25,25 @@ import { statusLabel } from "./formatters.js";
 import { STORAGE_KEYS, FIRESTORE } from "./constants.js";
 import { normalizeProject, migrateTaskFields } from "./projectSchema.js";
 
+import {
+    DEFAULT_APP,
+    IDLE_APP,
+    getSavedAccounts,
+    getActiveAccountEntry,
+    findAccountByApp,
+    findAccountByUid,
+    upsertAccountAndActivate,
+    setActiveApp,
+    removeAccountEntry,
+    newAppName,
+    saveAccountCache,
+    clearAccountCache,
+    restoreAccountCache,
+    setPullGuard,
+    clearPullGuard,
+    isPullGuarded
+} from "./accounts.js";
+
 // Set true saat development untuk melihat log status koneksi cloud sync.
 const DEBUG = false;
 
@@ -35,6 +54,12 @@ let firebase = null;
 let auth = null;
 let db = null;
 let currentUid = null;
+
+// Nama slot sesi Firebase yang sedang dipakai (satu slot per akun tersimpan;
+// lihat accounts.js). loginSlot = slot untuk login yang sedang berlangsung.
+let currentAppName = null;
+let loginSlot = null;
+const sessionSlots = {};
 let ready = false;
 let pushTimer = null;
 let homePushTimer = null;
@@ -132,6 +157,29 @@ async function loadFirebaseSDK() {
    INIT APP (tidak login, cuma siapkan koneksi)
 ========================================== */
 
+// Satu "slot" = satu instance Firebase (auth + firestore) dengan sesi login
+// yang disimpan terpisah. Inilah yang membuat beberapa akun bisa tetap login
+// bersamaan di perangkat yang sama, jadi pindah akun tidak perlu login ulang.
+function getSessionSlot(name) {
+
+    if (!sessionSlots[name]) {
+
+        const app = name === DEFAULT_APP
+            ? firebase.initializeApp(firebaseConfig)
+            : firebase.initializeApp(firebaseConfig, name);
+
+        sessionSlots[name] = {
+            name,
+            auth: firebase.getAuth(app),
+            db: firebase.getFirestore(app)
+        };
+
+    }
+
+    return sessionSlots[name];
+
+}
+
 export async function initFirebaseApp() {
 
     if (!isConfigured()) {
@@ -139,11 +187,22 @@ export async function initFirebaseApp() {
         return false;
     }
 
-    const fb = await loadFirebaseSDK();
+    await loadFirebaseSDK();
 
-    const app = fb.initializeApp(firebaseConfig);
-    auth = fb.getAuth(app);
-    db = fb.getFirestore(app);
+    // Pakai slot akun yang terakhir aktif. Belum ada akun tersimpan sama
+    // sekali -> slot bawaan (juga menampung sesi lama sebelum fitur
+    // Pindah Akun ada, jadi pengguna lama tidak perlu login ulang).
+    // Ada akun tersimpan tapi tidak ada yang aktif -> slot kosong.
+    const active = getActiveAccountEntry();
+
+    currentAppName = active
+        ? active.app
+        : (getSavedAccounts().length ? IDLE_APP : DEFAULT_APP);
+
+    const slot = getSessionSlot(currentAppName);
+
+    auth = slot.auth;
+    db = slot.db;
 
     return true;
 
@@ -177,6 +236,10 @@ export function waitForPersistedSession(onLateResolve) {
             unsubscribe();
 
             if (user) {
+
+                // Catat akun ini di daftar akun perangkat (juga memigrasikan
+                // sesi lama di slot bawaan ke daftar tanpa login ulang).
+                rememberSignedInUser(user, currentAppName);
 
                 // Akun yang belum verifikasi: cek ulang ke server dulu (user
                 // mungkin baru klik link di email), dan JANGAN aktifkan cloud
@@ -255,6 +318,10 @@ async function activateCloud(user, newAccount) {
 
     if (newAccount) {
 
+        // Akun baru belum punya data di cloud: tidak ada yang perlu dilindungi,
+        // data lokal (kosong) memang yang harus diunggah.
+        clearPullGuard(user.uid);
+
         await pushToCloud(true);
 
     } else {
@@ -265,9 +332,104 @@ async function activateCloud(user, newAccount) {
 
 }
 
+/* ==========================================
+   DAFTAR AKUN PERANGKAT & SLOT LOGIN
+========================================== */
+
+function providerOf(user) {
+
+    return hasPasswordLogin(user) ? "password" : "google";
+
+}
+
+// Tutup sesi di slot lain (mis. akun yang sama login ulang di slot baru).
+function closeSavedSession(appName) {
+
+    try {
+
+        const slot = getSessionSlot(appName);
+
+        firebase.signOut(slot.auth).catch(() => { /* abaikan */ });
+
+    } catch (error) { /* abaikan */ }
+
+}
+
+// Catat user yang sedang login di perangkat ini dan jadikan akun aktif.
+function rememberSignedInUser(user, appName) {
+
+    if (!user || !appName || appName === IDLE_APP) return;
+
+    const replaced = upsertAccountAndActivate({
+        app: appName,
+        uid: user.uid,
+        email: user.email || "",
+        provider: providerOf(user)
+    });
+
+    replaced.forEach(closeSavedSession);
+
+}
+
+// Siapkan slot sesi untuk login yang akan datang. Setiap login akun BARU
+// memakai slot baru, jadi sesi akun yang sudah login tidak ikut tertimpa.
+// reuseAppName: login ulang untuk akun yang sesinya sudah berakhir.
+export function prepareLoginSlot(reuseAppName = null) {
+
+    if (!firebase) return;
+
+    loginSlot = getSessionSlot(reuseAppName || newAppName());
+
+}
+
+function takeLoginSlot() {
+
+    if (!loginSlot) loginSlot = getSessionSlot(newAppName());
+
+    return loginSlot;
+
+}
+
+// Login berhasil di slot ini -> slot jadi akun aktif. Data akun lama
+// "diparkir", dan akun baru mulai dari datanya sendiri.
+function promoteLoginSlot(slot, user) {
+
+    const previous = getActiveAccountEntry();
+
+    clearTimeout(pushTimer);
+
+    if (previous && previous.uid !== user.uid) {
+
+        saveAccountCache(previous.uid);
+
+        // Akun yang baru login mulai dari salinan lokalnya sendiri (kalau ada).
+        // Kalau tidak ada, mulai kosong dan JANGAN upload apa pun sebelum data
+        // cloud berhasil ditarik.
+        if (restoreAccountCache(user.uid)) clearPullGuard(user.uid);
+        else setPullGuard(user.uid);
+
+    }
+
+    auth = slot.auth;
+    db = slot.db;
+    currentAppName = slot.name;
+    loginSlot = null;
+
+    ready = false;
+    currentUid = null;
+    currentUserRole = "user";
+
+    rememberSignedInUser(user, slot.name);
+
+}
+
 export async function loginWithEmail(email, password) {
 
-    const cred = await firebase.signInWithEmailAndPassword(auth, email, password);
+    const slot = takeLoginSlot();
+
+    const cred = await firebase.signInWithEmailAndPassword(slot.auth, email, password);
+
+    promoteLoginSlot(slot, cred.user);
 
     // Belum verifikasi: login berhasil tapi cloud TIDAK diaktifkan.
     if (!cred.user.emailVerified) await refreshVerification(cred.user);
@@ -280,7 +442,11 @@ export async function loginWithEmail(email, password) {
 
 export async function registerWithEmail(email, password, lang) {
 
-    const cred = await firebase.createUserWithEmailAndPassword(auth, email, password);
+    const slot = takeLoginSlot();
+
+    const cred = await firebase.createUserWithEmailAndPassword(slot.auth, email, password);
+
+    promoteLoginSlot(slot, cred.user);
 
     // Kirim email verifikasi; cloud baru aktif setelah link diklik.
     await sendVerificationEmail(lang, cred.user);
@@ -333,11 +499,21 @@ export async function checkEmailVerified() {
 // Login / daftar dengan akun Google. Email Google sudah terverifikasi.
 export async function loginWithGoogle() {
 
+    // Penting: slot diambil SEBELUM await apa pun supaya popup tidak diblokir
+    // browser (popup harus dibuka langsung dari klik pengguna).
+    const slot = takeLoginSlot();
+
     const provider = new firebase.GoogleAuthProvider();
 
-    const cred = await firebase.signInWithPopup(auth, provider);
+    // Selalu tampilkan pilihan akun Google, supaya bisa menambah akun Google
+    // lain (bukan langsung memakai akun Google yang sedang aktif di browser).
+    provider.setCustomParameters({ prompt: "select_account" });
+
+    const cred = await firebase.signInWithPopup(slot.auth, provider);
 
     const info = firebase.getAdditionalUserInfo(cred);
+
+    promoteLoginSlot(slot, cred.user);
 
     await activateCloud(cred.user, !!(info && info.isNewUser));
 
@@ -345,13 +521,37 @@ export async function loginWithGoogle() {
 
 }
 
+// Keluar dari akun yang sedang aktif. Akun ini juga dihapus dari daftar akun
+// perangkat (sesinya ditutup). Mengembalikan daftar akun yang masih tersimpan.
 export async function logoutCloud() {
 
-    if (auth) await firebase.signOut(auth);
+    const entry = getActiveAccountEntry();
+
+    try {
+
+        if (auth) await firebase.signOut(auth);
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal menutup sesi:", error);
+
+    }
+
+    clearTimeout(pushTimer);
 
     ready = false;
     currentUid = null;
     currentUserRole = "user";
+
+    if (entry) {
+
+        removeAccountEntry(entry.app);
+        clearAccountCache(entry.uid);
+        clearPullGuard(entry.uid);
+
+    }
+
+    return getSavedAccounts();
 
 }
 
@@ -431,11 +631,21 @@ export async function deleteAccountCloud(currentPassword) {
 
     }
 
+    const deletedUid = user.uid;
+
     await firebase.deleteUser(user);
 
     ready = false;
     currentUid = null;
     currentUserRole = "user";
+
+    // Akun sudah tidak ada -> keluarkan dari daftar akun perangkat ini.
+    const savedEntry = findAccountByUid(deletedUid);
+
+    if (savedEntry) removeAccountEntry(savedEntry.app);
+
+    clearAccountCache(deletedUid);
+    clearPullGuard(deletedUid);
 
     // Akun sudah dihapus permanen -> device ini juga harus bersih dari
     // data privat akun tersebut.
@@ -463,6 +673,10 @@ export async function pullFromCloud() {
             return;
 
         }
+
+        // Data cloud berhasil dibaca (ada atau memang belum ada): data lokal
+        // akun ini sekarang boleh diunggah lagi.
+        clearPullGuard(currentUid);
 
         if (snap.exists()) {
 
@@ -508,41 +722,181 @@ export async function pullFromCloud() {
    setelah import backup / register, sebelum reload).
 ========================================== */
 
+// Upload data My Project akun aktif ke cloud sekarang.
+// Return true kalau berhasil (atau tidak ada yang perlu diunggah), false kalau gagal.
+async function uploadNow() {
+
+    if (!ready) return true;
+
+    // Data lokal akun ini belum diverifikasi dari cloud (mis. baru pindah
+    // akun dan penarikan data gagal) -> jangan menimpa data cloud-nya.
+    if (isPullGuarded(currentUid)) return true;
+
+    try {
+
+        // merge:true -> supaya field "role" (diisi manual admin lewat
+        // Firestore Console) TIDAK ikut kehapus tiap kali user
+        // menyimpan project.
+        await firebase.setDoc(userDocRef(), {
+            projects: localStorage.getItem(STORAGE_KEYS.projects) || "[]",
+            lastReset: localStorage.getItem(STORAGE_KEYS.lastReset) || "",
+            updatedAt: firebase.serverTimestamp()
+        }, { merge: true });
+
+        return true;
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal simpan ke cloud (data tetap aman di device ini):", error);
+        addNotification(t("sync.saveFailed"), "error");
+
+        return false;
+
+    }
+
+}
+
 export function pushToCloud(immediate = false) {
 
     if (!ready) return Promise.resolve();
 
-    const doPush = async () => {
-
-        try {
-
-            // merge:true -> supaya field "role" (diisi manual admin lewat
-            // Firestore Console) TIDAK ikut kehapus tiap kali user
-            // menyimpan project.
-            await firebase.setDoc(userDocRef(), {
-                projects: localStorage.getItem(STORAGE_KEYS.projects) || "[]",
-                lastReset: localStorage.getItem(STORAGE_KEYS.lastReset) || "",
-                updatedAt: firebase.serverTimestamp()
-            }, { merge: true });
-
-        } catch (error) {
-
-            console.warn("[CloudSync] Gagal simpan ke cloud (data tetap aman di device ini):", error);
-            addNotification(t("sync.saveFailed"), "error");
-
-        }
-
-    };
-
     if (immediate) {
         clearTimeout(pushTimer);
-        return doPush();
+        return uploadNow();
     }
 
     clearTimeout(pushTimer);
-    pushTimer = setTimeout(doPush, 600);
+    pushTimer = setTimeout(uploadNow, 600);
 
     return Promise.resolve();
+
+}
+
+/* ==========================================
+   PINDAH AKUN
+   Semua akun yang pernah login di perangkat ini tetap punya sesi sendiri
+   (satu slot Firebase per akun), jadi pindah akun cukup:
+   1. pastikan perubahan akun sekarang sudah tersimpan,
+   2. cek sesi akun tujuan masih berlaku,
+   3. parkir data akun sekarang & pulihkan data akun tujuan,
+   4. tandai akun tujuan sebagai aktif -> halaman dimuat ulang.
+   Tidak ada password yang disimpan di mana pun.
+========================================== */
+
+// Simpan perubahan akun yang sedang aktif ke cloud sebelum ditinggalkan.
+// Return false kalau gagal/timeout (mis. offline) supaya UI bisa bertanya dulu.
+export async function flushCurrentAccount() {
+
+    if (!ready || !currentUid) return true;
+
+    clearTimeout(pushTimer);
+
+    const result = await withTimeout(uploadNow(), 5000, false);
+
+    return result === true;
+
+}
+
+// Menunggu status login awal sebuah slot. null = tidak ada sesi tersimpan,
+// undefined = timeout.
+function waitForSlotUser(slot, ms) {
+
+    return new Promise((resolve) => {
+
+        let done = false;
+
+        const unsubscribe = firebase.onAuthStateChanged(slot.auth, (user) => {
+
+            if (done) return;
+
+            done = true;
+
+            unsubscribe();
+
+            resolve(user);
+
+        });
+
+        setTimeout(() => {
+
+            if (done) return;
+
+            done = true;
+
+            resolve(undefined);
+
+        }, ms);
+
+    });
+
+}
+
+// Hasil: { ok: true } -> pemanggil harus memuat ulang halaman.
+//        { ok: false, reason: "expired" | "timeout" | "missing" | "unavailable", entry }
+export async function switchToAccount(appName) {
+
+    if (!firebase) return { ok: false, reason: "unavailable" };
+
+    const entry = findAccountByApp(appName);
+
+    if (!entry) return { ok: false, reason: "missing" };
+
+    const active = getActiveAccountEntry();
+
+    if (active && active.app === appName && ready) return { ok: true, same: true };
+
+    const slot = getSessionSlot(appName);
+
+    const user = await waitForSlotUser(slot, 8000);
+
+    if (user === undefined) return { ok: false, reason: "timeout", entry };
+
+    // Sesi akun itu sudah tidak berlaku (mis. password diganti di perangkat
+    // lain) -> harus login ulang untuk akun ini.
+    if (!user) return { ok: false, reason: "expired", entry };
+
+    clearTimeout(pushTimer);
+
+    if (active && active.uid !== entry.uid) saveAccountCache(active.uid);
+
+    // Pulihkan data akun tujuan. Tanpa salinan -> mulai kosong, dan perubahan
+    // tidak di-upload sampai data cloud-nya berhasil ditarik.
+    if (restoreAccountCache(entry.uid)) clearPullGuard(entry.uid);
+    else setPullGuard(entry.uid);
+
+    setActiveApp(appName);
+
+    return { ok: true };
+
+}
+
+// Hapus satu akun dari daftar perangkat ini (sesinya ditutup).
+// Mengembalikan daftar akun yang masih tersimpan.
+export async function removeSavedAccount(appName) {
+
+    const entry = findAccountByApp(appName);
+
+    if (!entry) return getSavedAccounts();
+
+    const active = getActiveAccountEntry();
+
+    if (active && active.app === appName) return logoutCloud();
+
+    try {
+
+        if (firebase) await firebase.signOut(getSessionSlot(appName).auth);
+
+    } catch (error) {
+
+        console.warn("[CloudSync] Gagal menutup sesi akun tersimpan:", error);
+
+    }
+
+    removeAccountEntry(appName);
+    clearAccountCache(entry.uid);
+    clearPullGuard(entry.uid);
+
+    return getSavedAccounts();
 
 }
 

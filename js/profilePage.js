@@ -17,7 +17,9 @@ import { showToast } from "./uiFeedback.js";
 import { showConfirm } from "./dialog.js";
 import { renderProjects } from "./render.js";
 import { closeMenu, updateAddButtonVisibility } from "./nav.js";
-import { showCloudAuthModal, setCloudAuthMode } from "./authUI.js";
+import { showCloudAuthModal } from "./authUI.js";
+import { openAccountSwitcher } from "./accountSwitcher.js";
+import { getSavedAccounts } from "./accounts.js";
 import { showVerifyEmailModal } from "./verifyEmail.js";
 import { withUiTimeout } from "./asyncUtils.js";
 import { t } from "./i18n.js";
@@ -113,9 +115,8 @@ async function handleLogout() {
 
     if (confirmed) {
 
-        await logoutCloud();
-
-        showToast(t("cloud.logoutSuccess"));
+        // Hanya akun ini yang keluar (dihapus dari daftar akun perangkat).
+        const remaining = await logoutCloud();
 
         refreshProfilePage();
 
@@ -125,36 +126,28 @@ async function handleLogout() {
 
         updateAddButtonVisibility();
 
+        // Masih ada akun lain di perangkat ini -> tawarkan langsung berpindah.
+        if (remaining.length > 0) {
+
+            showToast(t("account.afterLogout"), 3000);
+
+            openAccountSwitcher();
+
+        } else {
+
+            showToast(t("cloud.logoutSuccess"));
+
+        }
+
     }
 
 }
 
-async function handleSwitchAccount() {
+// Buka daftar akun yang pernah login di perangkat ini. Tidak ada logout:
+// akun sekarang tetap login dan bisa dipakai lagi kapan saja.
+function handleSwitchAccount() {
 
-    const user = getCurrentUser();
-
-    if (!user) return;
-
-    const confirmed = await showConfirm(
-        t("cloud.switchConfirm").replace("{email}", user.email),
-        t("profile.switchAccount")
-    );
-
-    if (!confirmed) return;
-
-    await logoutCloud();
-
-    refreshProfilePage();
-
-    renderProjects();
-
-    updateAddButtonVisibility();
-
-    closeMenu();
-
-    setCloudAuthMode("login");
-
-    showCloudAuthModal();
+    openAccountSwitcher();
 
 }
 
@@ -295,6 +288,16 @@ export function initProfilePage() {
     profileLoginBtn.addEventListener("click", () => {
 
         closeMenu();
+
+        // Ada akun tersimpan di perangkat ini -> tampilkan daftarnya dulu
+        // (dari sana tetap bisa menambah akun lain).
+        if (getSavedAccounts().length > 0) {
+
+            openAccountSwitcher();
+
+            return;
+
+        }
 
         showCloudAuthModal();
 

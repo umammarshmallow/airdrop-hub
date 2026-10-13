@@ -27,6 +27,7 @@ import { initAuthUI } from "./authUI.js";
 import { initForgotPassword } from "./forgotPassword.js";
 import { initVerifyEmail, showVerifyEmailModal } from "./verifyEmail.js";
 import { initProfilePage, refreshProfilePage } from "./profilePage.js";
+import { initAccountSwitcher } from "./accountSwitcher.js";
 import { refreshProjectsView } from "./projectsView.js";
 import { runCloudSyncInBackground } from "./cloudStartup.js";
 
@@ -45,6 +46,7 @@ initAuthUI({
 initVerifyEmail({ onLogout: refreshProfilePage });
 initForgotPassword();
 initProfilePage();
+initAccountSwitcher();
 
 /* ==========================================
    INITIALIZE APPLICATION

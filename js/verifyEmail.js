@@ -17,6 +17,7 @@ import {
 import { withUiTimeout } from "./asyncUtils.js";
 import { getLang, t } from "./i18n.js";
 import { showCloudAuthModal, setCloudAuthMode } from "./authUI.js";
+import { openAccountSwitcher } from "./accountSwitcher.js";
 
 /* ==========================================
    ELEMENT
@@ -182,16 +183,30 @@ async function handleResend() {
 
 async function handleSwitchAccount() {
 
-    await logoutCloud();
+    // Akun yang belum terverifikasi ini keluar dari daftar akun perangkat.
+    const remaining = await logoutCloud();
 
     if (typeof onLogout === "function") onLogout();
 
     closeVerifyModal();
 
-    setCloudAuthMode("login");
+    // tunggu animasi tutup modal ini selesai, baru buka modal berikutnya:
+    // daftar akun kalau masih ada akun lain, kalau tidak langsung login.
+    setTimeout(() => {
 
-    // tunggu animasi tutup modal ini selesai, baru buka modal login
-    setTimeout(() => showCloudAuthModal(), 240);
+        if (remaining.length > 0) {
+
+            openAccountSwitcher();
+
+            return;
+
+        }
+
+        setCloudAuthMode("login");
+
+        showCloudAuthModal();
+
+    }, 240);
 
 }
 
