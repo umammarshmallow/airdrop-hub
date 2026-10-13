@@ -488,6 +488,101 @@ body.modal-open{ overflow:hidden; height:100vh; touch-action:none; }
 }
 
 /* ==========================================================
+   PINDAH AKUN — daftar akun tersimpan di perangkat
+========================================================== */
+#accountSwitcherModal .modal-content{
+  max-height:calc(100vh - 40px);
+  max-height:calc(100dvh - 40px);
+  overflow-y:auto;
+}
+#accountSwitcherModal.is-busy .modal-content{ opacity:.6; pointer-events:none; }
+
+.acct-subtitle{ margin:0 0 14px; color:var(--text-muted); font-size:12.5px; }
+
+.acct-row{
+  display:flex; align-items:center; gap:12px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:var(--radius-md);
+  background:var(--surface-3);
+  transition:.2s;
+}
+.acct-row[role="button"]{ cursor:pointer; }
+.acct-row[role="button"]:hover{ border-color:var(--accent-line); background:var(--surface-2); }
+.acct-row.is-current{ border-color:var(--accent-line); background:var(--accent-soft); }
+
+.acct-avatar{
+  flex:0 0 40px; width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:var(--accent);
+  color:#fff; font-weight:700; font-size:16px;
+}
+
+.acct-info{ flex:1; min-width:0; }
+.acct-email{
+  font-size:13.5px; font-weight:600; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.acct-meta{ margin-top:2px; font-size:11.5px; color:var(--text-faint); }
+
+.acct-badge{
+  flex-shrink:0;
+  padding:3px 9px;
+  border-radius:999px;
+  background:rgba(51,214,166,.14);
+  color:var(--success);
+  font-size:11px; font-weight:700;
+}
+
+.acct-remove{
+  flex-shrink:0;
+  width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:none; border-radius:50%;
+  color:var(--text-faint); font-size:14px;
+  cursor:pointer;
+}
+.acct-remove:hover{ color:var(--danger); background:var(--surface); }
+
+.acct-current{ margin-bottom:6px; }
+
+.acct-others-toggle{
+  width:100%;
+  display:flex; align-items:center; justify-content:space-between;
+  margin:14px 0 8px; padding:6px 2px;
+  background:transparent; border:none;
+  color:var(--text-muted);
+  font:inherit; font-size:13px; font-weight:600;
+  cursor:pointer;
+}
+.acct-others-toggle i{ transition:transform .2s; }
+.acct-others-toggle[aria-expanded="false"] i{ transform:rotate(180deg); }
+
+.acct-list{ display:flex; flex-direction:column; gap:8px; }
+
+.acct-empty{ margin:4px 2px 8px; font-size:12.5px; color:var(--text-faint); }
+
+.acct-add{
+  width:100%;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  margin-top:14px; padding:12px 14px;
+  background:transparent;
+  border:1px dashed var(--accent-line);
+  border-radius:var(--radius-sm);
+  color:var(--accent);
+  font:inherit; font-size:13.5px; font-weight:600;
+  cursor:pointer;
+}
+.acct-add:hover{ background:var(--accent-soft); }
+
+.acct-note{
+  margin:12px 2px 0;
+  font-size:11.5px; line-height:1.5;
+  color:var(--text-faint);
+}
+
+/* ==========================================================
    APRESIASI — kirim USDT (BEP-20) ke dompet dev
 ========================================================== */
 .appreciation-desc{
