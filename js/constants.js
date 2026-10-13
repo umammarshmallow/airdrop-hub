@@ -47,9 +47,25 @@ export const STORAGE_KEYS = Object.freeze({
     lang: "airdropHub_lang",
 
     // Email yang diingat untuk "Remember me" di form login.
-    rememberEmail: "airdrophub_remember_email"
+    rememberEmail: "airdrophub_remember_email",
+
+    // Daftar akun yang pernah login di perangkat ini (untuk "Pindah Akun").
+    // Hanya metadata (email, uid, nama slot sesi) -- TANPA password/token.
+    // Sesi login sebenarnya disimpan Firebase sendiri per akun.
+    accounts: "airdropHub_accounts",
+
+    // Awalan key salinan data per akun (airdropHub_acct_<uid>) -- tempat
+    // "parkir" data My Project akun yang sedang tidak dipakai.
+    accountCachePrefix: "airdropHub_acct_",
+
+    // Penanda: data lokal akun ini BELUM terverifikasi dari cloud, jadi
+    // jangan di-upload dulu (mencegah menimpa data cloud dengan data kosong).
+    pullGuard: "airdropHub_pullGuard"
 
 });
+
+// Batas jumlah akun tersimpan per perangkat.
+export const MAX_SAVED_ACCOUNTS = 5;
 
 /* ==========================================
    FIRESTORE
