@@ -131,7 +131,23 @@ function switchMode(mode, activeBtn) {
    SECURITY PAGE
 ========================================== */
 
+// Halaman Security / Help dibuka dari menu Settings. Kalau begitu, menutup
+// halamannya harus kembali ke Settings dulu (bukan langsung ke Home).
+let reopenMenuAfterPage = false;
+
+function returnToMenuIfNeeded() {
+
+    if (!reopenMenuAfterPage) return;
+
+    reopenMenuAfterPage = false;
+
+    openMenu(false);
+
+}
+
 function openSecurityPage() {
+
+    reopenMenuAfterPage = isMenuOpen();
 
     closeMenu();
 
@@ -151,6 +167,8 @@ function closeSecurityPage() {
 
     bottomNav.style.display = "flex";
 
+    returnToMenuIfNeeded();
+
 }
 
 /* ==========================================
@@ -158,6 +176,8 @@ function closeSecurityPage() {
 ========================================== */
 
 function openHelpPage() {
+
+    reopenMenuAfterPage = isMenuOpen();
 
     closeMenu();
 
@@ -178,6 +198,8 @@ function closeHelpPage() {
     setActiveNav(homeBtn);
 
     bottomNav.style.display = "flex";
+
+    returnToMenuIfNeeded();
 
 }
 
@@ -200,6 +222,13 @@ function openMenu(highlightProfile) {
     openModalEl(sideMenuOverlay);
 
     document.body.classList.add("modal-open");
+
+}
+
+// true kalau menu Settings sedang tampil.
+export function isMenuOpen() {
+
+    return sideMenuOverlay.classList.contains("show");
 
 }
 

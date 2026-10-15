@@ -287,10 +287,9 @@ export function initProfilePage() {
 
     profileLoginBtn.addEventListener("click", () => {
 
-        closeMenu();
-
         // Ada akun tersimpan di perangkat ini -> tampilkan daftarnya dulu
-        // (dari sana tetap bisa menambah akun lain).
+        // (dari sana tetap bisa menambah akun lain). Menu Settings dibiarkan
+        // terbuka supaya menutup daftar ini kembali ke Settings.
         if (getSavedAccounts().length > 0) {
 
             openAccountSwitcher();
@@ -298,6 +297,8 @@ export function initProfilePage() {
             return;
 
         }
+
+        closeMenu();
 
         showCloudAuthModal();
 

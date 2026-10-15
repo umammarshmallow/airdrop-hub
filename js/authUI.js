@@ -116,7 +116,15 @@ export function closeCloudAuthModal() {
 
     closeModalEl(cloudAuthModal);
 
-    document.body.classList.remove("modal-open");
+    // Menu Settings masih terbuka di belakang (mis. dibuka dari Pindah Akun
+    // > Tambah akun) -> kunci scroll jangan dilepas.
+    const sideMenu = document.getElementById("sideMenuOverlay");
+
+    if (!(sideMenu && sideMenu.classList.contains("show"))) {
+
+        document.body.classList.remove("modal-open");
+
+    }
 
 }
 

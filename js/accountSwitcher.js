@@ -17,7 +17,6 @@ import {
     removeSavedAccount
 } from "./cloudSync.js";
 import { showCloudAuthModal, setCloudAuthMode } from "./authUI.js";
-import { closeMenu } from "./nav.js";
 import { MAX_SAVED_ACCOUNTS } from "./constants.js";
 import { t } from "./i18n.js";
 
@@ -304,9 +303,9 @@ async function handleAdd() {
    OPEN / CLOSE
 ========================================== */
 
+// Menu Settings (kalau sedang terbuka) sengaja TIDAK ditutup: kotak ini
+// tampil di atasnya, jadi saat ditutup pengguna kembali ke Settings.
 export function openAccountSwitcher() {
-
-    closeMenu();
 
     render();
 
