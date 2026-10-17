@@ -335,6 +335,113 @@ You can delete your account and all its data at any time from the Security page.
     </section>
   </div>
 
+  <!-- ================= FEEDBACKPAGE ================= -->
+  <div id="feedbackPage" class="app-page" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="fa-solid fa-comment-dots"></i> <span data-i18n="feedback.title">Send Feedback</span></h2>
+        <button id="closeFeedbackPageBtn" class="close-menu-btn" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p data-i18n="feedback.desc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 14px; line-height:1.5;">Choose how you want to send your feedback or suggestion.</p>
+
+      <div class="feedback-options">
+        <button type="button" class="feedback-option" data-feedback="app">
+          <i class="fa-solid fa-envelope"></i>
+          <span data-i18n="feedback.optApp">Email app</span>
+        </button>
+        <button type="button" class="feedback-option" data-feedback="gmail">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span data-i18n="feedback.optGmail">Gmail (web)</span>
+        </button>
+        <button type="button" class="feedback-option" data-feedback="copy">
+          <i class="fa-solid fa-copy"></i>
+          <span data-i18n="feedback.optCopy">Copy email address</span>
+        </button>
+      </div>
+
+      <p id="feedbackEmailText" class="feedback-email-text"></p>
+    </section>
+  </div>
+
+  <!-- ================= APPRECIATIONPAGE ================= -->
+  <div id="appreciationPage" class="app-page" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="fa-solid fa-heart"></i> <span data-i18n="settings.appreciation">Send Appreciation to the Dev</span></h2>
+        <button id="closeAppreciationPageBtn" class="close-menu-btn" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="appreciation-desc" data-i18n="appreciation.desc">Thanks for using AirdropHub! If you find it useful, you can send a voluntary tip in USDT. It's completely optional.</p>
+
+      <div class="appreciation-badges">
+        <span class="appreciation-badge" id="appreciationAsset"></span>
+        <span class="appreciation-badge" id="appreciationNetwork"></span>
+      </div>
+
+      <div id="appreciationQrWrap">
+        <div class="appreciation-qr" id="appreciationQr"></div>
+        <p class="appreciation-qr-hint" data-i18n="appreciation.scan">Scan with your wallet app</p>
+      </div>
+
+      <span class="appreciation-label" data-i18n="appreciation.addressLabel">Wallet address</span>
+      <div class="appreciation-address" id="appreciationAddress"></div>
+
+      <button type="button" class="appreciation-copy" id="appreciationCopyBtn">
+        <i class="fa-solid fa-copy"></i>
+        <span data-i18n="appreciation.copy">Copy address</span>
+      </button>
+      <p class="appreciation-status" id="appreciationStatus" role="status" aria-live="polite"></p>
+
+      <div class="appreciation-warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p data-i18n="appreciation.warn">Send only USDT on the BNB Smart Chain (BEP-20) network. Other tokens or networks may result in lost funds, and transfers can't be reversed.</p>
+      </div>
+
+      <p class="appreciation-verify" id="appreciationVerify"></p>
+
+      <a class="appreciation-explorer" id="appreciationExplorer" target="_blank" rel="noopener noreferrer">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        <span data-i18n="appreciation.explorer">View on BscScan</span>
+      </a>
+    </section>
+  </div>
+
+  <!-- ================= ACCOUNTSWITCHERPAGE ================= -->
+  <div id="accountSwitcherPage" class="app-page" style="display:none;">
+    <section>
+      <div class="page-header">
+        <h2><i class="fa-solid fa-right-left"></i> <span data-i18n="account.title">Switch Account</span></h2>
+        <button id="closeAccountPageBtn" class="close-menu-btn" type="button" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <p class="acct-subtitle" data-i18n="account.subtitle">Tap an account to switch</p>
+
+      <div id="accountCurrent" class="acct-current"></div>
+
+      <button type="button" class="acct-others-toggle" id="accountOthersToggle" aria-expanded="true">
+        <span id="accountOthersLabel">Other accounts (0)</span>
+        <i class="fa-solid fa-chevron-up"></i>
+      </button>
+
+      <div id="accountOthersList" class="acct-list"></div>
+
+      <button type="button" class="acct-add" id="accountAddBtn">
+        <i class="fa-solid fa-plus"></i>
+        <span data-i18n="account.add">Add account</span>
+      </button>
+
+      <p class="acct-note" data-i18n="account.note1">Accounts you've logged into on this phone are saved here so you can switch without logging in again.</p>
+      <p class="acct-note" data-i18n="account.note2">Each account's data stays separate. Passwords are never stored by the app.</p>
+    </section>
+  </div>
+
   <button id="addProjectBtn" style="display:none;"></button>
 
   <!-- ================= ADD PROJECT MODAL ================= -->
@@ -555,113 +662,6 @@ You can delete your account and all its data at any time from the Security page.
           Clear Read
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- ================= FEEDBACK MODAL ================= -->
-  <div class="modal" id="feedbackModal">
-    <div class="modal-content">
-      <div class="page-header" style="margin-bottom:10px;">
-        <h2><i class="fa-solid fa-comment-dots"></i> <span data-i18n="feedback.title">Send Feedback</span></h2>
-        <button id="closeFeedbackModal" class="close-menu-btn" type="button" aria-label="Close">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <p data-i18n="feedback.desc" style="color:var(--text-muted); font-size:12.5px; margin:0 0 14px; line-height:1.5;">Choose how you want to send your feedback or suggestion.</p>
-
-      <div class="feedback-options">
-        <button type="button" class="feedback-option" data-feedback="app">
-          <i class="fa-solid fa-envelope"></i>
-          <span data-i18n="feedback.optApp">Email app</span>
-        </button>
-        <button type="button" class="feedback-option" data-feedback="gmail">
-          <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          <span data-i18n="feedback.optGmail">Gmail (web)</span>
-        </button>
-        <button type="button" class="feedback-option" data-feedback="copy">
-          <i class="fa-solid fa-copy"></i>
-          <span data-i18n="feedback.optCopy">Copy email address</span>
-        </button>
-      </div>
-
-      <p id="feedbackEmailText" class="feedback-email-text"></p>
-    </div>
-  </div>
-
-  <!-- ================= ACCOUNT SWITCHER MODAL ================= -->
-  <div class="modal" id="accountSwitcherModal">
-    <div class="modal-content">
-      <div class="page-header" style="margin-bottom:6px;">
-        <h2><i class="fa-solid fa-right-left"></i> <span data-i18n="account.title">Switch Account</span></h2>
-        <button id="closeAccountSwitcher" class="close-menu-btn" type="button" aria-label="Close">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <p class="acct-subtitle" data-i18n="account.subtitle">Tap an account to switch</p>
-
-      <div id="accountCurrent" class="acct-current"></div>
-
-      <button type="button" class="acct-others-toggle" id="accountOthersToggle" aria-expanded="true">
-        <span id="accountOthersLabel">Other accounts (0)</span>
-        <i class="fa-solid fa-chevron-up"></i>
-      </button>
-
-      <div id="accountOthersList" class="acct-list"></div>
-
-      <button type="button" class="acct-add" id="accountAddBtn">
-        <i class="fa-solid fa-plus"></i>
-        <span data-i18n="account.add">Add account</span>
-      </button>
-
-      <p class="acct-note" data-i18n="account.note1">Accounts you've logged into on this phone are saved here so you can switch without logging in again.</p>
-      <p class="acct-note" data-i18n="account.note2">Each account's data stays separate. Passwords are never stored by the app.</p>
-    </div>
-  </div>
-
-  <!-- ================= APPRECIATION MODAL ================= -->
-  <div class="modal" id="appreciationModal">
-    <div class="modal-content">
-      <div class="page-header" style="margin-bottom:10px;">
-        <h2><i class="fa-solid fa-heart"></i> <span data-i18n="settings.appreciation">Send Appreciation to the Dev</span></h2>
-        <button id="closeAppreciationModal" class="close-menu-btn" type="button" aria-label="Close">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <p class="appreciation-desc" data-i18n="appreciation.desc">Thanks for using AirdropHub! If you find it useful, you can send a voluntary tip in USDT. It's completely optional.</p>
-
-      <div class="appreciation-badges">
-        <span class="appreciation-badge" id="appreciationAsset"></span>
-        <span class="appreciation-badge" id="appreciationNetwork"></span>
-      </div>
-
-      <div id="appreciationQrWrap">
-        <div class="appreciation-qr" id="appreciationQr"></div>
-        <p class="appreciation-qr-hint" data-i18n="appreciation.scan">Scan with your wallet app</p>
-      </div>
-
-      <span class="appreciation-label" data-i18n="appreciation.addressLabel">Wallet address</span>
-      <div class="appreciation-address" id="appreciationAddress"></div>
-
-      <button type="button" class="appreciation-copy" id="appreciationCopyBtn">
-        <i class="fa-solid fa-copy"></i>
-        <span data-i18n="appreciation.copy">Copy address</span>
-      </button>
-      <p class="appreciation-status" id="appreciationStatus" role="status" aria-live="polite"></p>
-
-      <div class="appreciation-warning">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <p data-i18n="appreciation.warn">Send only USDT on the BNB Smart Chain (BEP-20) network. Other tokens or networks may result in lost funds, and transfers can't be reversed.</p>
-      </div>
-
-      <p class="appreciation-verify" id="appreciationVerify"></p>
-
-      <a class="appreciation-explorer" id="appreciationExplorer" target="_blank" rel="noopener noreferrer">
-        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-        <span data-i18n="appreciation.explorer">View on BscScan</span>
-      </a>
     </div>
   </div>
 
