@@ -23,7 +23,6 @@ const homePage = document.getElementById("homePage");
 const securityPage = document.getElementById("securityPage");
 const helpPage = document.getElementById("helpPage");
 
-const allPages = [homePage, securityPage, helpPage];
 const bottomNavButtons = [homeBtn, searchBtn, addBottomBtn, profileBtn];
 
 const navIndicator = document.getElementById("navIndicator");
@@ -72,7 +71,7 @@ function setActiveNav(activeBtn) {
 
 function showPage(page) {
 
-    allPages.forEach(p => {
+    document.querySelectorAll(".app-page").forEach(p => {
 
         p.style.display = "none";
 
@@ -131,17 +130,39 @@ function switchMode(mode, activeBtn) {
    ATURAN SETTINGS
    Settings adalah "induk": apa pun yang dibuka dari Settings, menutupnya
    kembali ke Settings.
-   - Kotak/modal (Feedback, Apresiasi, Pindah Akun, Verifikasi, Login,
-     konfirmasi): tampil DI ATAS menu, menu dibiarkan terbuka -> otomatis
-     kembali ke Settings saat ditutup. Tidak ada kode khusus.
-   - Halaman penuh (Security, Help & FAQ): menggantikan tampilan, jadi menu
-     disembunyikan dulu lalu dibuka lagi saat halamannya ditutup.
-     Cukup satu pasang fungsi di bawah untuk semua halaman penuh.
+   - Halaman penuh (Security, Help & FAQ, Feedback, Apresiasi, Pindah Akun):
+     semuanya satu bentuk -- header judul + tombol X di pojok kanan atas,
+     animasi masuk yang sama. Menu disembunyikan dulu lalu dibuka lagi saat
+     halamannya ditutup. Satu pasang fungsi di bawah untuk semuanya.
+   - Kotak kecil (Verifikasi email, Login, konfirmasi): tampil DI ATAS menu,
+     menu dibiarkan terbuka -> otomatis kembali ke Settings saat ditutup.
 ========================================== */
 
 let reopenMenuAfterPage = false;
 
-function openSettingsPage(page) {
+// Halaman penuh selain Home (Security, Help, Feedback, Apresiasi, Pindah Akun).
+function openSubPage() {
+
+    return Array.from(document.querySelectorAll(".app-page"))
+        .find((p) => p !== homePage && p.style.display === "block") || null;
+
+}
+
+// true kalau halaman ini sedang tampil.
+export function isSettingsPageOpen(page) {
+
+    return !!page && page.style.display === "block";
+
+}
+
+// Tutup halaman ini kalau memang sedang tampil (aman dipanggil kapan saja).
+export function closeSettingsPageIfOpen(page) {
+
+    if (isSettingsPageOpen(page)) closeSettingsPage();
+
+}
+
+export function openSettingsPage(page) {
 
     reopenMenuAfterPage = isMenuOpen();
 
@@ -157,7 +178,7 @@ function openSettingsPage(page) {
 
 }
 
-function closeSettingsPage() {
+export function closeSettingsPage() {
 
     showPage(homePage);
 
@@ -223,6 +244,18 @@ export function closeMenu() {
 ========================================== */
 
 export function initNav() {
+
+    // Escape menutup halaman penuh yang sedang tampil -> kembali ke Settings.
+    // Kalau ada kotak/modal di atasnya (mis. konfirmasi), Escape itu urusan kotaknya.
+    document.addEventListener("keydown", (e) => {
+
+        if (e.key !== "Escape") return;
+
+        if (document.querySelector(".modal.show")) return;
+
+        if (openSubPage()) closeSettingsPage();
+
+    });
 
     homeBtn.addEventListener("click", () => switchMode("home", homeBtn));
 

@@ -9,7 +9,7 @@ import { refreshCloudAuthTexts } from "./authUI.js";
 import { refreshProjectsView } from "./projectsView.js";
 import { STORAGE_KEYS, FEEDBACK_EMAIL, APPRECIATION_WALLET } from "./constants.js";
 import { QR_ADDRESS, QR_ROWS } from "./appreciationQr.js";
-import { openModalEl, closeModalEl } from "./modalAnim.js";
+import { openSettingsPage, closeSettingsPageIfOpen } from "./nav.js";
 import { showToast } from "./uiFeedback.js";
 
 /* ==========================================
@@ -76,7 +76,7 @@ function applyLang(lang, { refresh = true } = {}) {
    Tidak ada data yang dikirim oleh website itu sendiri.
 ========================================== */
 
-const feedbackModal = document.getElementById("feedbackModal");
+const feedbackPage = document.getElementById("feedbackPage");
 
 function feedbackParts() {
 
@@ -88,19 +88,19 @@ function feedbackParts() {
 
 }
 
-function openFeedbackModal() {
+function openFeedbackPage() {
 
     const emailText = document.getElementById("feedbackEmailText");
 
     if (emailText) emailText.textContent = FEEDBACK_EMAIL;
 
-    openModalEl(feedbackModal);
+    openSettingsPage(feedbackPage);
 
 }
 
-function closeFeedbackModal() {
+function closeFeedbackPage() {
 
-    closeModalEl(feedbackModal);
+    closeSettingsPageIfOpen(feedbackPage);
 
 }
 
@@ -160,8 +160,8 @@ async function copyFeedbackEmail() {
 
     }
 
-    // modal ditutup dulu supaya toast (z-index lebih rendah) tidak tertutup
-    closeFeedbackModal();
+    // halaman ditutup dulu supaya pengguna kembali ke Settings dan langsung melihat toast
+    closeFeedbackPage();
 
     if (copied) {
 
@@ -179,26 +179,13 @@ function initFeedback() {
 
     const feedbackBtn = document.getElementById("feedbackBtn");
 
-    if (!feedbackBtn || !feedbackModal) return;
+    if (!feedbackBtn || !feedbackPage) return;
 
-    feedbackBtn.addEventListener("click", openFeedbackModal);
+    feedbackBtn.addEventListener("click", openFeedbackPage);
 
-    document.getElementById("closeFeedbackModal").addEventListener("click", closeFeedbackModal);
+    document.getElementById("closeFeedbackPageBtn").addEventListener("click", closeFeedbackPage);
 
-    // klik area gelap di luar kotak = tutup
-    feedbackModal.addEventListener("click", (e) => {
-
-        if (e.target === feedbackModal) closeFeedbackModal();
-
-    });
-
-    document.addEventListener("keydown", (e) => {
-
-        if (e.key === "Escape" && feedbackModal.classList.contains("show")) closeFeedbackModal();
-
-    });
-
-    feedbackModal.querySelectorAll("[data-feedback]").forEach(btn => {
+    feedbackPage.querySelectorAll("[data-feedback]").forEach(btn => {
 
         btn.addEventListener("click", () => {
 
@@ -216,7 +203,7 @@ function initFeedback() {
 
             if (choice === "app") openMailApp();
 
-            closeFeedbackModal();
+            closeFeedbackPage();
 
         });
 
@@ -232,7 +219,7 @@ function initFeedback() {
    Menu disembunyikan kalau alamat tidak berformat benar.
 ========================================== */
 
-const appreciationModal = document.getElementById("appreciationModal");
+const appreciationPage = document.getElementById("appreciationPage");
 
 const WALLET_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 
@@ -300,7 +287,7 @@ function renderAppreciationQr() {
 
 }
 
-function openAppreciationModal() {
+function openAppreciationPage() {
 
     const { address, asset, network, explorerUrl } = APPRECIATION_WALLET;
 
@@ -320,13 +307,7 @@ function openAppreciationModal() {
 
     renderAppreciationQr();
 
-    openModalEl(appreciationModal);
-
-}
-
-function closeAppreciationModal() {
-
-    closeModalEl(appreciationModal);
+    openSettingsPage(appreciationPage);
 
 }
 
@@ -418,7 +399,7 @@ function initAppreciation() {
 
     const button = document.getElementById("appreciationBtn");
 
-    if (!button || !appreciationModal) return;
+    if (!button || !appreciationPage) return;
 
     if (!WALLET_PATTERN.test(APPRECIATION_WALLET.address)) {
 
@@ -428,26 +409,13 @@ function initAppreciation() {
 
     }
 
-    button.addEventListener("click", openAppreciationModal);
+    button.addEventListener("click", openAppreciationPage);
 
-    document.getElementById("closeAppreciationModal")
-        .addEventListener("click", closeAppreciationModal);
+    document.getElementById("closeAppreciationPageBtn")
+        .addEventListener("click", () => closeSettingsPageIfOpen(appreciationPage));
 
     document.getElementById("appreciationCopyBtn")
         .addEventListener("click", copyAppreciationAddress);
-
-    // klik area gelap di luar kotak = tutup
-    appreciationModal.addEventListener("click", (e) => {
-
-        if (e.target === appreciationModal) closeAppreciationModal();
-
-    });
-
-    document.addEventListener("keydown", (e) => {
-
-        if (e.key === "Escape" && appreciationModal.classList.contains("show")) closeAppreciationModal();
-
-    });
 
 }
 

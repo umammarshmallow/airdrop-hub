@@ -1,12 +1,11 @@
 /* ==========================================
    ACCOUNTSWITCHER.JS
-   Kotak "Pindah Akun": daftar akun yang pernah login di
+   Halaman "Pindah Akun": daftar akun yang pernah login di
    perangkat ini. Ketuk akun untuk berpindah tanpa login ulang,
    atau tambah akun baru. Logika sesi ada di cloudSync.js dan
    daftar akunnya di accounts.js.
 ========================================== */
 
-import { openModalEl, closeModalEl } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
 import { showConfirm } from "./dialog.js";
 import { getSavedAccounts } from "./accounts.js";
@@ -17,16 +16,17 @@ import {
     removeSavedAccount
 } from "./cloudSync.js";
 import { showCloudAuthModal, setCloudAuthMode } from "./authUI.js";
+import { openSettingsPage, closeSettingsPageIfOpen } from "./nav.js";
 import { MAX_SAVED_ACCOUNTS } from "./constants.js";
 import { t } from "./i18n.js";
 
-const modal = document.getElementById("accountSwitcherModal");
+const page = document.getElementById("accountSwitcherPage");
 const currentBox = document.getElementById("accountCurrent");
 const othersToggle = document.getElementById("accountOthersToggle");
 const othersLabel = document.getElementById("accountOthersLabel");
 const othersList = document.getElementById("accountOthersList");
 const addBtn = document.getElementById("accountAddBtn");
-const closeBtn = document.getElementById("closeAccountSwitcher");
+const closeBtn = document.getElementById("closeAccountPageBtn");
 
 let busy = false;
 
@@ -193,7 +193,7 @@ async function handleSwitch(appName) {
 
     busy = true;
 
-    modal.classList.add("is-busy");
+    page.classList.add("is-busy");
 
     try {
 
@@ -232,7 +232,7 @@ async function handleSwitch(appName) {
 
         busy = false;
 
-        modal.classList.remove("is-busy");
+        page.classList.remove("is-busy");
 
     }
 
@@ -303,8 +303,8 @@ async function handleAdd() {
    OPEN / CLOSE
 ========================================== */
 
-// Menu Settings (kalau sedang terbuka) sengaja TIDAK ditutup: kotak ini
-// tampil di atasnya, jadi saat ditutup pengguna kembali ke Settings.
+// Halaman penuh seperti Security/Help: dibuka dari Settings, menutupnya
+// kembali ke Settings (lihat "ATURAN SETTINGS" di nav.js).
 export function openAccountSwitcher() {
 
     render();
@@ -312,19 +312,20 @@ export function openAccountSwitcher() {
     othersToggle.setAttribute("aria-expanded", "true");
     othersList.style.display = "";
 
-    openModalEl(modal);
+    openSettingsPage(page);
 
 }
 
+// Aman dipanggil kapan saja: tidak melakukan apa pun kalau halamannya tidak tampil.
 export function closeAccountSwitcher() {
 
-    closeModalEl(modal);
+    closeSettingsPageIfOpen(page);
 
 }
 
 export function initAccountSwitcher() {
 
-    if (!modal) return;
+    if (!page) return;
 
     closeBtn.addEventListener("click", closeAccountSwitcher);
 
@@ -337,18 +338,6 @@ export function initAccountSwitcher() {
         othersToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
 
         othersList.style.display = expanded ? "none" : "";
-
-    });
-
-    modal.addEventListener("click", (e) => {
-
-        if (e.target === modal) closeAccountSwitcher();
-
-    });
-
-    document.addEventListener("keydown", (e) => {
-
-        if (e.key === "Escape" && modal.classList.contains("show")) closeAccountSwitcher();
 
     });
 
