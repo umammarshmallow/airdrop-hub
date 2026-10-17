@@ -286,8 +286,10 @@ footer p{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
 }
 
 .close-menu-btn:hover{ color:var(--text); border-color:var(--accent-line); }
+/* Tombol X selalu di pojok kanan atas: semua halaman (Security, Help, Feedback,
+   Apresiasi, Pindah Akun) memakai header yang sama. */
 #closeNotifModal,
-#closeSecurityPageBtn{ position:absolute; top:0; right:0; }
+.app-page .page-header > .close-menu-btn{ position:absolute; top:0; right:0; }
 .side-menu-content{ padding:12px 0; overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1 1 auto; min-height:0; }
 
 /* ==========================================================
