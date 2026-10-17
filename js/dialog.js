@@ -6,7 +6,8 @@
 
 import {
     openModalEl,
-    closeModalEl
+    closeModalEl,
+    releaseScrollLock
 } from "./modalAnim.js";
 
 let alertModal, alertMessage, alertOkBtn;
@@ -44,7 +45,7 @@ export function showAlert(message) {
 
             closeModalEl(alertModal);
 
-            document.body.classList.remove("modal-open");
+            releaseScrollLock();
 
             alertOkBtn.removeEventListener("click", onOk);
 
@@ -80,7 +81,7 @@ export function showConfirm(message, confirmLabel = "Delete") {
 
             closeModalEl(confirmModal);
 
-            document.body.classList.remove("modal-open");
+            releaseScrollLock();
 
             confirmOkBtn.removeEventListener("click", onOk);
             confirmCancelBtn.removeEventListener("click", onCancel);

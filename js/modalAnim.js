@@ -48,3 +48,16 @@ export function closeModalEl(el) {
     }, TRANSITION_MS);
 
 }
+
+// Melepas kunci scroll halaman setelah sebuah kotak ditutup -- KECUALI menu
+// Settings masih terbuka di belakangnya (kotak yang dibuka dari Settings
+// tampil di atas menu, jadi menutupnya kembali ke Settings yang masih terkunci).
+export function releaseScrollLock() {
+
+    const sideMenu = document.getElementById("sideMenuOverlay");
+
+    if (sideMenu && sideMenu.classList.contains("show")) return;
+
+    document.body.classList.remove("modal-open");
+
+}

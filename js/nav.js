@@ -128,60 +128,26 @@ function switchMode(mode, activeBtn) {
 }
 
 /* ==========================================
-   SECURITY PAGE
+   ATURAN SETTINGS
+   Settings adalah "induk": apa pun yang dibuka dari Settings, menutupnya
+   kembali ke Settings.
+   - Kotak/modal (Feedback, Apresiasi, Pindah Akun, Verifikasi, Login,
+     konfirmasi): tampil DI ATAS menu, menu dibiarkan terbuka -> otomatis
+     kembali ke Settings saat ditutup. Tidak ada kode khusus.
+   - Halaman penuh (Security, Help & FAQ): menggantikan tampilan, jadi menu
+     disembunyikan dulu lalu dibuka lagi saat halamannya ditutup.
+     Cukup satu pasang fungsi di bawah untuk semua halaman penuh.
 ========================================== */
 
-// Halaman Security / Help dibuka dari menu Settings. Kalau begitu, menutup
-// halamannya harus kembali ke Settings dulu (bukan langsung ke Home).
 let reopenMenuAfterPage = false;
 
-function returnToMenuIfNeeded() {
-
-    if (!reopenMenuAfterPage) return;
-
-    reopenMenuAfterPage = false;
-
-    openMenu(false);
-
-}
-
-function openSecurityPage() {
+function openSettingsPage(page) {
 
     reopenMenuAfterPage = isMenuOpen();
 
     closeMenu();
 
-    showPage(securityPage);
-
-    setActiveNav(null);
-
-    bottomNav.style.display = "none";
-
-}
-
-function closeSecurityPage() {
-
-    showPage(homePage);
-
-    setActiveNav(homeBtn);
-
-    bottomNav.style.display = "flex";
-
-    returnToMenuIfNeeded();
-
-}
-
-/* ==========================================
-   HELP / FAQ PAGE
-========================================== */
-
-function openHelpPage() {
-
-    reopenMenuAfterPage = isMenuOpen();
-
-    closeMenu();
-
-    showPage(helpPage);
+    showPage(page);
 
     setActiveNav(null);
 
@@ -191,7 +157,7 @@ function openHelpPage() {
 
 }
 
-function closeHelpPage() {
+function closeSettingsPage() {
 
     showPage(homePage);
 
@@ -199,7 +165,11 @@ function closeHelpPage() {
 
     bottomNav.style.display = "flex";
 
-    returnToMenuIfNeeded();
+    if (!reopenMenuAfterPage) return;
+
+    reopenMenuAfterPage = false;
+
+    openMenu(false);
 
 }
 
@@ -286,11 +256,11 @@ export function initNav() {
 
     closeMenuBtn.addEventListener("click", closeMenu);
 
-    profileSecurityBtn.addEventListener("click", openSecurityPage);
+    profileSecurityBtn.addEventListener("click", () => openSettingsPage(securityPage));
 
-    closeSecurityPageBtn.addEventListener("click", closeSecurityPage);
+    closeSecurityPageBtn.addEventListener("click", closeSettingsPage);
 
-    helpMenuBtn.addEventListener("click", openHelpPage);
+    helpMenuBtn.addEventListener("click", () => openSettingsPage(helpPage));
 
     helpMenuBtn.addEventListener("keydown", (e) => {
 
@@ -298,13 +268,13 @@ export function initNav() {
 
             e.preventDefault();
 
-            openHelpPage();
+            openSettingsPage(helpPage);
 
         }
 
     });
 
-    closeHelpPageBtn.addEventListener("click", closeHelpPage);
+    closeHelpPageBtn.addEventListener("click", closeSettingsPage);
 
     sideMenuOverlay.addEventListener("click", (e) => {
 

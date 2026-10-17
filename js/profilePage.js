@@ -16,7 +16,7 @@ import {
 import { showToast } from "./uiFeedback.js";
 import { showConfirm } from "./dialog.js";
 import { renderProjects } from "./render.js";
-import { closeMenu, updateAddButtonVisibility } from "./nav.js";
+import { updateAddButtonVisibility } from "./nav.js";
 import { showCloudAuthModal } from "./authUI.js";
 import { openAccountSwitcher } from "./accountSwitcher.js";
 import { getSavedAccounts } from "./accounts.js";
@@ -288,8 +288,7 @@ export function initProfilePage() {
     profileLoginBtn.addEventListener("click", () => {
 
         // Ada akun tersimpan di perangkat ini -> tampilkan daftarnya dulu
-        // (dari sana tetap bisa menambah akun lain). Menu Settings dibiarkan
-        // terbuka supaya menutup daftar ini kembali ke Settings.
+        // (dari sana tetap bisa menambah akun lain).
         if (getSavedAccounts().length > 0) {
 
             openAccountSwitcher();
@@ -298,15 +297,13 @@ export function initProfilePage() {
 
         }
 
-        closeMenu();
-
         showCloudAuthModal();
 
     });
 
+    // Kotak yang dibuka dari Settings tampil di atas menu (menu tidak ditutup),
+    // jadi menutupnya kembali ke Settings. Lihat "ATURAN SETTINGS" di nav.js.
     profileVerifyBtn.addEventListener("click", () => {
-
-        closeMenu();
 
         showVerifyEmailModal();
 

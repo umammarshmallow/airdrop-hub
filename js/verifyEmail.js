@@ -6,7 +6,7 @@
    bisa dipakai secara lokal.
 ========================================== */
 
-import { openModalEl, closeModalEl } from "./modalAnim.js";
+import { openModalEl, closeModalEl, releaseScrollLock } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
 import {
     getCurrentUser,
@@ -105,7 +105,7 @@ function closeVerifyModal() {
 
     closeModalEl(verifyModal);
 
-    document.body.classList.remove("modal-open");
+    releaseScrollLock();
 
 }
 

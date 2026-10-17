@@ -5,7 +5,7 @@
    halaman profil/keamanan di profilePage.js.
 ========================================== */
 
-import { openModalEl, closeModalEl } from "./modalAnim.js";
+import { openModalEl, closeModalEl, releaseScrollLock } from "./modalAnim.js";
 import { showToast } from "./uiFeedback.js";
 import { loginWithEmail, registerWithEmail, loginWithGoogle, prepareLoginSlot } from "./cloudSync.js";
 import { withUiTimeout } from "./asyncUtils.js";
@@ -116,15 +116,7 @@ export function closeCloudAuthModal() {
 
     closeModalEl(cloudAuthModal);
 
-    // Menu Settings masih terbuka di belakang (mis. dibuka dari Pindah Akun
-    // > Tambah akun) -> kunci scroll jangan dilepas.
-    const sideMenu = document.getElementById("sideMenuOverlay");
-
-    if (!(sideMenu && sideMenu.classList.contains("show"))) {
-
-        document.body.classList.remove("modal-open");
-
-    }
+    releaseScrollLock();
 
 }
 
